@@ -1,4 +1,3 @@
-
 package com.sompoble.cat.domain;
 
 import jakarta.persistence.Column;
@@ -36,7 +35,7 @@ public class Reserva implements Serializable {
     private Empresa empresa;
     
     @ManyToOne
-    @JoinColumn(name="ID_PERSONA", referencedColumnName = "ID_PERSONA", nullable = false)
+    @JoinColumn(name="ID_CLIENTE", referencedColumnName = "ID_PERSONA", nullable = false)
     @NotNull
     private Cliente cliente;
     
