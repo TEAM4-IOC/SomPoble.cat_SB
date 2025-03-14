@@ -13,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/empresarios")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EmpresarioController {
 
     @Autowired
@@ -85,6 +86,7 @@ public class EmpresarioController {
         existingEmpresario.setApellidos(empresario.getApellidos());
         existingEmpresario.setTelefono(empresario.getTelefono());
         existingEmpresario.setContraseña(empresario.getContraseña());
+        existingEmpresario.setEmail(empresario.getEmail());        
 
         empresarioService.updateEmpresario(existingEmpresario);
 

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/clientes")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ClienteController {
 
     @Autowired
@@ -84,8 +85,9 @@ public class ClienteController {
         // Actualización de los datos del cliente
         existingCliente.setNombre(cliente.getNombre());
         existingCliente.setApellidos(cliente.getApellidos());
-        existingCliente.setNombre(cliente.getTelefono());
-        existingCliente.setApellidos(cliente.getContraseña());
+        existingCliente.setTelefono(cliente.getTelefono());
+        existingCliente.setContraseña(cliente.getContraseña());
+        existingCliente.setEmail(cliente.getEmail());
 
         clienteService.updateCliente(existingCliente);
 
