@@ -30,13 +30,13 @@ public class EmpresaHibernate implements EmpresaRepository {
     }
 
     @Override
-    public Empresa findByCif(String cif) {
+    public Empresa findByIdentificadorFiscal(String identificadorFiscal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Empresa> cq = cb.createQuery(Empresa.class);
         Root<Empresa> root = cq.from(Empresa.class);
 
-        Predicate cifPredicate = cb.equal(root.get("cif"), cif);
-        cq.where(cifPredicate);
+        Predicate identificadorFiscalPredicate = cb.equal(root.get("identificadorFiscal"), identificadorFiscal);
+        cq.where(identificadorFiscalPredicate);
 
         return entityManager.createQuery(cq).getSingleResult();
     }
@@ -59,21 +59,21 @@ public class EmpresaHibernate implements EmpresaRepository {
     }
 
     @Override
-    public void deleteByCif(String cif) {
-        Empresa empresa = findByCif(cif);  // Puedes reutilizar la consulta findByCif
+    public void deleteByIdentificadorFiscal(String identificadorFiscal) {
+        Empresa empresa = findByIdentificadorFiscal(identificadorFiscal);
         if (empresa != null) {
             entityManager.remove(empresa);
         }
     }
 
     @Override
-    public boolean existsByCif(String cif) {
+    public boolean existsByIdentificadorFiscal (String identificadorFiscal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<Empresa> root = cq.from(Empresa.class);
 
-        Predicate cifPredicate = cb.equal(root.get("cif"), cif);
-        cq.select(cb.count(root)).where(cifPredicate);
+        Predicate identificadorFiscalPredicate = cb.equal(root.get("identificadorFiscal"), identificadorFiscal);
+        cq.select(cb.count(root)).where(identificadorFiscalPredicate);
 
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;

@@ -1,5 +1,6 @@
 package com.sompoble.cat.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,17 +30,21 @@ public class Empresa implements Serializable {
     @ManyToOne
     @JoinColumn(name="ID_PERSONA", nullable = false)
     @NotNull
+    @JsonBackReference
     private Empresario empresario;
     
-    @Column(name = "CIF", nullable = false, length = 9) 
+    @Column(name = "IDENTIFICADOR_FISCAL", nullable = false, length = 9) 
     @NotNull
     @Size(max = 9)
-    private String cif;
+    private String identificadorFiscal;
     
     @Column(name = "NOMBRE", nullable = false, length = 100) 
-    @NotNull
     @Size(max = 100)
     private String nombre;
+    
+    @Column(name = "ACTIVIDAD", nullable = false, length = 100) 
+    @Size(max = 100)
+    private String actividad;
         
     @Column(name = "DIRECCION", nullable = false, length = 255) 
     @NotNull
@@ -55,6 +60,10 @@ public class Empresa implements Serializable {
     @NotNull
     @Size(max = 20)
     private String telefono;
+    
+    @Column(name = "TIPO", nullable = false) 
+    @NotNull
+    private int tipo;
     
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
     @CreationTimestamp
@@ -76,13 +85,15 @@ public class Empresa implements Serializable {
     public Empresa() {
     }
 
-    public Empresa(Empresario empresario, String cif, String nombre, String direccion, String email, String telefono) {
+    public Empresa(Empresario empresario, String identificadorFiscal, String nombre, String actividad, String direccion, String email, String telefono, int tipo) {
         this.empresario = empresario;
-        this.cif = cif;
+        this.identificadorFiscal = identificadorFiscal;
         this.nombre = nombre;
+        this.actividad = actividad;
         this.direccion = direccion;
         this.email = email;
         this.telefono = telefono;
+        this.tipo = tipo;
     }
 
     public Long getIdEmpresa() {
@@ -97,12 +108,12 @@ public class Empresa implements Serializable {
         this.empresario = empresario;
     }
 
-    public String getCif() {
-        return cif;
+    public String getIdentificadorFiscal() {
+        return identificadorFiscal;
     }
 
-    public void setCif(String cif) {
-        this.cif = cif;
+    public void setIdentificadorFiscal(String identificadorFiscal) {
+        this.identificadorFiscal = identificadorFiscal;
     }
 
     public String getNombre() {
@@ -111,6 +122,14 @@ public class Empresa implements Serializable {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+    
+    public String getActividad() {
+        return actividad;
+    }
+
+    public void setActividad(String actividad) {
+        this.actividad = actividad;
     }
 
     public String getDireccion() {
@@ -135,6 +154,14 @@ public class Empresa implements Serializable {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+    
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
     }
 
     public LocalDateTime getFechaAlta() {

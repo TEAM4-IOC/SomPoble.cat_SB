@@ -14,8 +14,8 @@ public class EmpresaServiceImpl implements EmpresaService {
     private EmpresaRepository empresaRepository;
 
     @Override
-    public Empresa findByCif(String cif) {
-        return empresaRepository.findByCif(cif);
+    public Empresa findByIdentificadorFiscal(String identificadorFiscal) {
+        return empresaRepository.findByIdentificadorFiscal(identificadorFiscal);
     }
 
     @Override
@@ -44,12 +44,12 @@ public class EmpresaServiceImpl implements EmpresaService {
     }
 
     @Override
-    public boolean existsByCif(String cif) {
-        return empresaRepository.existsByCif(cif);
+    public boolean existsByIdentificadorFiscal(String identificadorFiscal) {
+        return empresaRepository.existsByIdentificadorFiscal(identificadorFiscal);
     }
 
     @Override
-    public void deleteByCif(String cif) {
-        empresaRepository.deleteByCif(cif);
+    public void deleteByIdentificadorFiscal(String identificadorFiscal) {
+        empresaRepository.deleteByIdentificadorFiscal(identificadorFiscal);
     }
 }

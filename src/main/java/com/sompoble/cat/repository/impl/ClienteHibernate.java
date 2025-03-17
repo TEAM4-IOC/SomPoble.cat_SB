@@ -60,7 +60,7 @@ public class ClienteHibernate implements ClienteRepository {
 
     @Override
     public void deleteByDni(String dni) {
-        Cliente cliente = findByDNI(dni);  // Puedes reutilizar la consulta findByDNI
+        Cliente cliente = findByDNI(dni);
         if (cliente != null) {
             entityManager.remove(cliente);
         }

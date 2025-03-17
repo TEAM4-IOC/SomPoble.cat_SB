@@ -1,5 +1,6 @@
 package com.sompoble.cat.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -10,6 +11,7 @@ import java.util.List;
 public class Empresario extends Persona{
     
     @OneToMany(mappedBy = "empresario")
+    @JsonManagedReference 
     private List<Empresa> empresas;
     
     @OneToMany(mappedBy = "empresario")
@@ -18,8 +20,8 @@ public class Empresario extends Persona{
     public Empresario() {
     }
 
-    public Empresario(String dni, String nombre, String apellidos, String email, String telefono, String contraseña) {
-        super(dni, nombre, apellidos, email, telefono, contraseña);
+    public Empresario(String dni, String nombre, String apellidos, String email, String telefono, String pass) {
+        super(dni, nombre, apellidos, email, telefono, pass);
     }
     
     public List<Empresa> getEmpresas() {
