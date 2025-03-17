@@ -104,4 +104,17 @@ public class ClienteHibernate implements ClienteRepository {
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;
     }
+    
+    @Override
+	public Cliente findByEmail(String email) {
+	    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+	    CriteriaQuery<Cliente> cq = cb.createQuery(Cliente.class);
+	    Root<Cliente> root = cq.from(Cliente.class);
+
+	    Predicate emailPredicate = cb.equal(root.get("email"), email);
+	    cq.where(emailPredicate);
+
+	    List<Cliente> result = entityManager.createQuery(cq).getResultList();
+	    return result.isEmpty() ? null : result.get(0);
+	}
 }

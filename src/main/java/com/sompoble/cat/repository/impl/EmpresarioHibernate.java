@@ -104,4 +104,17 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;
     }
+    
+    @Override
+    public Empresario findByEmail(String email) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Empresario> cq = cb.createQuery(Empresario.class);
+        Root<Empresario> root = cq.from(Empresario.class);
+
+        Predicate emailPredicate = cb.equal(root.get("email"), email);
+        cq.where(emailPredicate);
+
+        List<Empresario> result = entityManager.createQuery(cq).getResultList();
+        return result.isEmpty() ? null : result.get(0);
+    }
 }

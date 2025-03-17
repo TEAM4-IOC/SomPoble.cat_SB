@@ -57,4 +57,9 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public boolean existsByEmail(String email) {
         return empresarioRepository.existsByEmail(email);
     }
+    
+    @Override
+    public Empresario findByEmail(String email) {
+            return empresarioRepository.findByEmail(email);
+    }
 }

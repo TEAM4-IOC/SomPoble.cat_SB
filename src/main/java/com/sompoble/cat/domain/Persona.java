@@ -1,6 +1,5 @@
 package com.sompoble.cat.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -73,7 +72,7 @@ public class Persona implements Serializable {
         this.dni = dni;
         this.nombre = nombre;
         this.apellidos = apellidos;
-        this.email = email;
+        this.email = email.toLowerCase();
         this.telefono = telefono;
         this.pass = encoder.encode(pass);
     }
@@ -111,7 +110,7 @@ public class Persona implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.toLowerCase();
     }
 
     public String getTelefono() {

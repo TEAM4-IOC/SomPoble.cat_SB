@@ -57,4 +57,9 @@ public class ClienteServiceImpl implements ClienteService {
     public boolean existsByEmail(String email) {
         return clienteRepository.existsByEmail(email);
     }
+    
+    @Override
+    public Cliente findByEmail(String email) {
+            return clienteRepository.findByEmail(email);
+    }
 }

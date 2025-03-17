@@ -91,7 +91,7 @@ public class Empresa implements Serializable {
         this.nombre = nombre;
         this.actividad = actividad;
         this.direccion = direccion;
-        this.email = email;
+        this.email = email.toLowerCase();
         this.telefono = telefono;
         this.tipo = tipo;
     }
@@ -145,7 +145,7 @@ public class Empresa implements Serializable {
     }
     
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.toLowerCase();
     }
 
     public String getTelefono() {
