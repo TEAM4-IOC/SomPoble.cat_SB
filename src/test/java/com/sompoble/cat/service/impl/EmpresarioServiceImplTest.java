@@ -19,10 +19,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 class EmpresarioServiceImplTest {
 
     @Autowired
-    private EmpresarioService empresarioService; // El servicio que estás probando
+    private EmpresarioService empresarioService; 
 
     @Autowired
-    private EmpresarioRepository empresarioRepository; // Para interactuar con el repositorio directamente
+    private EmpresarioRepository empresarioRepository; 
 
     @Test
     void addEmpresarioTest() {
@@ -32,7 +32,7 @@ class EmpresarioServiceImplTest {
         empresario.setApellidos("Sanchez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
         Empresario empresarioPersistido = empresarioRepository.findByDNI(empresario.getDni());
@@ -42,21 +42,18 @@ class EmpresarioServiceImplTest {
 
     @Test
     void updateEmpresarioTest() {
-        // Crear un empresario inicial
         Empresario empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
         empresario.setApellidos("Sanchez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        // Actualizar el empresario
         empresario.setNombre("Fernando");
         empresarioService.updateEmpresario(empresario);
 
-        // Verificar que el empresario ha sido actualizado
         Empresario empresarioActualizado = empresarioRepository.findByDNI(empresario.getDni());
         assertNotNull(empresarioActualizado);
         assertEquals("Fernando", empresarioActualizado.getNombre());
@@ -64,17 +61,15 @@ class EmpresarioServiceImplTest {
 
     @Test
     void findByDniTest() {
-        // Crear un empresario
         Empresario empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
         empresario.setApellidos("Sanchez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        // Buscar empresario por DNI
         Empresario result = empresarioService.findByDNI("12345678A");
         assertNotNull(result);
         assertEquals(empresario.getDni(), result.getDni());
@@ -82,56 +77,49 @@ class EmpresarioServiceImplTest {
 
     @Test
     void existsByDniTest() {
-        // Crear un empresario
         Empresario empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
         empresario.setApellidos("Sanchez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        // Verificar si el empresario existe por DNI
         boolean result = empresarioService.existsByDni("12345678A");
         assertTrue(result);
     }
 
     @Test
     void deleteByIdTest() {
-        // Crear un empresario
         Empresario empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
         empresario.setApellidos("Sanchez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        // Eliminar el empresario por ID
         empresarioService.deleteById(empresario.getIdPersona());
 
-        // Verificar que el empresario ha sido eliminado
         try {
             Empresario empresarioEliminado = empresarioRepository.findByDNI(empresario.getDni());
             assertNull(empresarioEliminado);
         } catch (EmptyResultDataAccessException e) {
-            // Exception is expected because the empresario has been deleted
             assertTrue(true);
         }
     }
 
     @Test
     void findAllTest() {
-        // Crear empresarios
         Empresario empresario1 = new Empresario();
         empresario1.setDni("12345678A");
         empresario1.setNombre("Carlos");
         empresario1.setApellidos("Sanchez Martinez");
         empresario1.setEmail("carlos@empresa.com");
         empresario1.setTelefono("650123456");
-        empresario1.setContraseña("pass");
+        empresario1.setPass("pass");
         empresarioService.addEmpresario(empresario1);
 
         Empresario empresario2 = new Empresario();
@@ -140,10 +128,9 @@ class EmpresarioServiceImplTest {
         empresario2.setApellidos("Lopez Garcia");
         empresario2.setEmail("maria@empresa.com");
         empresario2.setTelefono("650123457");
-        empresario2.setContraseña("pass");
+        empresario2.setPass("pass");
         empresarioService.addEmpresario(empresario2);
 
-        // Verificar que ambos empresarios están presentes
         List<Empresario> empresarios = empresarioService.findAll();
         assertNotNull(empresarios);
         assertEquals(2, empresarios.size());
@@ -151,59 +138,51 @@ class EmpresarioServiceImplTest {
 
     @Test
     void existsByIdTest() {
-        // Crear un empresario
         Empresario empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
         empresario.setApellidos("Sanchez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        // Verificar si el empresario existe por ID
         boolean result = empresarioService.existsById(empresario.getIdPersona());
         assertTrue(result);
     }
 
     @Test
     void deleteByDniTest() {
-        // Crear un empresario
         Empresario empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
         empresario.setApellidos("Sanchez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        // Eliminar el empresario por DNI
         empresarioService.deleteByDni(empresario.getDni());
 
-        // Verificar que el empresario ha sido eliminado
         try {
             Empresario empresarioEliminado = empresarioRepository.findByDNI(empresario.getDni());
             assertNull(empresarioEliminado);
         } catch (EmptyResultDataAccessException e) {
-            // Exception is expected because the empresario has been deleted
             assertTrue(true);
         }
     }
 
     @Test
     void existsByEmailTest() {
-        // Crear un empresario
         Empresario empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
         empresario.setApellidos("Sanchez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        // Verificar si el empresario existe por email
         boolean result = empresarioService.existsByEmail("carlos@empresa.com");
         assertTrue(result);
     }

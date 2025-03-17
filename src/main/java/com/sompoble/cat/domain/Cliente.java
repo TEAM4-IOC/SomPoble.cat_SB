@@ -18,8 +18,8 @@ public class Cliente extends Persona {
     public Cliente() {
     }
 
-    public Cliente(String dni, String nombre, String apellidos, String email, String telefono, String contraseña) {
-        super(dni, nombre, apellidos, email, telefono, contraseña);
+    public Cliente(String dni, String nombre, String apellidos, String email, String telefono, String pass) {
+        super(dni, nombre, apellidos, email, telefono, pass);
     }
     
     public List<Reserva> getReservas() {

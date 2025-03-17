@@ -19,23 +19,22 @@ import org.junit.jupiter.api.BeforeEach;
 class EmpresaHibernateTest {
 
     @Autowired
-    private EmpresaHibernate empresaHibernate; // El repositorio que estás probando
+    private EmpresaHibernate empresaHibernate;
 
     @Autowired
-    private EntityManager entityManager; // Para interactuar directamente con la base de datos
+    private EntityManager entityManager; 
     
     private Empresario empresario;
     
     @BeforeEach
     void setUp() {
-        // Crear un nuevo empresario antes de cada prueba
         empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
         empresario.setApellidos("Lopez Martinez");
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650180800");
-        empresario.setContraseña("pass");
+        empresario.setPass("pass");
         
         entityManager.persist(empresario);
         entityManager.flush();
@@ -45,7 +44,7 @@ class EmpresaHibernateTest {
     @Test
     void addEmpresaTest() {
         Empresa empresa = new Empresa();
-        empresa.setCif("A12345678");
+        empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa S.A.");
         empresa.setDireccion("Calle Falsa, 123");
         empresa.setTelefono("123456789");
@@ -55,14 +54,13 @@ class EmpresaHibernateTest {
 
         Empresa empresaPersistida = entityManager.find(Empresa.class, empresa.getIdEmpresa());
         assertNotNull(empresaPersistida);
-        assertEquals(empresa.getCif(), empresaPersistida.getCif());
+        assertEquals(empresa.getIdentificadorFiscal(), empresaPersistida.getIdentificadorFiscal());
     }
 
     @Test
     void updateEmpresaTest() {
-        // Crear una empresa inicial
         Empresa empresa = new Empresa();
-        empresa.setCif("A12345678");
+        empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa S.A.");
         empresa.setDireccion("Calle Falsa, 123");
         empresa.setTelefono("123456789");
@@ -70,21 +68,18 @@ class EmpresaHibernateTest {
         empresa.setEmpresario(empresario);
         empresaHibernate.addEmpresario(empresa);
 
-        // Actualizar la empresa
         empresa.setNombre("Nueva Empresa S.A.");
         empresaHibernate.updateEmpresa(empresa);
 
-        // Verificar que la empresa ha sido actualizada
         Empresa empresaActualizada = entityManager.find(Empresa.class, empresa.getIdEmpresa());
         assertNotNull(empresaActualizada);
         assertEquals("Nueva Empresa S.A.", empresaActualizada.getNombre());
     }
 
     @Test
-    void findByCifTest() {
-        // Crear una empresa
+    void findByIdentificadorFiscalTest() {
         Empresa empresa = new Empresa();
-        empresa.setCif("A12345678");
+        empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa S.A.");
         empresa.setDireccion("Calle Falsa, 123");
         empresa.setTelefono("123456789");
@@ -92,17 +87,15 @@ class EmpresaHibernateTest {
         empresa.setEmpresario(empresario);
         empresaHibernate.addEmpresario(empresa);
 
-        // Buscar empresa por CIF
-        Empresa result = empresaHibernate.findByCif("A12345678");
+        Empresa result = empresaHibernate.findByIdentificadorFiscal("A12345678");
         assertNotNull(result);
-        assertEquals(empresa.getCif(), result.getCif());
+        assertEquals(empresa.getIdentificadorFiscal(), result.getIdentificadorFiscal());
     }
 
     @Test
-    void existsByCifTest() {
-        // Crear una empresa
+    void existsByIdentificadorFiscalTest() {
         Empresa empresa = new Empresa();
-        empresa.setCif("A12345678");
+        empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa S.A.");
         empresa.setDireccion("Calle Falsa, 123");
         empresa.setTelefono("123456789");
@@ -110,16 +103,14 @@ class EmpresaHibernateTest {
         empresa.setEmpresario(empresario);
         empresaHibernate.addEmpresario(empresa);
 
-        // Verificar si la empresa existe por CIF
-        boolean result = empresaHibernate.existsByCif("A12345678");
+        boolean result = empresaHibernate.existsByIdentificadorFiscal("A12345678");
         assertTrue(result);
     }
 
     @Test
     void deleteByIdTest() {
-        // Crear una empresa
         Empresa empresa = new Empresa();
-        empresa.setCif("A12345678");
+        empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa S.A.");
         empresa.setDireccion("Calle Falsa, 123");
         empresa.setTelefono("123456789");
@@ -127,19 +118,16 @@ class EmpresaHibernateTest {
         empresa.setEmpresario(empresario);
         empresaHibernate.addEmpresario(empresa);
 
-        // Eliminar la empresa por ID
         empresaHibernate.deleteById(empresa.getIdEmpresa());
 
-        // Verificar que la empresa ha sido eliminada
         Empresa empresaEliminada = entityManager.find(Empresa.class, empresa.getIdEmpresa());
         assertNull(empresaEliminada);
     }
 
     @Test
     void findAllTest() {
-        // Crear empresas
         Empresa empresa1 = new Empresa();
-        empresa1.setCif("A12345678");
+        empresa1.setIdentificadorFiscal("A12345678");
         empresa1.setNombre("Empresa S.A.");
         empresa1.setDireccion("Calle Falsa, 123");
         empresa1.setTelefono("123456789");
@@ -148,7 +136,7 @@ class EmpresaHibernateTest {
         empresaHibernate.addEmpresario(empresa1);
 
         Empresa empresa2 = new Empresa();
-        empresa2.setCif("B98765432");
+        empresa2.setIdentificadorFiscal("B98765432");
         empresa2.setNombre("Otra Empresa S.A.");
         empresa2.setDireccion("Calle Verdadera, 456");
         empresa2.setTelefono("987654321");
@@ -156,7 +144,6 @@ class EmpresaHibernateTest {
         empresa2.setEmpresario(empresario);
         empresaHibernate.addEmpresario(empresa2);
 
-        // Verificar que ambas empresas están presentes
         List<Empresa> empresas = empresaHibernate.findAll();
         assertNotNull(empresas);
         assertEquals(2, empresas.size());
@@ -164,9 +151,8 @@ class EmpresaHibernateTest {
 
     @Test
     void existsByIdTest() {
-        // Crear una empresa
         Empresa empresa = new Empresa();
-        empresa.setCif("A12345678");
+        empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa S.A.");
         empresa.setDireccion("Calle Falsa, 123");
         empresa.setTelefono("123456789");
@@ -174,16 +160,14 @@ class EmpresaHibernateTest {
         empresa.setEmpresario(empresario);
         empresaHibernate.addEmpresario(empresa);
 
-        // Verificar si la empresa existe por ID
         boolean result = empresaHibernate.existsById(empresa.getIdEmpresa());
         assertTrue(result);
     }
 
     @Test
-    void deleteByCifTest() {
-        // Crear una empresa
+    void deleteByIdentificadorFiscalTest() {
         Empresa empresa = new Empresa();
-        empresa.setCif("A12345678");
+        empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa S.A.");
         empresa.setDireccion("Calle Falsa, 123");
         empresa.setTelefono("123456789");
@@ -191,10 +175,8 @@ class EmpresaHibernateTest {
         empresa.setEmpresario(empresario);
         empresaHibernate.addEmpresario(empresa);
 
-        // Eliminar la empresa por CIF
-        empresaHibernate.deleteByCif("A12345678");
+        empresaHibernate.deleteByIdentificadorFiscal("A12345678");
 
-        // Verificar que la empresa ha sido eliminada
         Empresa empresaEliminada = entityManager.find(Empresa.class, empresa.getIdEmpresa());
         assertNull(empresaEliminada);
     }

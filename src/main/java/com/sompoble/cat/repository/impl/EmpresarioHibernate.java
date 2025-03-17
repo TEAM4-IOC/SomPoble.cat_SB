@@ -60,7 +60,7 @@ public class EmpresarioHibernate implements EmpresarioRepository {
 
     @Override
     public void deleteByDni(String dni) {
-        Empresario empresario = findByDNI(dni);  // Puedes reutilizar la consulta findByDNI
+        Empresario empresario = findByDNI(dni);
         if (empresario != null) {
             entityManager.remove(empresario);
         }

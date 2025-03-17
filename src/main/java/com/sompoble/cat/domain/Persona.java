@@ -1,5 +1,6 @@
 package com.sompoble.cat.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,10 +51,10 @@ public class Persona implements Serializable {
     @Size(max = 20)
     private String telefono;   
     
-    @Column(name = "CONTRASEÑA", nullable = false, length = 255) 
+    @Column(name = "PASSWRD", nullable = false, length = 255) 
     @NotNull
     @Size(max = 255)
-    private String contraseña;
+    private String pass;
     
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
     @CreationTimestamp
@@ -68,13 +69,13 @@ public class Persona implements Serializable {
     public Persona() {
     }
 
-    public Persona(String dni, String nombre, String apellidos, String email, String telefono, String contraseña) {
+    public Persona(String dni, String nombre, String apellidos, String email, String telefono, String pass) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.email = email;
         this.telefono = telefono;
-        this.contraseña = encoder.encode(contraseña);
+        this.pass = encoder.encode(pass);
     }
     
     public Long getIdPersona() {
@@ -121,12 +122,12 @@ public class Persona implements Serializable {
         this.telefono = telefono;
     }
     
-    public String getContraseña() {
-        return contraseña;
+    public String getPass() {
+        return pass;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = encoder.encode(contraseña);
+    public void setPass(String pass) {
+        this.pass = encoder.encode(pass);
     }
     
     public LocalDateTime getFechaAlta() {

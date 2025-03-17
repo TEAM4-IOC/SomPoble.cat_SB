@@ -4,7 +4,7 @@ import com.sompoble.cat.domain.Empresa;
 import java.util.List;
 
 public interface EmpresaRepository {
-    Empresa findByCif(String cif);
+    Empresa findByIdentificadorFiscal(String identificadorFiscal);
     
     void updateEmpresa (Empresa empresa);
     
@@ -16,7 +16,7 @@ public interface EmpresaRepository {
 
     void deleteById(Long id);
     
-    boolean existsByCif(String cif);
+    boolean existsByIdentificadorFiscal(String identificadorFiscal);
 
-    void deleteByCif(String cif);
+    void deleteByIdentificadorFiscal(String identificadorFiscal);
 }

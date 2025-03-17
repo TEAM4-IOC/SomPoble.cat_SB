@@ -43,6 +43,10 @@ public class Servicio implements Serializable {
     @NotNull
     private float precio;
     
+    @Column(name="LIMITE_RESERVAS", nullable = false)
+    @NotNull
+    private int limiteReservas;
+    
     @ManyToOne
     @JoinColumn(name="ID_EMPRESA", referencedColumnName = "ID_EMPRESA", nullable = false)
     @NotNull
@@ -65,11 +69,12 @@ public class Servicio implements Serializable {
     public Servicio() {
     }
 
-    public Servicio(String nombre, String descripcion, int duracion, float precio, Empresa empresa) {
+    public Servicio(String nombre, String descripcion, int duracion, float precio, int limiteReservas, Empresa empresa) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.precio = precio;
+        this.limiteReservas = limiteReservas;
         this.empresa = empresa;
     }
 
@@ -107,6 +112,14 @@ public class Servicio implements Serializable {
 
     public void setPrecio(float precio) {
         this.precio = precio;
+    }
+    
+    public float getLimiteReservas() {
+        return limiteReservas;
+    }
+
+    public void setLimiteReservas(int limiteReservas) {
+        this.limiteReservas = limiteReservas;
     }
 
     public Empresa getEmpresa() {

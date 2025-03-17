@@ -100,15 +100,7 @@ public class Evento implements Serializable {
         return fechaAlta;
     }
 
-    public void setFechaAlta(LocalDateTime fechaAlta) {
-        this.fechaAlta = fechaAlta;
-    }
-
     public LocalDateTime getFechaModificacion() {
         return fechaModificacion;
-    }
-
-    public void setFechaModificacion(LocalDateTime fechaModificacion) {
-        this.fechaModificacion = fechaModificacion;
     }
 }

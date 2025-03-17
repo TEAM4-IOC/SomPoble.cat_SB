@@ -9,8 +9,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 
 @Entity
@@ -21,6 +25,11 @@ public class Horario implements Serializable {
     @Column(name = "ID_HORARIO")
     private Long idHorario;
     
+    @Column(name = "DIAS_LABORABLES", nullable = false, length = 255) 
+    @NotNull
+    @Size(max = 255)
+    private String diasLaborables;    
+    
     @Column(name = "HORARIO_INICIO", nullable = false)
     @NotNull
     private LocalTime  horarioInicio;
@@ -28,6 +37,16 @@ public class Horario implements Serializable {
     @Column(name = "HORARIO_FIN", nullable = false)
     @NotNull
     private LocalTime  horarioFin;
+    
+    @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
+    @CreationTimestamp
+    @NotNull
+    private LocalDateTime fechaAlta;
+
+    @Column(name = "FECHA_MODIFICACION", nullable = false)
+    @UpdateTimestamp
+    @NotNull
+    private LocalDateTime fechaModificacion;
     
     @ManyToOne
     @JoinColumn(name="ID_EMPRESA", referencedColumnName = "ID_EMPRESA", nullable = false)
@@ -37,14 +56,21 @@ public class Horario implements Serializable {
     public Horario() {
     }
 
-    // Constructor con parámetros
-    public Horario(LocalTime horarioInicio, LocalTime horarioFin, Empresa empresa) {
+    public Horario(String diasLaborables, LocalTime horarioInicio, LocalTime horarioFin, Empresa empresa) {
+        this.diasLaborables = diasLaborables;
         this.horarioInicio = horarioInicio;
         this.horarioFin = horarioFin;
         this.empresa = empresa;
     }
 
-    // Getters y Setters
+    public String getDiasLaborables() {
+        return diasLaborables;
+    }
+
+    public void setDiasLaborables(String diasLaborables) {
+        this.diasLaborables = diasLaborables;
+    }
+    
     public Long getIdHorario() {
         return idHorario;
     }
@@ -71,5 +97,13 @@ public class Horario implements Serializable {
 
     public void setEmpresa(Empresa empresa) {
         this.empresa = empresa;
+    }
+    
+    public LocalDateTime getFechaAlta() {
+        return fechaAlta;
+    }
+
+    public LocalDateTime getFechaModificacion() {
+        return fechaModificacion;
     }
 }

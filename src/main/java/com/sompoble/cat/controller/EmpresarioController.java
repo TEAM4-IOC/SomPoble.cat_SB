@@ -2,12 +2,11 @@ package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.service.EmpresarioService;
+import com.sompoble.cat.exception.ResourceNotFoundException;
+import com.sompoble.cat.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,11 +23,7 @@ public class EmpresarioController {
     public ResponseEntity<?> getAll() {
         List<Empresario> empresarios = empresarioService.findAll();
         if (empresarios.isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", 404);
-            response.put("error", "Not Found");
-            response.put("message", "No se encontraron empresarios en la base de datos");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            throw new ResourceNotFoundException("No se encontraron empresarios en la base de datos");
         }
         return ResponseEntity.ok(empresarios);
     }
@@ -36,84 +31,60 @@ public class EmpresarioController {
     // Consultar por DNI
     @GetMapping("/{dni}")
     public ResponseEntity<?> getByDni(@PathVariable String dni) {
+        try {
         Empresario empresario = empresarioService.findByDNI(dni);
-        if (empresario == null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", 404);
-            response.put("error", "Not Found");
-            response.put("message", "Empresario con DNI " + dni + " no encontrado");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.ok(empresario);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Empresario con DNI " + dni + " no encontrado");
         }
-        return ResponseEntity.ok(empresario);
     }
 
     // Crear un nuevo empresario
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Empresario empresario) {
         if (empresarioService.existsByDni(empresario.getDni())) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", 400);
-            response.put("error", "Bad Request");
-            response.put("message", "Empresario con DNI " + empresario.getDni() + " ya existe");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            throw new BadRequestException("Empresario con DNI " + empresario.getDni() + " ya existe");
         } else if (empresarioService.existsByEmail(empresario.getEmail())) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", 400);
-            response.put("error", "Bad Request");
-            response.put("message", "Email " + empresario.getEmail() + " ya está registrado");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            throw new BadRequestException("Email " + empresario.getEmail() + " ya está registrado");
         }
 
         empresarioService.addEmpresario(empresario);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.created(null).build(); 
     }
 
     // Actualizar un empresario
     @PutMapping("/{dni}")
-    public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Empresario empresario) {
+    public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) {
+        try{
         Empresario existingEmpresario = empresarioService.findByDNI(dni);
-
-        if (existingEmpresario == null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", 404);
-            response.put("error", "Not Found");
-            response.put("message", "No se encontró un empresario con el DNI " + dni);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-
-        // Actualización de datos
-        existingEmpresario.setNombre(empresario.getNombre());
-        existingEmpresario.setApellidos(empresario.getApellidos());
-        existingEmpresario.setTelefono(empresario.getTelefono());
-        existingEmpresario.setContraseña(empresario.getContraseña());
-        existingEmpresario.setEmail(empresario.getEmail());        
+        updates.forEach((key, value) -> {
+            if (value != null) {
+                switch (key) {
+                    case "dni" -> existingEmpresario.setDni(value.toString());
+                    case "nombre" -> existingEmpresario.setNombre(value.toString());
+                    case "apellidos" -> existingEmpresario.setApellidos(value.toString());
+                    case "telefono" -> existingEmpresario.setTelefono(value.toString());
+                    case "pass" -> existingEmpresario.setPass(value.toString());
+                    case "email" -> existingEmpresario.setEmail(value.toString());
+                }
+            }
+        });
 
         empresarioService.updateEmpresario(existingEmpresario);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
-        response.put("message", "Empresario actualizado correctamente");
-        response.put("empresario", existingEmpresario);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("Empresario con DNI " + dni + " actualizado correctamente");
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("No se encontró un empresario con el DNI " + dni);
+        }
     }
 
     // Eliminar un empresario por DNI
     @DeleteMapping("/{dni}")
     public ResponseEntity<?> delete(@PathVariable String dni) {
         if (!empresarioService.existsByDni(dni)) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", 404);
-            response.put("error", "Not Found");
-            response.put("message", "No se encontró un empresario con el DNI " + dni);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            throw new ResourceNotFoundException("No se encontró un empresario con el DNI " + dni);
         }
 
         empresarioService.deleteByDni(dni);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
-        response.put("message", "Empresario con DNI " + dni + " eliminado correctamente");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("Empresario con DNI " + dni + " eliminado correctamente");
     }
 }
