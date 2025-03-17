@@ -22,4 +22,6 @@ public interface EmpresarioRepository {
     void deleteByDni(String dni);
     
     boolean existsByEmail(String email);
+    
+    Empresario findByEmail(String email);
 }

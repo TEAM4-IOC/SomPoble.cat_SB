@@ -22,4 +22,6 @@ public interface ClienteRepository {
     void deleteByDni(String dni);
     
     boolean existsByEmail(String email);
+    
+    Cliente findByEmail(String email);
 }
