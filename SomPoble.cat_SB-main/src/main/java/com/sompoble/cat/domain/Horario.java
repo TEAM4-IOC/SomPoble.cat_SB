@@ -44,7 +44,7 @@ public class Horario implements Serializable {
     private LocalDateTime fechaModificacion;
 
     @ManyToOne
-    @JoinColumn(name = "ID_EMPRESA", nullable = false)
+    @JoinColumn(name = "ID_EMPRESA",referencedColumnName = "ID_EMPRESA", nullable = false)
     @NotNull(message = "Debe asociarse a una empresa/autónomo")
     private Empresa empresa;
 
