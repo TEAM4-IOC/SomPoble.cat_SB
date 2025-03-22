@@ -11,19 +11,20 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity
 @Table(name = "HORARIO")
 public class Horario implements Serializable {
-    
     private static final long serialVersionUID = 1L;
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_HORARIO")
     private Long idHorario;
 
-    // Validación de días laborables
-    @Pattern(regexp = "^(Lunes|Martes|Miercoles|Jueves|Viernes|Sabado|Domingo)(,(Lunes|Martes|Miercoles|Jueves|Viernes|Sabado|Domingo))*$",
-            message = "Días laborables deben ser una lista válida separada por comas")
+   
+    @Pattern(
+        regexp = "^(Lunes|Martes|Miercoles|Jueves|Viernes|Sabado|Domingo)(,(Lunes|Martes|Miercoles|Jueves|Viernes|Sabado|Domingo))*$",
+        message = "Días laborables deben ser una lista válida de días separados por comas (ej: 'Lunes,Martes')"
+    )
+    @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
     @Column(name = "DIAS_LABORALES", nullable = false, length = 255)
-    @Size(max = 255)
     private String diasLaborables;
 
     @Column(name = "HORARIO_INICIO", nullable = false)
@@ -47,7 +48,7 @@ public class Horario implements Serializable {
     @NotNull(message = "Debe asociarse a una empresa/autónomo")
     private Empresa empresa;
 
-   
+    
     public Horario() {}
 
     public Horario(String diasLaborables, LocalTime horarioInicio, LocalTime horarioFin, Empresa empresa) {
