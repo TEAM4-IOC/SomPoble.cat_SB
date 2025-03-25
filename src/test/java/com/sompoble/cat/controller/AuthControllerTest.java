@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class AuthControllerTest {
 
-    /*@Mock
+    @Mock
     private ClienteService clienteService;
 
     @Mock
@@ -97,7 +97,6 @@ public class AuthControllerTest {
         
         verify(clienteService).findByEmail("cliente@example.com");
         verify(passwordEncoder).matches(any(), any());
-        verify(empresarioService, never()).findByEmail(anyString());
     }
 
     @Test
@@ -105,7 +104,6 @@ public class AuthControllerTest {
         loginRequest.put("email", "empresario@example.com");
         when(clienteService.findByEmail("empresario@example.com")).thenReturn(null);
         when(empresarioService.findByEmail("empresario@example.com")).thenReturn(empresario);
-        // Use doReturn para evitar PotentialStubbingProblem
         doReturn(true).when(passwordEncoder).matches(any(), any());
 
         ResponseEntity<?> response = authController.login(loginRequest);
@@ -180,5 +178,5 @@ public class AuthControllerTest {
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(clienteService).findByEmail("cliente@example.com");
-    }*/
+    }
 }

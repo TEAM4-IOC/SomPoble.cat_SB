@@ -2,8 +2,11 @@ package com.sompoble.cat.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.exception.GlobalExceptionHandler;
 import com.sompoble.cat.service.EmpresaService;
+import com.sompoble.cat.service.EmpresarioService;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,9 @@ public class EmpresaControllerTest {
 
     @Mock
     private EmpresaService empresaService;
+    
+    @Mock
+    private EmpresarioService empresarioService;
 
     private MockMvc mockMvc;
 
@@ -42,100 +48,134 @@ public class EmpresaControllerTest {
 
     @Test
     public void testGetAllEmpresas() throws Exception {
+        // Create test data
+        Empresario empresario1 = new Empresario();
+        empresario1.setDni("12345678X");
+        
         Empresa empresa1 = new Empresa();
         empresa1.setIdentificadorFiscal("A12345678");
         empresa1.setNombre("Empresa 1");
         empresa1.setDireccion("Dirección 1");
         empresa1.setEmail("empresa1@empresa.com");
         empresa1.setTelefono("650180800");
+        empresa1.setTipo(1);
+        empresa1.setEmpresario(empresario1);
 
+        Empresario empresario2 = new Empresario();
+        empresario2.setDni("87654321Y");
+        
         Empresa empresa2 = new Empresa();
         empresa2.setIdentificadorFiscal("B12345678");
         empresa2.setActividad("Peluqueria");
         empresa2.setDireccion("Dirección 2");
         empresa2.setEmail("empresa2@empresa.com");
         empresa2.setTelefono("650180801");
+        empresa2.setTipo(2);
+        empresa2.setEmpresario(empresario2);
 
-        when(empresaService.findAll()).thenReturn(List.of(empresa1, empresa2));
+        List<Empresa> empresas = List.of(empresa1, empresa2);
+        
+        when(empresaService.findAll()).thenReturn(empresas);
 
+        // Execute and verify
         mockMvc.perform(MockMvcRequestBuilders.get("/api/empresas"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].identificadorFiscal").value("A12345678"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].identificadorFiscal").value("B12345678"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].empresa.identificadorFiscal").value("A12345678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].dni").value("12345678X"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].empresa.identificadorFiscal").value("B12345678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].dni").value("87654321Y"));
 
         verify(empresaService, times(1)).findAll();
     }
 
     @Test
     public void testGetEmpresaByIdentificadorFiscal() throws Exception {
+        // Create test data
+        Empresario empresario = new Empresario();
+        empresario.setDni("12345678X");
+        
         Empresa empresa = new Empresa();
         empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa 1");
         empresa.setDireccion("Dirección 1");
         empresa.setEmail("empresa1@empresa.com");
         empresa.setTelefono("650180800");
+        empresa.setEmpresario(empresario);
 
         when(empresaService.findByIdentificadorFiscal("A12345678")).thenReturn(empresa);
 
+        // Execute and verify
         mockMvc.perform(MockMvcRequestBuilders.get("/api/empresas/A12345678"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.identificadorFiscal").value("A12345678"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value("Empresa 1"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.empresa.identificadorFiscal").value("A12345678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.empresa.nombre").value("Empresa 1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.dni").value("12345678X"));
 
         verify(empresaService, times(1)).findByIdentificadorFiscal("A12345678");
     }
     
-    /*
-    * Testeado en Postman
-    *
     @Test
     public void testGetEmpresaByIdentificadorFiscalNotFound() throws Exception {
-        when(empresaService.findByIdentificadorFiscal("A12345678")).thenReturn(null);
+        when(empresaService.findByIdentificadorFiscal("A12345678")).thenThrow(new RuntimeException("Empresa no encontrada"));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/empresas/A12345678"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
         verify(empresaService, times(1)).findByIdentificadorFiscal("A12345678");
     }
-    */
-    /*
-    * Testeado en Postman
-    *
+    
     @Test
     public void testCreateEmpresa() throws Exception {
-        Empresa empresa = new Empresa();
-        empresa.setIdentificadorFiscal("A12345678");
-        empresa.setNombre("Empresa 1");
-        empresa.setDireccion("Dirección 1");
-        empresa.setEmail("empresa1@empresa.com");
-        empresa.setTelefono("650180800");
-
-        when(empresaService.existsByIdentificadorFiscal(empresa.getIdentificadorFiscal())).thenReturn(false);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(empresa)))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-
-        verify(empresaService, times(1)).addEmpresario(empresa);
-    }
-     */
-    @Test
-    public void testCreateEmpresaBadRequest() throws Exception {
+        // Create test data for a company (tipo 1)
+        String dni = "12345678X";
+        Empresario empresario = new Empresario();
+        empresario.setDni(dni);
+        
         Map<String, Object> empresaData = new HashMap<>();
         empresaData.put("identificadorFiscal", "A12345678");
         empresaData.put("nombre", "Empresa 1");
         empresaData.put("direccion", "Dirección 1");
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
-
+        
         Map<String, Object> request = new HashMap<>();
         request.put("empresa", empresaData);
-        request.put("dniEmpresario", "12345678X");
+        request.put("dni", dni);
+
+        when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(false);
+        when(empresarioService.existsByDni(dni)).thenReturn(true);
+        when(empresarioService.findByDNI(dni)).thenReturn(empresario);
+
+        // Execute and verify
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
+        verify(empresarioService, times(1)).existsByDni(dni);
+        verify(empresarioService, times(1)).findByDNI(dni);
+        verify(empresaService, times(1)).addEmpresario(any(Empresa.class));
+    }
+    
+    @Test
+    public void testCreateEmpresaWithExistingIdentificadorFiscal() throws Exception {
+        // Create test data
+        Map<String, Object> empresaData = new HashMap<>();
+        empresaData.put("identificadorFiscal", "A12345678");
+        empresaData.put("nombre", "Empresa 1");
+        empresaData.put("direccion", "Dirección 1");
+        empresaData.put("email", "empresa1@empresa.com");
+        empresaData.put("telefono", "650180800");
+        
+        Map<String, Object> request = new HashMap<>();
+        request.put("empresa", empresaData);
+        request.put("dni", "12345678X");
 
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(true);
 
+        // Execute and verify
         mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(request)))
@@ -143,69 +183,135 @@ public class EmpresaControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Empresa con identificador fiscal A12345678 ya existe"));
 
         verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
+        verify(empresarioService, never()).existsByDni(anyString());
+    }
+    
+    @Test
+    public void testCreateEmpresaWithoutDni() throws Exception {
+        // Create test data without dni
+        Map<String, Object> empresaData = new HashMap<>();
+        empresaData.put("identificadorFiscal", "A12345678");
+        empresaData.put("nombre", "Empresa 1");
+        empresaData.put("direccion", "Dirección 1");
+        empresaData.put("email", "empresa1@empresa.com");
+        empresaData.put("telefono", "650180800");
+        
+        Map<String, Object> request = new HashMap<>();
+        request.put("empresa", empresaData);
+        // No dni provided
+
+        when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(false);
+
+        // Execute and verify
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No se ha informado el DNI del empresario"));
+
+        verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
+    }
+    
+    @Test
+    public void testCreateEmpresaWithNonExistentEmpresario() throws Exception {
+        // Create test data with non-existent empresario
+        String dni = "12345678X";
+        Map<String, Object> empresaData = new HashMap<>();
+        empresaData.put("identificadorFiscal", "A12345678");
+        empresaData.put("nombre", "Empresa 1");
+        empresaData.put("direccion", "Dirección 1");
+        empresaData.put("email", "empresa1@empresa.com");
+        empresaData.put("telefono", "650180800");
+        
+        Map<String, Object> request = new HashMap<>();
+        request.put("empresa", empresaData);
+        request.put("dni", dni);
+
+        when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(false);
+        when(empresarioService.existsByDni(dni)).thenReturn(false);
+
+        // Execute and verify
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No existe un empresario con DNI " + dni));
+
+        verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
+        verify(empresarioService, times(1)).existsByDni(dni);
     }
 
     @Test
     public void testUpdateEmpresa() throws Exception {
-        Empresa empresa = new Empresa();
-        empresa.setIdentificadorFiscal("A12345678");
-        empresa.setNombre("Empresa 1");
-        empresa.setDireccion("Dirección 1");
-        empresa.setEmail("empresa1@empresa.com");
-        empresa.setTelefono("650180800");
+        // Create test data
+        Empresa existingEmpresa = new Empresa();
+        existingEmpresa.setIdentificadorFiscal("A12345678");
+        existingEmpresa.setNombre("Empresa 1");
+        existingEmpresa.setDireccion("Dirección 1");
+        existingEmpresa.setEmail("empresa1@empresa.com");
+        existingEmpresa.setTelefono("650180800");
 
-        Empresa updatedEmpresa = new Empresa();
-        updatedEmpresa.setNombre("Empresa 1 Updated");
-        updatedEmpresa.setDireccion("Dirección 1 Updated");
-        updatedEmpresa.setEmail("empresa1_updated@empresa.com");
-        updatedEmpresa.setTelefono("650180801");
+        Map<String, Object> updatedFields = new HashMap<>();
+        updatedFields.put("nombre", "Empresa 1 Updated");
+        updatedFields.put("direccion", "Dirección 1 Updated");
+        updatedFields.put("email", "empresa1_updated@empresa.com");
+        updatedFields.put("telefono", "650180801");
 
-        when(empresaService.findByIdentificadorFiscal("A12345678")).thenReturn(empresa);
+        when(empresaService.findByIdentificadorFiscal("A12345678")).thenReturn(existingEmpresa);
 
+        // Execute and verify
         mockMvc.perform(MockMvcRequestBuilders.put("/api/empresas/A12345678")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(updatedEmpresa)))
+                .content(objectMapper.writeValueAsString(updatedFields)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Empresa o autónomo con identificador fiscal A12345678 actualizada correctamente"));
 
-        verify(empresaService, times(1)).updateEmpresa(empresa);
+        verify(empresaService, times(1)).findByIdentificadorFiscal("A12345678");
+        verify(empresaService, times(1)).updateEmpresa(existingEmpresa);
     }
 
     @Test
     public void testUpdateEmpresaNotFound() throws Exception {
-        Empresa updatedEmpresa = new Empresa();
-        updatedEmpresa.setNombre("Empresa 1 Updated");
-        updatedEmpresa.setDireccion("Dirección 1 Updated");
-        updatedEmpresa.setEmail("empresa1_updated@empresa.com");
-        updatedEmpresa.setTelefono("650180801");
+        Map<String, Object> updatedFields = new HashMap<>();
+        updatedFields.put("nombre", "Empresa 1 Updated");
+        updatedFields.put("direccion", "Dirección 1 Updated");
+        updatedFields.put("email", "empresa1_updated@empresa.com");
+        updatedFields.put("telefono", "650180801");
 
-        when(empresaService.findByIdentificadorFiscal("A12345678")).thenReturn(null);
+        when(empresaService.findByIdentificadorFiscal("A12345678")).thenThrow(new RuntimeException("Empresa no encontrada"));
 
+        // Execute and verify
         mockMvc.perform(MockMvcRequestBuilders.put("/api/empresas/A12345678")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(updatedEmpresa)))
+                .content(objectMapper.writeValueAsString(updatedFields)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
         verify(empresaService, times(1)).findByIdentificadorFiscal("A12345678");
+        verify(empresaService, never()).updateEmpresa(any(Empresa.class));
     }
 
     @Test
     public void testDeleteEmpresa() throws Exception {
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(true);
 
+        // Execute and verify
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/empresas/A12345678"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Empresa o autónomo con identificador fiscal A12345678 eliminada correctamente"));
 
         verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
+        verify(empresaService, times(1)).deleteByIdentificadorFiscal("A12345678");
     }
 
     @Test
     public void testDeleteEmpresaNotFound() throws Exception {
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(false);
 
+        // Execute and verify
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/empresas/A12345678"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
         verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
+        verify(empresaService, never()).deleteByIdentificadorFiscal(anyString());
     }
 }

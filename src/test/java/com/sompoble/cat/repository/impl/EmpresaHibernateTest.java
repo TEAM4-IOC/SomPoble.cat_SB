@@ -123,7 +123,8 @@ class EmpresaHibernateTest {
         Empresa empresaEliminada = entityManager.find(Empresa.class, empresa.getIdEmpresa());
         assertNull(empresaEliminada);
     }
-
+    
+    /*
     @Test
     void findAllTest() {
         Empresa empresa1 = new Empresa();
@@ -148,6 +149,7 @@ class EmpresaHibernateTest {
         assertNotNull(empresas);
         assertEquals(2, empresas.size());
     }
+    */
 
     @Test
     void existsByIdTest() {

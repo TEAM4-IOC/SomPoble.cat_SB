@@ -26,33 +26,33 @@ public class Persona implements Serializable {
     private Long idPersona;
     
     @Column(name = "DNI", nullable = false, length = 9) 
-    @NotNull
-    @Size(min = 9, max = 9)
+    @NotNull(message = "El DNI es obligatorio")
+    @Size(min = 9, max = 9, message = "El campo no puede exceder los 9 caracteres")
     private String dni;
     
     @Column(name = "NOMBRE", nullable = false, length = 100) 
-    @NotNull
-    @Size(max = 100)
+    @NotNull(message = "El nombre es obligatorio")
+    @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
     private String nombre;
     
     @Column(name = "APELLIDOS", nullable = false, length = 100) 
-    @NotNull
-    @Size(max = 100)
+    @NotNull(message = "Los apellidos son obligatorios")
+    @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
     private String apellidos;
     
     @Column(name = "EMAIL", nullable = false, length = 100) 
-    @NotNull
-    @Size(max = 100)
+    @NotNull(message = "El email es obligatorio")
+    @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
     private String email;
     
     @Column(name = "TELEFONO", nullable = false, length = 20) 
-    @NotNull
-    @Size(max = 20)
+    @NotNull(message = "El teléfono es obligatorio")
+    @Size(max = 20, message = "El campo no puede exceder los 20 caracteres")
     private String telefono;   
     
     @Column(name = "PASSWRD", nullable = false, length = 255) 
-    @NotNull
-    @Size(max = 255)
+    @NotNull(message = "El password es obligatorio")
+    @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
     private String pass;
     
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
