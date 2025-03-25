@@ -55,11 +55,11 @@ public class Persona implements Serializable {
     @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
     private String pass;
     
-    @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
+    @Column(name = "FECHA_ALTA", updatable = false, nullable = false,columnDefinition = "DATETIME")
     @CreationTimestamp
     private LocalDateTime fechaAlta;
 
-    @Column(name = "FECHA_MODIFICACION", nullable = false)
+    @Column(name = "FECHA_MODIFICACION", nullable = false,columnDefinition = "DATETIME")
     @UpdateTimestamp
     private LocalDateTime fechaModificacion;
     
