@@ -7,8 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,42 +27,42 @@ public class Empresa implements Serializable {
     @Column(name = "ID_EMPRESA")
     private Long idEmpresa;
     
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name="ID_PERSONA", nullable = false)
-    @NotNull
+    @NotNull(message = "Debe asociarse a un empresario")
     @JsonBackReference
     private Empresario empresario;
     
     @Column(name = "IDENTIFICADOR_FISCAL", nullable = false, length = 9) 
-    @NotNull
+    @NotNull(message = "El identificador fiscal es obligatorio")
     @Size(max = 9)
     private String identificadorFiscal;
     
-    @Column(name = "NOMBRE", nullable = false, length = 100) 
-    @Size(max = 100)
+    @Column(name = "NOMBRE", nullable = true, length = 100) 
+    @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
     private String nombre;
     
-    @Column(name = "ACTIVIDAD", nullable = false, length = 100) 
-    @Size(max = 100)
+    @Column(name = "ACTIVIDAD", nullable = true, length = 100) 
+    @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
     private String actividad;
         
     @Column(name = "DIRECCION", nullable = false, length = 255) 
-    @NotNull
-    @Size(max = 255)
+    @NotNull(message = "La dirección es obligatoria")
+    @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
     private String direccion;
     
     @Column(name = "EMAIL", nullable = false, length = 100) 
-    @NotNull
-    @Size(max = 100)
+    @NotNull(message = "El email es obligatorio")
+    @Size(max = 100 , message = "El campo no puede exceder los 100 caracteres")
     private String email;
     
     @Column(name = "TELEFONO", nullable = false, length = 20) 
-    @NotNull
-    @Size(max = 20)
+    @NotNull(message = "El teléfono es obligatorio")
+    @Size(max = 20, message = "El campo no puede exceder los 20 caracteres")
     private String telefono;
     
     @Column(name = "TIPO", nullable = false) 
-    @NotNull
+    @NotNull(message = "Es tipo es obligatorio")
     private int tipo;
     
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)

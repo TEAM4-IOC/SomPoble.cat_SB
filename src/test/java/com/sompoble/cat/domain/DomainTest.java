@@ -34,7 +34,7 @@ public class DomainTest {
         Notificacion notificacion2 = new Notificacion(cliente, empresario, "Mensaje de prueba", "Informativa");
         empresario.setNotificaciones(List.of(notificacion2));
 
-        Servicio servicio = new Servicio("Servicio A", "Descripción del servicio A", 60, 150.0f, 10, empresa);
+        Servicio servicio = new Servicio("Servicio A", "Descripción del servicio A", "60", "150.0", 10, empresa);
         Reserva reserva = new Reserva(empresa, cliente, servicio, java.sql.Date.valueOf("2025-03-15"), LocalTime.of(10, 30), "Confirmada");
 
         Empresario result = empresa.getEmpresario();
@@ -66,11 +66,6 @@ public class DomainTest {
         cliente.setNotificaciones(nuevasNotificaciones);
         assertEquals(1, cliente.getNotificaciones().size(), "El cliente debería tener una notificación");
         assertEquals("Otro mensaje", cliente.getNotificaciones().get(0).getMensaje(), "El mensaje de la nueva notificación no es correcto");
-
-        List<Empresa> nuevasEmpresas = List.of(empresa);
-        empresario.setEmpresas(nuevasEmpresas);
-        assertEquals(1, empresario.getEmpresas().size(), "El empresario debería tener una empresa asociada");
-        assertEquals(empresa, empresario.getEmpresas().get(0), "La empresa asociada no es la correcta");
 
         assertEquals("Servicio A", reserva.getServicio().getNombre(), "El nombre del servicio no es correcto");
         assertEquals("Juan", reserva.getCliente().getNombre(), "El nombre del cliente asociado con la reserva no es correcto");

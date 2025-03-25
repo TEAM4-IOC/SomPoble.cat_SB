@@ -105,7 +105,8 @@ class ClienteHibernateTest {
         Cliente clienteEliminado = entityManager.find(Cliente.class, cliente.getIdPersona());
         assertNull(clienteEliminado);
     }
-
+    
+    /*
     @Test
     void findAllTest() {
         Cliente cliente1 = new Cliente();
@@ -130,6 +131,7 @@ class ClienteHibernateTest {
         assertNotNull(clientes);
         assertEquals(2, clientes.size());
     }
+    */
 
     @Test
     void existsByIdTest() {

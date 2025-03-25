@@ -27,29 +27,31 @@ public class Servicio implements Serializable {
     private Long idServicio;
     
     @Column(name = "NOMBRE", nullable = false, length = 100) 
-    @NotNull
-    @Size(max = 100)
+    @NotNull(message = "El nombre del servicio es obligatorio")
+    @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
     private String nombre;
     
     @Column(name = "DESCRIPCION", nullable = false) 
-    @NotNull
+    @NotNull(message = "La descripción del servicio es obligatoria")
     private String descripcion;
     
     @Column(name = "DURACION", nullable = false) 
-    @NotNull
-    private int duracion;
+    @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
+    @NotNull(message = "La duración del servicio es obligatoria")
+    private String duracion;
     
     @Column(name = "PRECIO", nullable = false) 
-    @NotNull
-    private float precio;
+    @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
+    @NotNull(message = "El precio del servicio es obligatorio")
+    private String precio;
     
     @Column(name="LIMITE_RESERVAS", nullable = false)
-    @NotNull
+    @NotNull(message = "El limite de reservas del servicio es obligatorio")
     private int limiteReservas;
     
     @ManyToOne
     @JoinColumn(name="ID_EMPRESA", referencedColumnName = "ID_EMPRESA", nullable = false)
-    @NotNull
+    @NotNull(message = "Debe asociarse a una empresa/autónomo")
     private Empresa empresa;
     
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
@@ -63,13 +65,12 @@ public class Servicio implements Serializable {
     private LocalDateTime fechaModificacion;
 
     @OneToMany(mappedBy = "servicio")
-    @NotNull
     private List<Reserva> reservas;
     
     public Servicio() {
     }
 
-    public Servicio(String nombre, String descripcion, int duracion, float precio, int limiteReservas, Empresa empresa) {
+    public Servicio(String nombre, String descripcion, String duracion, String precio, int limiteReservas, Empresa empresa) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.duracion = duracion;
@@ -98,19 +99,19 @@ public class Servicio implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public int getDuracion() {
+    public String getDuracion() {
         return duracion;
     }
 
-    public void setDuracion(int duracion) {
+    public void setDuracion(String duracion) {
         this.duracion = duracion;
     }
 
-    public float getPrecio() {
+    public String getPrecio() {
         return precio;
     }
 
-    public void setPrecio(float precio) {
+    public void setPrecio(String precio) {
         this.precio = precio;
     }
     

@@ -3,6 +3,7 @@ package com.sompoble.cat.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
 
@@ -10,9 +11,9 @@ import java.util.List;
 @Table(name = "EMPRESARIO")
 public class Empresario extends Persona{
     
-    @OneToMany(mappedBy = "empresario")
+    @OneToOne(mappedBy = "empresario")
     @JsonManagedReference 
-    private List<Empresa> empresas;
+    private Empresa empresa;
     
     @OneToMany(mappedBy = "empresario")
     private List<Notificacion> notificaciones;
@@ -24,12 +25,12 @@ public class Empresario extends Persona{
         super(dni, nombre, apellidos, email, telefono, pass);
     }
     
-    public List<Empresa> getEmpresas() {
-        return empresas;
+    public Empresa getEmpresas() {
+        return empresa;
     }
 
-    public void setEmpresas(List<Empresa> empresas) {
-        this.empresas = empresas;
+    public void setEmpresas(Empresa empresas) {
+        this.empresa = empresas;
     }
     
     public List<Notificacion> getNotificaciones() {

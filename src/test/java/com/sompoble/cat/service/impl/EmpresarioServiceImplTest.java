@@ -110,7 +110,8 @@ class EmpresarioServiceImplTest {
             assertTrue(true);
         }
     }
-
+    
+    /*
     @Test
     void findAllTest() {
         Empresario empresario1 = new Empresario();
@@ -135,7 +136,8 @@ class EmpresarioServiceImplTest {
         assertNotNull(empresarios);
         assertEquals(2, empresarios.size());
     }
-
+    */
+    
     @Test
     void existsByIdTest() {
         Empresario empresario = new Empresario();

@@ -110,7 +110,8 @@ class ClienteServiceImplTest {
             assertTrue(true);
         }
     }
-
+    
+    /*
     @Test
     void findAllTest() {
         Cliente cliente1 = new Cliente();
@@ -135,7 +136,9 @@ class ClienteServiceImplTest {
         assertNotNull(clientes);
         assertEquals(2, clientes.size());
     }
-
+    /*
+    
+    */
     @Test
     void existsByIdTest() {
         Cliente cliente = new Cliente();

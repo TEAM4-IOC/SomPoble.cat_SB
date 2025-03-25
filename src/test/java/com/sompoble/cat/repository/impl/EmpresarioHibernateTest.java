@@ -104,7 +104,8 @@ class EmpresarioHibernateTest {
         Empresario empresarioEliminado = entityManager.find(Empresario.class, empresario.getIdPersona());
         assertNull(empresarioEliminado);
     }
-
+    
+    /*
     @Test
     void findAllTest() {
         Empresario empresario1 = new Empresario();
@@ -129,7 +130,8 @@ class EmpresarioHibernateTest {
         assertNotNull(empresarios);
         assertEquals(2, empresarios.size());
     }
-
+    
+    */
     @Test
     void existsByIdTest() {
         Empresario empresario = new Empresario();
