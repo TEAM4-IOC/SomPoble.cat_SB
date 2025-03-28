@@ -86,6 +86,10 @@ public class EmpresaController {
         } else {
             empresario = empresarioService.findByDNI(dni);
         }
+        
+        if (empresario.getEmpresas() != null) {
+            throw new BadRequestException("El empresario con DNI " + dni + " ya tiene una empresa/autónomo asignada");
+        }
 
         // Crear la empresa con los datos recibidos
         Empresa empresa = new Empresa();
