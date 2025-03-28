@@ -13,7 +13,7 @@ public class Empresario extends Persona{
     
     @OneToOne(mappedBy = "empresario")
     @JsonManagedReference 
-    private Empresa empresa;
+    private Empresa empresas;
     
     @OneToMany(mappedBy = "empresario")
     private List<Notificacion> notificaciones;
@@ -26,11 +26,11 @@ public class Empresario extends Persona{
     }
     
     public Empresa getEmpresas() {
-        return empresa;
+        return empresas;
     }
 
     public void setEmpresas(Empresa empresas) {
-        this.empresa = empresas;
+        this.empresas = empresas;
     }
     
     public List<Notificacion> getNotificaciones() {
