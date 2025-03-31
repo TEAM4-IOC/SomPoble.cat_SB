@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,50 +28,71 @@ public class Servicio implements Serializable {
     private Long idServicio;
     
     @Column(name = "NOMBRE", nullable = false, length = 100) 
-    @NotNull(message = "El nombre del servicio es obligatorio")
-    @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
+    @NotNull
+    @Size(max = 100)
     private String nombre;
     
     @Column(name = "DESCRIPCION", nullable = false) 
-    @NotNull(message = "La descripción del servicio es obligatoria")
+    @NotNull
     private String descripcion;
     
     @Column(name = "DURACION", nullable = false) 
-    @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
-    @NotNull(message = "La duración del servicio es obligatoria")
-    private String duracion;
+    @NotNull
+    private int duracion;
     
     @Column(name = "PRECIO", nullable = false) 
-    @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
-    @NotNull(message = "El precio del servicio es obligatorio")
-    private String precio;
+    @NotNull
+    private float precio;
     
     @Column(name="LIMITE_RESERVAS", nullable = false)
-    @NotNull(message = "El limite de reservas del servicio es obligatorio")
+    @NotNull
     private int limiteReservas;
     
     @ManyToOne
     @JoinColumn(name="ID_EMPRESA", referencedColumnName = "ID_EMPRESA", nullable = false)
-    @NotNull(message = "Debe asociarse a una empresa/autónomo")
+    @NotNull
     private Empresa empresa;
     
-    @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
     @CreationTimestamp
-    @NotNull
-    private LocalDateTime fechaAlta;
+    @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
+    private LocalDateTime fechaAlta = LocalDateTime.now();
 
-    @Column(name = "FECHA_MODIFICACION", nullable = false)
     @UpdateTimestamp
-    @NotNull
-    private LocalDateTime fechaModificacion;
+    @Column(name = "FECHA_MODIFICACION", nullable = false)
+    private LocalDateTime fechaModificacion = LocalDateTime.now();
 
     @OneToMany(mappedBy = "servicio")
-    private List<Reserva> reservas;
+    @NotNull
+    private List<Reserva> reservas = new ArrayList<>();
     
-    public Servicio() {
+    @OneToMany(mappedBy = "servicio")
+    private List<Horario> horarios;
+    
+    
+    public List<Horario> getHorarios() {
+		return horarios;
+	}
+
+	public void setHorarios(List<Horario> horarios) {
+		this.horarios = horarios;
+	}
+
+	public void setIdServicio(Long idServicio) {
+		this.idServicio = idServicio;
+	}
+
+	public void setFechaAlta(LocalDateTime fechaAlta) {
+		this.fechaAlta = fechaAlta;
+	}
+
+	public void setFechaModificacion(LocalDateTime fechaModificacion) {
+		this.fechaModificacion = fechaModificacion;
+	}
+
+	public Servicio() {
     }
 
-    public Servicio(String nombre, String descripcion, String duracion, String precio, int limiteReservas, Empresa empresa) {
+    public Servicio(String nombre, String descripcion, int duracion, float precio, int limiteReservas, Empresa empresa) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.duracion = duracion;
@@ -99,19 +121,19 @@ public class Servicio implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public String getDuracion() {
+    public int getDuracion() {
         return duracion;
     }
 
-    public void setDuracion(String duracion) {
+    public void setDuracion(int duracion) {
         this.duracion = duracion;
     }
 
-    public String getPrecio() {
+    public float getPrecio() {
         return precio;
     }
 
-    public void setPrecio(String precio) {
+    public void setPrecio(float precio) {
         this.precio = precio;
     }
     

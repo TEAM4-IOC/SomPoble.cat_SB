@@ -97,13 +97,13 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
         Servicio servicio = servicioOptional.get();
 
         // 2. Buscar el horario por ID
-        Optional<Horario> horarioOptional = horarioRepository.findById(horarioId);
+        Optional<Horario> horarioOptional = Optional.ofNullable(horarioRepository.findById(horarioId));
         if (!horarioOptional.isPresent()) {
             throw new RuntimeException("Horario no encontrado con ID: " + horarioId);
         }
         Horario horario = horarioOptional.get();
 
-        // 3. Validar que pertenezcan a la misma empresa (opcional)
+        // 3. Validar que pertenezcan a la misma empresa 
         if (!servicio.getEmpresa().getIdEmpresa().equals(horario.getEmpresa().getIdEmpresa())) {
             throw new RuntimeException("El servicio y el horario deben pertenecer a la misma empresa");
         }

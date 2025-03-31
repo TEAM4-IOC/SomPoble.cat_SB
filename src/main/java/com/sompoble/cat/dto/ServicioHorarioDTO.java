@@ -3,6 +3,7 @@ package com.sompoble.cat.dto;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sompoble.cat.domain.Horario;
 import com.sompoble.cat.domain.Servicio;
 
@@ -11,16 +12,18 @@ public class ServicioHorarioDTO {
     private Long idServicio;
     private String nombre;
     private String descripcion;
-    private String duracion;
-    private String precio;
+    private int duracion;
+    private float precio;
     private int limiteReservas;
     private LocalDateTime fechaAltaServicio;
     private LocalDateTime fechaModificacionServicio;
     private Long empresaId;
+    @JsonProperty("identificadorFiscal")
+    private String identificadorFiscal;
 
     // Campos de Horario
     private Long idHorario;
-    private String diasLaborables;
+    private String diasLaborables; 
     private LocalTime horarioInicio;
     private LocalTime horarioFin;
     private LocalDateTime fechaAltaHorario;
@@ -39,17 +42,18 @@ public class ServicioHorarioDTO {
         this.limiteReservas = (int) servicio.getLimiteReservas();
         this.fechaAltaServicio = servicio.getFechaAlta();
         this.fechaModificacionServicio = servicio.getFechaModificacion();
-        this.empresaId = servicio.getEmpresa().getIdEmpresa(); 
+        this.empresaId = servicio.getEmpresa().getIdEmpresa();
+        this.identificadorFiscal = servicio.getEmpresa().getIdentificadorFiscal();
 
         this.idHorario = horario.getIdHorario();
-        this.diasLaborables = horario.getDiasLaborables();
+        this.diasLaborables = String.join(",", horario.getDiasLaborables());  
         this.horarioInicio = horario.getHorarioInicio();
         this.horarioFin = horario.getHorarioFin();
         this.fechaAltaHorario = horario.getFechaAlta();
         this.fechaModificacionHorario = horario.getFechaModificacion();
     }
 
-    // Getters y setters
+  
     public Long getIdServicio() { return idServicio; }
     public void setIdServicio(Long idServicio) { this.idServicio = idServicio; }
 
@@ -59,11 +63,11 @@ public class ServicioHorarioDTO {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public String getDuracion() { return duracion; }
-    public void setDuracion(String duracion) { this.duracion = duracion; }
+    public int getDuracion() { return duracion; }
+    public void setDuracion(int duracion) { this.duracion = duracion; }
 
-    public String getPrecio() { return precio; }
-    public void setPrecio(String precio) { this.precio = precio; }
+    public float getPrecio() { return precio; }
+    public void setPrecio(float precio) { this.precio = precio; }
 
     public int getLimiteReservas() { return limiteReservas; }
     public void setLimiteReservas(int limiteReservas) { this.limiteReservas = limiteReservas; }
@@ -77,10 +81,13 @@ public class ServicioHorarioDTO {
     public Long getEmpresaId() { return empresaId; }
     public void setEmpresaId(Long empresaId) { this.empresaId = empresaId; }
 
+    public String getIdentificadorFiscal() { return identificadorFiscal; }
+    public void setIdentificadorFiscal(String identificadorFiscal) { this.identificadorFiscal = identificadorFiscal; }
+
     public Long getIdHorario() { return idHorario; }
     public void setIdHorario(Long idHorario) { this.idHorario = idHorario; }
 
-    public String getDiasLaborables() { return diasLaborables; }
+    public String getDiasLaborables() { return (String) diasLaborables; } 
     public void setDiasLaborables(String diasLaborables) { this.diasLaborables = diasLaborables; }
 
     public LocalTime getHorarioInicio() { return horarioInicio; }
@@ -101,14 +108,15 @@ public class ServicioHorarioDTO {
                 "idServicio=" + idServicio +
                 ", nombre='" + nombre + '\'' +
                 ", descripcion='" + descripcion + '\'' +
-                ", duracion='" + duracion + '\'' +
-                ", precio='" + precio + '\'' +
+                ", duracion=" + duracion +
+                ", precio=" + precio +
                 ", limiteReservas=" + limiteReservas +
                 ", fechaAltaServicio=" + fechaAltaServicio +
                 ", fechaModificacionServicio=" + fechaModificacionServicio +
                 ", empresaId=" + empresaId +
+                ", identificadorFiscal='" + identificadorFiscal + '\'' +
                 ", idHorario=" + idHorario +
-                ", diasLaborables='" + diasLaborables + '\'' +
+                ", diasLaborables=" + diasLaborables +  
                 ", horarioInicio=" + horarioInicio +
                 ", horarioFin=" + horarioFin +
                 ", fechaAltaHorario=" + fechaAltaHorario +

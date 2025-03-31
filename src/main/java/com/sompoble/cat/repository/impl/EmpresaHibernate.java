@@ -38,7 +38,7 @@ public class EmpresaHibernate implements EmpresaRepository {
         Predicate identificadorFiscalPredicate = cb.equal(root.get("identificadorFiscal"), identificadorFiscal);
         cq.where(identificadorFiscalPredicate);
 
-        return entityManager.createQuery(cq).getSingleResult();
+        return entityManager.createQuery(cq).getResultStream().findFirst().orElse(null);
     }
 
     @Override
