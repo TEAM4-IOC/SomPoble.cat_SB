@@ -59,6 +59,10 @@ public class Horario implements Serializable {
     }
 
   
+    public void setIdHorario(Long idHorario) {
+        this.idHorario = idHorario;
+    }
+    
     public Long getIdHorario() {
         return idHorario;
     }
