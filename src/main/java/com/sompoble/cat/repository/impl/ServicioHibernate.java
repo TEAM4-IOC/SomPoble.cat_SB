@@ -120,4 +120,25 @@ public class ServicioHibernate implements ServicioRepository {
             entityManager.remove(servicio);
         }
     }
+
+
+    @Override
+    public List<Servicio> findByNombreContainingIgnoreCase(String nombre) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Servicio> cq = cb.createQuery(Servicio.class);
+        Root<Servicio> root = cq.from(Servicio.class);
+
+        // Busca coincidencias parciales (ignorando mayúsculas/minúsculas)
+        Predicate predicate = cb.like(
+            cb.lower(root.get("nombre")), // Convierte el campo a minúsculas
+            "%" + nombre.toLowerCase() + "%" // Convierte el valor a minúsculas y añade comodines
+        );
+
+        cq.where(predicate);
+        return entityManager.createQuery(cq).getResultList();
+    }
+
+
 }
+
+

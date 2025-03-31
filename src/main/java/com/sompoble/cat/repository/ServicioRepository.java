@@ -60,4 +60,8 @@ public interface ServicioRepository {
      * @param id Identificador del servicio a eliminar.
      */
     void deleteById(Long id);
+    
+    List<Servicio> findByNombreContainingIgnoreCase(String nombre);
+    
+    
 }
