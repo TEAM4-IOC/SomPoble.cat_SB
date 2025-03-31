@@ -24,4 +24,6 @@ public interface EmpresarioRepository {
     boolean existsByEmail(String email);
     
     Empresario findByEmail(String email);
+
+	
 }

@@ -117,4 +117,6 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         List<Empresario> result = entityManager.createQuery(cq).getResultList();
         return result.isEmpty() ? null : result.get(0);
     }
+
+	
 }

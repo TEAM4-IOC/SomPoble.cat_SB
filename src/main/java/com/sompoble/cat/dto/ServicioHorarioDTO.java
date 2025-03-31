@@ -39,7 +39,7 @@ public class ServicioHorarioDTO {
         this.limiteReservas = (int) servicio.getLimiteReservas();
         this.fechaAltaServicio = servicio.getFechaAlta();
         this.fechaModificacionServicio = servicio.getFechaModificacion();
-        this.empresaId = servicio.getEmpresa().getIdEmpresa(); // Asumiendo Empresa tiene getIdEmpresa()
+        this.empresaId = servicio.getEmpresa().getIdEmpresa(); 
 
         this.idHorario = horario.getIdHorario();
         this.diasLaborables = horario.getDiasLaborables();

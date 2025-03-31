@@ -62,4 +62,6 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public Empresario findByEmail(String email) {
             return empresarioRepository.findByEmail(email);
     }
+
+	
 }

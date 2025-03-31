@@ -8,12 +8,16 @@ import java.util.List;
 public interface ServicioHorarioService {
 
     // Obtener todos los servicios con sus horarios por empresa
-    List<ServicioHorarioDTO> obtenerServiciosConHorariosPorEmpresa(Long empresaId);
+    List<ServicioHorarioDTO> obtenerServiciosConHorariosPorEmpresa(String identificadorFiscal);
 
     // Buscar por nombre de servicio y día laborable
     List<ServicioHorarioDTO> buscarPorNombreYServicio(
         String nombreServicio, String diaLaborable);
 
     // Obtener DTO a partir de objetos individuales
-    ServicioHorarioDTO crearDTO(Servicio servicio, Horario horario);
+    ServicioHorarioDTO crearDTO(Long servicio, Long horario);
+
+	ServicioHorarioDTO crearDTO(Servicio servicio, Horario horario);
+
+	
 }
