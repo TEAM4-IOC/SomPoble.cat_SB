@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -339,6 +341,59 @@ public class HorarioHibernate implements HorarioRepository {
 	public Optional<Horario> findByServicio_IdServicio(Long idServicio) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
+	}
+	@Override
+	 // Método para obtener horarios por identificadorFiscal de la empresa
+   public List<Horario> findByServicio_Empresa_IdentificadorFiscal(String identificadorFiscal) {
+       String query = "SELECT h FROM Horario h " +
+                      "JOIN h.servicio s " +
+                      "JOIN s.empresa e " +
+                      "WHERE e.identificadorFiscal = :identificadorFiscal";
+       TypedQuery<Horario> typedQuery = entityManager.createQuery(query, Horario.class);
+       typedQuery.setParameter("identificadorFiscal", identificadorFiscal);
+       return typedQuery.getResultList();
+   }
+	/**
+	 * Busca un horario basado en el identificador de la empresa y el identificador del servicio.
+	 * 
+	 * @param idEmpresa El identificador de la empresa a buscar en la tabla de horarios.
+	 * @param idServicio El identificador del servicio asociado al horario.
+	 * @return Un {@link Optional} que contiene el horario encontrado, o {@link Optional#empty()} si no se encuentra.
+	 */
+	@Override
+	public Optional<Horario> findByEmpresaIdAndServicioId(Long idEmpresa, Long idServicio) {
+	    try {
+	        // Imprimir valores que llegan al método
+	        System.out.println(" Buscando horario con:");
+	        System.out.println("    idEmpresa: " + idEmpresa);
+	        System.out.println("    idServicio: " + idServicio);
+
+	        // Utilizamos el EntityManager para hacer la consulta
+	        String hql = "FROM Horario h WHERE h.empresa.idEmpresa = :idEmpresa AND h.servicio.idServicio = :idServicio";
+	        Query query = entityManager.createQuery(hql);
+	        query.setParameter("idEmpresa", idEmpresa);
+	        query.setParameter("idServicio", idServicio);
+
+	        // Ejecutamos la consulta y obtenemos la lista de resultados
+	        List<Horario> resultList = query.getResultList();
+
+	        // Imprimir los resultados obtenidos
+	        System.out.println("   Resultados encontrados: " + resultList.size());
+
+	        // Si la lista no está vacía, devolvemos el primer elemento como Optional
+	        if (!resultList.isEmpty()) {
+	            System.out.println("   Horario encontrado: " + resultList.get(0));
+	            return Optional.ofNullable(resultList.get(0));
+	        }
+
+	        // Si no se encuentra ningún resultado, devolvemos Optional vacío
+	        System.out.println("   No se encontró ningún horario.");
+	        return Optional.empty();
+	    } catch (Exception e) {
+	        // Si ocurre algún error, lo capturamos y lo logueamos
+	        e.printStackTrace();
+	        return Optional.empty(); // Retornamos Optional vacío si algo falla
+	    }
 	}
 
 

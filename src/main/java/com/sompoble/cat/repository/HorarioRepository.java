@@ -136,7 +136,15 @@ public interface HorarioRepository {
     @Query("SELECT h FROM Horario h WHERE h.servicio.idServicio = :idServicio")
     Optional<Horario> findByServicio_IdServicio(@Param("idServicio") Long idServicio);
 
+    // Buscar horarios por identificadorFiscal de la empresa
+    @Query("SELECT h FROM Horario h " +
+           "JOIN h.servicio s " +
+           "JOIN s.empresa e " +
+           "WHERE e.identificadorFiscal = :identificadorFiscal")
+    List<Horario> findByServicio_Empresa_IdentificadorFiscal(
+        @Param("identificadorFiscal") String identificadorFiscal);
 
+    Optional<Horario> findByEmpresaIdAndServicioId(Long idEmpresa, Long idServicio);
 
 	
 

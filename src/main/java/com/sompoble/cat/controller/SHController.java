@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,30 +63,49 @@ public class SHController {
     }
 
     /**
-     * Obtiene los servicios y horarios de una empresa según su identificador fiscal.
+     * Obtiene los horarios asociados a una empresa específica a partir de su identificador fiscal.
+     *
+     * Este método consulta los horarios relacionados con los servicios de una empresa,
+     * utilizando el identificador fiscal de la empresa para filtrar los resultados.
      * 
-     * @param identificadorFiscal Identificador fiscal de la empresa.
-     * @return ResponseEntity con la lista de servicios y horarios asociados.
+     * @param identificadorFiscal El identificador fiscal de la empresa cuyo horario se desea consultar.
+     * @return Una lista de objetos {@link Horario} asociados a la empresa con el identificador fiscal dado.
+     * Si no se encuentran horarios, se devuelve una lista vacía.
      */
     @GetMapping("/obtener")
     public ResponseEntity<List<ServicioHorarioDTO>> obtenerServicioConHorario(@RequestParam String identificadorFiscal) {
+       
         Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscal(identificadorFiscal))
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
-        
-        List<Servicio> servicios = servicioRepository.findAllByEmpresaIdentificador(identificadorFiscal);
-        if (servicios.isEmpty()) {
-            throw new RuntimeException("No hay servicios registrados para esta empresa");
+
+        List<Horario> horarios = horarioRepository.findByServicio_Empresa_IdentificadorFiscal(identificadorFiscal);
+        if (horarios.isEmpty()) {
+            throw new RuntimeException("No hay horarios registrados para esta empresa");
         }
-        
+
+        List<Servicio> servicios = new ArrayList<>();
+        for (Horario horario : horarios) {
+            Servicio servicio = horario.getServicio();
+            if (servicio != null && !servicios.contains(servicio)) {
+                servicios.add(servicio);
+            }
+        }
+        if (servicios.isEmpty()) {
+            throw new RuntimeException("No hay servicios relacionados con los horarios para esta empresa");
+        }
+  
         List<ServicioHorarioDTO> respuesta = servicios.stream().map(servicio -> {
-            Horario horario = horarioRepository.findByServicio_IdServicio(servicio.getIdServicio())
+           
+            Horario horario = horarios.stream()
+                    .filter(h -> h.getServicio().equals(servicio)) 
+                    .findFirst()
                     .orElseThrow(() -> new RuntimeException("Horario no encontrado para el servicio con ID: " + servicio.getIdServicio()));
+
             return new ServicioHorarioDTO(servicio, horario);
         }).toList();
-        
+
         return ResponseEntity.ok(respuesta);
     }
-
     /**
      * Actualiza un servicio y su horario asociado según el identificador fiscal de la empresa.
      * 
