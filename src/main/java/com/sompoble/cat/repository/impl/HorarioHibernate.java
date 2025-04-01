@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
@@ -173,7 +174,7 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.createQuery(cq).getResultList();
     }
 
-    // --- Métodos con @Query (usando JPQL) ---
+ 
 
     @Override
     public List<Horario> findByDiaExacto(String dia) {
@@ -337,11 +338,31 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.find(Horario.class, id);
     }
 
-	@Override
-	public Optional<Horario> findByServicio_IdServicio(Long idServicio) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
-	}
+    /**
+     * Busca un horario asociado a un servicio por su identificador único.
+     *
+     * <p>
+     * Este método ejecuta una consulta JPQL para recuperar un horario que esté vinculado al servicio especificado mediante su ID.
+     * Si no se encuentra ningún horario asociado, devuelve un {@link Optional#empty()}.
+     * </p>
+     *
+     * @param idServicio El identificador único del servicio al que está asociado el horario.
+     * @return Un {@link Optional} que contiene el horario encontrado si existe, o vacío en caso contrario.
+     */
+    @Override
+    public Optional<Horario> findByServicio_IdServicio(Long idServicio) {
+       
+        String jpql = "SELECT h FROM Horario h WHERE h.servicio.idServicio = :idServicio";
+        TypedQuery<Horario> query = entityManager.createQuery(jpql, Horario.class);
+        query.setParameter("idServicio", idServicio);
+
+        try {
+            Horario horario = query.getSingleResult();
+            return Optional.ofNullable(horario);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
 	@Override
 	 // Método para obtener horarios por identificadorFiscal de la empresa
    public List<Horario> findByServicio_Empresa_IdentificadorFiscal(String identificadorFiscal) {
