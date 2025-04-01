@@ -1,11 +1,14 @@
 package com.sompoble.cat.service.impl;
 
 import com.sompoble.cat.domain.Empresario;
+import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.repository.EmpresarioRepository;
 import com.sompoble.cat.service.EmpresarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmpresarioServiceImpl implements EmpresarioService {
@@ -14,12 +17,17 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     private EmpresarioRepository empresarioRepository;
 
     @Override
-    public Empresario findByDNI(String dni) {
+    public EmpresarioDTO findByDni(String dni) {
         return empresarioRepository.findByDNI(dni);
+    }
+    
+    @Override
+    public Empresario findEmpresarioByDNI(String dni) {
+        return empresarioRepository.findEmpresarioByDNI(dni);
     }
 
     @Override
-    public void updateEmpresario(Empresario empresario) {
+    public void updateEmpresario(EmpresarioDTO empresario) {
         empresarioRepository.updateEmpresario(empresario);
     }
 
@@ -29,7 +37,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     }
 
     @Override
-    public List<Empresario> findAll() {
+    public List<EmpresarioDTO> findAll() {
         return empresarioRepository.findAll();
     }
 
@@ -52,14 +60,14 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public void deleteByDni(String dni) {
         empresarioRepository.deleteByDni(dni);
     }
-    
+
     @Override
     public boolean existsByEmail(String email) {
         return empresarioRepository.existsByEmail(email);
     }
-    
+
     @Override
-    public Empresario findByEmail(String email) {
-            return empresarioRepository.findByEmail(email);
+    public EmpresarioDTO findByEmail(String email) {
+        return empresarioRepository.findByEmail(email);
     }
 }

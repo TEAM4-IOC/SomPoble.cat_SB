@@ -2,6 +2,9 @@ package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
+import com.sompoble.cat.dto.EmpresaDTO;
+import com.sompoble.cat.dto.EmpresarioDTO;
+import com.sompoble.cat.repository.impl.EmpresarioHibernate;
 import com.sompoble.cat.service.EmpresaService;
 import com.sompoble.cat.exception.BadRequestException;
 import com.sompoble.cat.exception.ResourceNotFoundException;
@@ -24,19 +27,22 @@ public class EmpresaController {
     @Autowired
     private EmpresarioService empresarioService;
 
+    @Autowired
+    private EmpresarioHibernate empresarioHibernate;
+
     // Obtener todas las empresas
     @GetMapping
     public ResponseEntity<?> getAll() {
-        List<Empresa> empresas = empresaService.findAll();
+        List<EmpresaDTO> empresas = empresaService.findAll();
         if (empresas.isEmpty()) {
             throw new ResourceNotFoundException("No se encontraron empresas en la base de datos");
         }
         List<Map<String, Object>> responseList = new ArrayList<>();
 
-        for (Empresa empresa : empresas) {
+        for (EmpresaDTO empresa : empresas) {
             Map<String, Object> response = new HashMap<>();
             response.put("empresa", empresa);
-            response.put("dni", empresa.getEmpresario() != null ? empresa.getEmpresario().getDni() : "No disponible");
+            response.put("dni", empresa.getDniEmpresario() != null ? empresa.getDniEmpresario() : "No disponible");
             responseList.add(response);
         }
         return ResponseEntity.ok(responseList);
@@ -46,13 +52,12 @@ public class EmpresaController {
     @GetMapping("/{identificadorFiscal}")
     public ResponseEntity<?> getByIdentificadorFiscal(@PathVariable String identificadorFiscal) {
         try {
-            Empresa empresa = empresaService.findByIdentificadorFiscal(identificadorFiscal);
-            Empresario empresario = empresa.getEmpresario();
-            String dni = empresa.getEmpresario().getDni();
+            EmpresaDTO empresa = empresaService.findByIdentificadorFiscal(identificadorFiscal);
+            //String dni = empresa.getDniEmpresario();
 
             Map<String, Object> response = new HashMap<>();
             response.put("empresa", empresa);
-            response.put("dni", empresario != null ? empresario.getDni() : "No disponible");
+            response.put("dni", empresa.getDniEmpresario() != null ? empresa.getDniEmpresario() : "No disponible");
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -70,7 +75,7 @@ public class EmpresaController {
             throw new BadRequestException("Empresa con identificador fiscal " + identificadorFiscal + " ya existe");
         }
 
-        Empresario empresario = null;
+        EmpresarioDTO empresarioDTO = null;
         String dni = null;
         boolean exists = false;
 
@@ -81,13 +86,17 @@ public class EmpresaController {
             throw new BadRequestException("No se ha informado el DNI del empresario");
         }
 
+        Empresario empresario = null;
+
         if (!exists) {
             throw new BadRequestException("No existe un empresario con DNI " + dni);
         } else {
-            empresario = empresarioService.findByDNI(dni);
+            empresario = empresarioService.findEmpresarioByDNI(dni);
+
+            empresarioDTO = empresarioService.findByDni(dni);
         }
-        
-        if (empresario.getEmpresas() != null) {
+
+        if (empresarioDTO.getEmpresas() != null && !empresarioDTO.getEmpresas().isEmpty()) {
             throw new BadRequestException("El empresario con DNI " + dni + " ya tiene una empresa/autónomo asignada");
         }
 
@@ -109,7 +118,7 @@ public class EmpresaController {
             empresa.setTipo(1);
         }
 
-        empresaService.addEmpresario(empresa);
+        empresaService.addEmpresa(empresa);
         return ResponseEntity.created(null).build();
     }
 
@@ -117,7 +126,7 @@ public class EmpresaController {
     @PutMapping("/{identificadorFiscal}")
     public ResponseEntity<?> update(@PathVariable String identificadorFiscal, @RequestBody Map<String, Object> updates) {
         try {
-            Empresa existingEmpresa = empresaService.findByIdentificadorFiscal(identificadorFiscal);
+            Empresa existingEmpresa = empresaService.findByIdentificadorFiscalFull(identificadorFiscal);
             updates.forEach((key, value) -> {
                 if (value != null) {
                     switch (key) {

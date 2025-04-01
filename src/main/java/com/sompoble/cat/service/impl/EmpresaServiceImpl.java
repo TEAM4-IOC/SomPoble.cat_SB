@@ -1,6 +1,7 @@
 package com.sompoble.cat.service.impl;
 
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
 import com.sompoble.cat.service.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +15,27 @@ public class EmpresaServiceImpl implements EmpresaService {
     private EmpresaRepository empresaRepository;
 
     @Override
-    public Empresa findByIdentificadorFiscal(String identificadorFiscal) {
+    public EmpresaDTO findByIdentificadorFiscal(String identificadorFiscal) {
         return empresaRepository.findByIdentificadorFiscal(identificadorFiscal);
     }
-
+    
+    @Override
+    public Empresa findByIdentificadorFiscalFull(String identificadorFiscal) {
+        return empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal);
+    }
+    
     @Override
     public void updateEmpresa(Empresa empresa) {
         empresaRepository.updateEmpresa(empresa);
     }
 
     @Override
-    public void addEmpresario(Empresa empresa) {
-        empresaRepository.addEmpresario(empresa);
+    public void addEmpresa(Empresa empresa) {
+        empresaRepository.addEmpresa(empresa);
     }
 
     @Override
-    public List<Empresa> findAll() {
+    public List<EmpresaDTO> findAll() {
         return empresaRepository.findAll();
     }
 

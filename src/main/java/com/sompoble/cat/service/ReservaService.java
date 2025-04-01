@@ -1,35 +1,32 @@
-package com.sompoble.cat.repository;
+package com.sompoble.cat.service;
 
-import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.dto.ReservaDTO;
-import org.springframework.stereotype.Repository;
+import com.sompoble.cat.domain.Reserva;
 import java.util.List;
 
 /**
- * Repositorio para la entidad {@code Reserva}.
+ * Servicio para gestionar las reservas.
  * <p>
- * Proporciona métodos para gestionar reservas en la base de datos.
+ * Proporciona métodos para realizar operaciones sobre las reservas.
  * </p>
  * 
  * @author SomPoble
  */
-
-@Repository
-public interface ReservaRepository {
+public interface ReservaService {
 
     /**
      * Obtiene todas las reservas asociadas a un cliente mediante su DNI.
      *
      * @param dni el documento nacional de identidad del cliente.
-     * @return una lista de reservas realizadas por el cliente con el DNI especificado.
+     * @return una lista de DTOs de reservas realizadas por el cliente con el DNI especificado.
      */
     List<ReservaDTO> findByClienteDni(String dni);
 
     /**
-     * Obtiene todas las reservas asociadas a una empresa mediante su identificador fiscal.
+     * Obtiene todas las reservas asociadas a una empresa o autónomo mediante su identificador fiscal.
      *
-     * @param identificadorFiscal el identificador fiscal de la empresa.
-     * @return una lista de reservas asociadas a la empresa especificada.
+     * @param identificadorFiscal el identificador fiscal de la empresa o autónomo.
+     * @return una lista de DTOs de reservas asociadas a la empresa o autónomo especificado.
      */
     List<ReservaDTO> findByEmpresaIdentificadorFiscal(String identificadorFiscal);
 
@@ -37,14 +34,14 @@ public interface ReservaRepository {
      * Busca una reserva por su identificador único.
      *
      * @param id el identificador de la reserva.
-     * @return un {@code Optional} que contiene la reserva si existe, o vacío si no se encuentra.
+     * @return el DTO con la reserva correspondiente.
      */
     ReservaDTO findById(Long id);
     
     Reserva findByIdFull(Long id);
 
     /**
-     * Guarda una nueva reserva en la base de datos.
+     * Guarda una nueva reserva.
      * Si la reserva ya existe, la actualiza.
      *
      * @param reserva la reserva a guardar.
@@ -52,14 +49,14 @@ public interface ReservaRepository {
     void addReserva(Reserva reserva);
 
     /**
-     * Actualiza una reserva existente en la base de datos.
+     * Actualiza una reserva existente.
      *
-     * @param reserva Objeto {@link Reserva} con la información actualizada.
+     * @param reserva la reserva con la información actualizada.
      */
     void updateReserva(Reserva reserva);
     
     /**
-     * Elimina una reserva de la base de datos mediante su identificador.
+     * Elimina una reserva mediante su identificador.
      *
      * @param id el identificador de la reserva a eliminar.
      */

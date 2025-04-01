@@ -1,6 +1,7 @@
 package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Cliente;
+import com.sompoble.cat.dto.ClienteDTO;
 import com.sompoble.cat.service.ClienteService;
 import com.sompoble.cat.exception.ResourceNotFoundException;
 import com.sompoble.cat.exception.BadRequestException;
@@ -20,7 +21,7 @@ public class ClienteController {
     // Obtener todos los clientes
     @GetMapping
     public ResponseEntity<?> getAll() {
-        List<Cliente> clientes = clienteService.findAll();
+        List<ClienteDTO> clientes = clienteService.findAll();
         if (clientes.isEmpty()) {
             throw new ResourceNotFoundException("No se encontraron clientes en la base de datos");
         }
@@ -31,7 +32,7 @@ public class ClienteController {
     @GetMapping("/{dni}")
     public ResponseEntity<?> getByDni(@PathVariable String dni) {
         try {
-            Cliente cliente = clienteService.findByDni(dni);
+            ClienteDTO cliente = clienteService.findByDni(dni);
             return ResponseEntity.ok(cliente);
         } catch (Exception e) {
             throw new ResourceNotFoundException("Cliente con DNI " + dni + " no encontrado");
@@ -55,7 +56,7 @@ public class ClienteController {
     @PutMapping("/{dni}")
     public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) { 
         try {
-            Cliente existingCliente= clienteService.findByDni(dni);
+            Cliente existingCliente= clienteService.findByDniFull(dni);
             updates.forEach((key, value) -> {
             if (value != null) {
                 switch (key) {

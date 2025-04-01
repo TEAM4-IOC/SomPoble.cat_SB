@@ -4,7 +4,7 @@ import com.sompoble.cat.domain.Servicio;
 import java.util.List;
 
 /**
- * Interfaz que define los métodos de servicio para la gestión de los servicios de la empresa.
+ * Interfaz que define los métodos relacionados con la gestión de servicios.
  */
 public interface ServicioService {
 

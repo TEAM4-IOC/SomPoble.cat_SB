@@ -1,6 +1,7 @@
 package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Empresario;
+import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.service.EmpresarioService;
 import com.sompoble.cat.exception.ResourceNotFoundException;
 import com.sompoble.cat.exception.BadRequestException;
@@ -20,7 +21,7 @@ public class EmpresarioController {
     // Obtener todos los empresarios
     @GetMapping
     public ResponseEntity<?> getAll() {
-        List<Empresario> empresarios = empresarioService.findAll();
+        List<EmpresarioDTO> empresarios = empresarioService.findAll();
         if (empresarios.isEmpty()) {
             throw new ResourceNotFoundException("No se encontraron empresarios en la base de datos");
         }
@@ -31,7 +32,7 @@ public class EmpresarioController {
     @GetMapping("/{dni}")
     public ResponseEntity<?> getByDni(@PathVariable String dni) {
         try {
-        Empresario empresario = empresarioService.findByDNI(dni);
+            EmpresarioDTO empresario = empresarioService.findByDni(dni);
             return ResponseEntity.ok(empresario);
         } catch (Exception e) {
             throw new ResourceNotFoundException("Empresario con DNI " + dni + " no encontrado");
@@ -55,7 +56,7 @@ public class EmpresarioController {
     @PutMapping("/{dni}")
     public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) {
         try{
-        Empresario existingEmpresario = empresarioService.findByDNI(dni);
+        EmpresarioDTO existingEmpresario = empresarioService.findByDni(dni);
         updates.forEach((key, value) -> {
             if (value != null) {
                 switch (key) {

@@ -1,13 +1,16 @@
 package com.sompoble.cat.repository.impl;
 
 import com.sompoble.cat.domain.Cliente;
+import com.sompoble.cat.dto.ClienteDTO;
 import com.sompoble.cat.repository.ClienteRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +33,7 @@ public class ClienteHibernate implements ClienteRepository {
     }
 
     @Override
-    public Cliente findByDNI(String dni) {
+    public ClienteDTO findByDNI(String dni) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Cliente> cq = cb.createQuery(Cliente.class);
         Root<Cliente> root = cq.from(Cliente.class);
@@ -38,16 +41,43 @@ public class ClienteHibernate implements ClienteRepository {
         Predicate dniPredicate = cb.equal(root.get("dni"), dni);
         cq.where(dniPredicate);
 
-        return entityManager.createQuery(cq).getSingleResult();
-    }
+        List<Cliente> result = entityManager.createQuery(cq).getResultList();
 
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            Cliente cliente = result.get(0);
+            return convertToDTO(cliente);
+        }
+    }
+    
     @Override
-    public List<Cliente> findAll() {
+    public Cliente findByDNIFull(String dni) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Cliente> cq = cb.createQuery(Cliente.class);
         Root<Cliente> root = cq.from(Cliente.class);
 
-        return entityManager.createQuery(cq).getResultList();
+        Predicate dniPredicate = cb.equal(root.get("dni"), dni);
+        cq.where(dniPredicate);
+
+        List<Cliente> result = entityManager.createQuery(cq).getResultList();
+
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            Cliente cliente = result.get(0);
+            return cliente;
+        }
+    }
+
+    @Override
+    public List<ClienteDTO> findAll() {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Cliente> cq = cb.createQuery(Cliente.class);
+        Root<Cliente> root = cq.from(Cliente.class);
+
+        List<Cliente> clientes = entityManager.createQuery(cq).getResultList();
+        return clientes.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -60,9 +90,17 @@ public class ClienteHibernate implements ClienteRepository {
 
     @Override
     public void deleteByDni(String dni) {
-        Cliente cliente = findByDNI(dni);
-        if (cliente != null) {
-            entityManager.remove(cliente);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Cliente> cq = cb.createQuery(Cliente.class);
+        Root<Cliente> root = cq.from(Cliente.class);
+
+        Predicate dniPredicate = cb.equal(root.get("dni"), dni);
+        cq.where(dniPredicate);
+
+        List<Cliente> result = entityManager.createQuery(cq).getResultList();
+        
+        if (!result.isEmpty()) {
+            entityManager.remove(result.get(0));
         }
     }
 
@@ -104,17 +142,54 @@ public class ClienteHibernate implements ClienteRepository {
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;
     }
-    
+
     @Override
-	public Cliente findByEmail(String email) {
-	    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-	    CriteriaQuery<Cliente> cq = cb.createQuery(Cliente.class);
-	    Root<Cliente> root = cq.from(Cliente.class);
+    public ClienteDTO findByEmail(String email) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Cliente> cq = cb.createQuery(Cliente.class);
+        Root<Cliente> root = cq.from(Cliente.class);
 
-	    Predicate emailPredicate = cb.equal(root.get("email"), email);
-	    cq.where(emailPredicate);
+        Predicate emailPredicate = cb.equal(root.get("email"), email);
+        cq.where(emailPredicate);
 
-	    List<Cliente> result = entityManager.createQuery(cq).getResultList();
-	    return result.isEmpty() ? null : result.get(0);
-	}
+        List<Cliente> result = entityManager.createQuery(cq).getResultList();
+        
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            Cliente cliente = result.get(0);
+            return convertToDTO(cliente);
+        }
+    }
+
+    private ClienteDTO convertToDTO(Cliente cliente) {
+        List<Long> reservasIds = new ArrayList<>();
+        List<Long> notificacionesIds = new ArrayList<>();
+
+        return new ClienteDTO(
+                cliente.getIdPersona(),
+                cliente.getDni(),
+                cliente.getNombre(),
+                cliente.getApellidos(),
+                cliente.getEmail(),
+                cliente.getTelefono(),
+                cliente.getPass(),
+                reservasIds,
+                notificacionesIds
+        );
+    }
+    
+    public Cliente convertToEntity(ClienteDTO clienteDTO) {
+        Cliente cliente = new Cliente();
+
+        cliente.setDni(clienteDTO.getDni());
+        cliente.setNombre(clienteDTO.getNombre());
+        cliente.setApellidos(clienteDTO.getApellidos());
+        cliente.setEmail(clienteDTO.getEmail());
+        cliente.setTelefono(clienteDTO.getTelefono());
+        cliente.setPass(clienteDTO.getPass());
+        
+        return cliente;
+    }
+    
 }

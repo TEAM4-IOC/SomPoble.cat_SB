@@ -1,17 +1,28 @@
 package com.sompoble.cat.repository.impl;
 
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementación del repositorio para la entidad {@code Empresa}.
+ * <p>
+ * Proporciona métodos para gestionar empresas en la base de datos.
+ * </p>
+ *
+ * @author SomPoble
+ */
 @Repository
 @Transactional
 public class EmpresaHibernate implements EmpresaRepository {
@@ -19,18 +30,36 @@ public class EmpresaHibernate implements EmpresaRepository {
     @Autowired
     private EntityManager entityManager;
 
+    /**
+     * Agrega una nueva empresa a la base de datos.
+     *
+     * @param empresa el objeto {@link Empresa} a guardar.
+     */
     @Override
-    public void addEmpresario(Empresa empresa) {
+    public void addEmpresa(Empresa empresa) {
         entityManager.persist(empresa);
     }
 
+    /**
+     * Actualiza la información de una empresa en la base de datos.
+     *
+     * @param empresa el objeto {@link EmpresaDTO} con la información
+     * actualizada.
+     */
     @Override
     public void updateEmpresa(Empresa empresa) {
         entityManager.merge(empresa);
     }
 
+    /**
+     * Busca una empresa por su identificador fiscal.
+     *
+     * @param identificadorFiscal el identificador fiscal de la empresa.
+     * @return un objeto {@code EmpresaDTO} si la empresa existe, o null si no
+     * se encuentra.
+     */
     @Override
-    public Empresa findByIdentificadorFiscal(String identificadorFiscal) {
+    public EmpresaDTO findByIdentificadorFiscal(String identificadorFiscal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Empresa> cq = cb.createQuery(Empresa.class);
         Root<Empresa> root = cq.from(Empresa.class);
@@ -38,18 +67,56 @@ public class EmpresaHibernate implements EmpresaRepository {
         Predicate identificadorFiscalPredicate = cb.equal(root.get("identificadorFiscal"), identificadorFiscal);
         cq.where(identificadorFiscalPredicate);
 
-        return entityManager.createQuery(cq).getSingleResult();
+        List<Empresa> result = entityManager.createQuery(cq).getResultList();
+
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            Empresa empresa = result.get(0);
+            return convertToDTO(empresa);
+        }
     }
 
     @Override
-    public List<Empresa> findAll() {
+    public Empresa findByIdentificadorFiscalFull(String identificadorFiscal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Empresa> cq = cb.createQuery(Empresa.class);
         Root<Empresa> root = cq.from(Empresa.class);
-        
-        return entityManager.createQuery(cq).getResultList();
+
+        Predicate identificadorFiscalPredicate = cb.equal(root.get("identificadorFiscal"), identificadorFiscal);
+        cq.where(identificadorFiscalPredicate);
+
+        List<Empresa> result = entityManager.createQuery(cq).getResultList();
+
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            Empresa empresa = result.get(0);
+            return empresa;
+        }
     }
 
+    /**
+     * Obtiene todas las empresas registradas en la base de datos.
+     *
+     * @return una lista de objetos {@code EmpresaDTO} con la información de las
+     * empresas.
+     */
+    @Override
+    public List<EmpresaDTO> findAll() {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Empresa> cq = cb.createQuery(Empresa.class);
+        Root<Empresa> root = cq.from(Empresa.class);
+
+        List<Empresa> empresas = entityManager.createQuery(cq).getResultList();
+        return empresas.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    /**
+     * Elimina una empresa de la base de datos mediante su ID.
+     *
+     * @param id el identificador de la empresa a eliminar.
+     */
     @Override
     public void deleteById(Long id) {
         Empresa empresa = entityManager.find(Empresa.class, id);
@@ -58,16 +125,37 @@ public class EmpresaHibernate implements EmpresaRepository {
         }
     }
 
+    /**
+     * Elimina una empresa de la base de datos mediante su identificador fiscal.
+     *
+     * @param identificadorFiscal el identificador fiscal de la empresa a
+     * eliminar.
+     */
     @Override
     public void deleteByIdentificadorFiscal(String identificadorFiscal) {
-        Empresa empresa = findByIdentificadorFiscal(identificadorFiscal);
-        if (empresa != null) {
-            entityManager.remove(empresa);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Empresa> cq = cb.createQuery(Empresa.class);
+        Root<Empresa> root = cq.from(Empresa.class);
+
+        Predicate dniPredicate = cb.equal(root.get("identificadorFiscal"), identificadorFiscal);
+        cq.where(dniPredicate);
+
+        List<Empresa> result = entityManager.createQuery(cq).getResultList();
+
+        if (!result.isEmpty()) {
+            entityManager.remove(result.get(0));
         }
     }
 
+    /**
+     * Verifica si una empresa existe en la base de datos por su identificador
+     * fiscal.
+     *
+     * @param identificadorFiscal el identificador fiscal de la empresa.
+     * @return true si la empresa existe, false en caso contrario.
+     */
     @Override
-    public boolean existsByIdentificadorFiscal (String identificadorFiscal) {
+    public boolean existsByIdentificadorFiscal(String identificadorFiscal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<Empresa> root = cq.from(Empresa.class);
@@ -79,6 +167,12 @@ public class EmpresaHibernate implements EmpresaRepository {
         return count > 0;
     }
 
+    /**
+     * Verifica si una empresa existe en la base de datos por su ID.
+     *
+     * @param id el identificador de la empresa.
+     * @return true si la empresa existe, false en caso contrario.
+     */
     @Override
     public boolean existsById(Long id) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -90,5 +184,47 @@ public class EmpresaHibernate implements EmpresaRepository {
 
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;
+    }
+
+    /**
+     * Convierte un objeto {@link Empresa} a su correspondiente
+     * {@link EmpresaDTO}.
+     *
+     * @param empresa el objeto {@link Empresa} a convertir.
+     * @return el objeto {@link EmpresaDTO} correspondiente.
+     */
+    private EmpresaDTO convertToDTO(Empresa empresa) {
+        List<Long> reservasIds = new ArrayList<>();
+        List<Long> serviciosIds = new ArrayList<>();
+        List<Long> horariosIds = new ArrayList<>();
+
+        return new EmpresaDTO(
+                empresa.getIdEmpresa(),
+                empresa.getEmpresario().getDni(),
+                empresa.getIdentificadorFiscal(),
+                empresa.getNombre(),
+                empresa.getActividad(),
+                empresa.getDireccion(),
+                empresa.getEmail(),
+                empresa.getTelefono(),
+                empresa.getTipo(),
+                reservasIds,
+                serviciosIds,
+                horariosIds
+        );
+    }
+
+    public Empresa convertToEntity(EmpresaDTO empresaDTO) {
+        Empresa empresa = new Empresa();
+
+        empresa.setIdentificadorFiscal(empresaDTO.getIdentificadorFiscal());
+        empresa.setNombre(empresaDTO.getNombre());
+        empresa.setActividad(empresaDTO.getActividad());
+        empresa.setDireccion(empresaDTO.getDireccion());
+        empresa.setEmail(empresaDTO.getEmail());
+        empresa.setTelefono(empresaDTO.getTelefono());
+        empresa.setTipo(empresaDTO.getTipo());
+
+        return empresa;
     }
 }

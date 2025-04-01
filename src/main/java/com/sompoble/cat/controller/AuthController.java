@@ -1,15 +1,14 @@
 package com.sompoble.cat.controller;
 
-import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Empresario;
+import com.sompoble.cat.dto.ClienteDTO;
+import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.exception.BadRequestException;
 import com.sompoble.cat.exception.UnauthorizedException;
 import com.sompoble.cat.service.ClienteService;
 import com.sompoble.cat.service.EmpresarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,8 +40,8 @@ public class AuthController {
         email = email.toLowerCase();
         Map<String, Object> response = new HashMap<>();
 
-        Cliente cliente = clienteService.findByEmail(email);
-        Empresario empresario = empresarioService.findByEmail(email);
+        ClienteDTO cliente = clienteService.findByEmail(email);
+        EmpresarioDTO empresario = empresarioService.findByEmail(email);
 
         if (cliente != null && empresario != null && passwordEncoder.matches(pass, cliente.getPass())) {
             return crearRespuestaExitosa(response, 3, cliente);
