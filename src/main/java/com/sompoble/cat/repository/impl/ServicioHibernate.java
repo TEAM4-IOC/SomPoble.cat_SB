@@ -1,13 +1,19 @@
 package com.sompoble.cat.repository.impl;
 
+import com.sompoble.cat.domain.Horario;
 import com.sompoble.cat.domain.Servicio;
 import com.sompoble.cat.repository.ServicioRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,7 +143,58 @@ public class ServicioHibernate implements ServicioRepository {
         cq.where(predicate);
         return entityManager.createQuery(cq).getResultList();
     }
+    /**
+     * Obtiene todos los servicios de una empresa específica, incluyendo los horarios asociados mediante un LEFT JOIN.
+     * Este método realiza una consulta para recuperar todos los servicios de una empresa, junto con sus horarios,
+     * sin necesidad de que exista un horario asignado a cada servicio.
+     *
+     * @param empresaId El identificador de la empresa cuyos servicios se quieren obtener.
+     * @return Una lista de servicios asociados a la empresa indicada. Si no se encuentran servicios, se devuelve una lista vacía.
+     */
+    @Override
+    public List<Servicio> findAllHorariosByEmpresaId(Long empresaId) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Servicio> cq = cb.createQuery(Servicio.class);
+        Root<Servicio> root = cq.from(Servicio.class);
 
+        
+        Join<Servicio, Horario> horarioJoin = root.join("horarios", JoinType.LEFT);
+
+        
+        Predicate empresaPredicate = cb.equal(root.get("empresa").get("id"), empresaId);
+        cq.where(empresaPredicate);
+
+       
+        return entityManager.createQuery(cq).getResultList();
+    }
+    /**
+     * Busca un servicio por su ID y verifica que pertenezca a una empresa específica.
+     * 
+     * @param servicioId ID único del servicio.
+     * @param empresaId ID de la empresa propietaria del servicio.
+     * @return Un {@link Optional} con el servicio encontrado, o vacío si no existe.
+     */
+    @Override
+    public Optional<Servicio> findByIdAndEmpresaId(Long servicioId, Long empresaId) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Servicio> cq = cb.createQuery(Servicio.class);
+        Root<Servicio> root = cq.from(Servicio.class);
+
+        // Filtro por ID del servicio
+        Predicate idPredicate = cb.equal(root.get("id"), servicioId);
+        // Filtro por ID de la empresa asociada
+        Predicate empresaPredicate = cb.equal(root.get("empresa").get("id"), empresaId);
+
+        // Combina ambos filtros
+        cq.where(cb.and(idPredicate, empresaPredicate));
+
+        try {
+            Servicio servicio = entityManager.createQuery(cq).getSingleResult();
+            return Optional.ofNullable(servicio);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
 
 }
 

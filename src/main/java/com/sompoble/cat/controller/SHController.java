@@ -145,28 +145,42 @@ public class SHController {
     }
 
     /**
-     * Elimina un servicio y su horario asociado según el identificador fiscal de la empresa.
+     * Elimina un servicio y su horario asociado por su ID y el identificador fiscal de la empresa.
      * 
-     * @param identificadorFiscal Identificador fiscal de la empresa.
-     * @return ResponseEntity con código de respuesta 204 si la eliminación fue exitosa.
+     * <p>
+     * Este método busca el servicio por su ID y verifica que pertenezca a la empresa especificada
+     * mediante el identificador fiscal. Si ambos existen, se eliminan el horario y el servicio de la base de datos.
+     * </p>
+     * 
+     * @param idServicio     ID único del servicio a eliminar.
+     * @param identificadorFiscal Identificador fiscal de la empresa propietaria del servicio.
+     * @return {@link ResponseEntity#NO_CONTENT()} (status 204) si la operación se realiza con éxito.
+     * @throws RuntimeException Si:
+     *   - La empresa no existe (identificador fiscal inválido).
+     *   - El servicio no existe o no pertenece a la empresa.
+     *   - El horario asociado al servicio no existe.
      */
-    @DeleteMapping("/anular")
-    public ResponseEntity<Void> anularServicioConHorario(@RequestParam String identificadorFiscal) {
+    @DeleteMapping("/anular/{idServicio}")
+    public ResponseEntity<Void> anularServicioConHorario(
+        @PathVariable Long idServicio,
+        @RequestParam String identificadorFiscal) {
+
+        // Verificar existencia de la empresa
         Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscal(identificadorFiscal))
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
-        
-        List<Servicio> servicios = servicioRepository.findAllByEmpresaIdentificador(identificadorFiscal);
-        if (servicios.isEmpty()) {
-            throw new RuntimeException("No se encontraron servicios para la empresa con identificador fiscal: " + identificadorFiscal);
-        }
-        
-        Servicio servicio = servicios.get(0);
-        Horario horario = horarioRepository.findByServicio_IdServicio(servicio.getIdServicio())
+
+        // Buscar el servicio específico por ID y verificar que pertenezca a la empresa
+        Servicio servicio = servicioRepository.findByIdAndEmpresaId(idServicio, empresa.getIdEmpresa())
+                .orElseThrow(() -> new RuntimeException("Servicio no encontrado para la empresa"));
+
+        // Buscar el horario asociado al servicio
+        Horario horario = horarioRepository.findByServicio_IdServicio(idServicio)
                 .orElseThrow(() -> new RuntimeException("Horario no encontrado para el servicio"));
-        
+
+        // Eliminar horario y servicio
         horarioRepository.delete(horario.getIdHorario());
         servicioRepository.deleteById(servicio.getIdServicio());
-        
+
         return ResponseEntity.noContent().build();
     }
 }
