@@ -183,4 +183,30 @@ public class SHController {
 
         return ResponseEntity.noContent().build();
     }
+    /*
+     * 
+     * obtenerTodosServiciosConHorario()
+    Obtiene todos los servicios disponibles junto con sus horarios asociados.
+
+    Este método consulta la base de datos para recuperar todos los registros de servicios y sus horarios correspondientes,
+    devolviendo una lista de objetos ServicioHorarioDTO que contienen la información combinada.
+
+    Returns:
+        ResponseEntity<List<ServicioHorarioDTO>> Respuesta HTTP con código 200 (OK) que incluye una lista de servicios con sus horarios. Si no hay servicios registrados, la lista se devuelve vacía.
+     * 
+     * */
+    @GetMapping("/obtener-todos")
+    public ResponseEntity<List<ServicioHorarioDTO>> obtenerTodosServiciosConHorario() {
+        List<Horario> horarios = horarioRepository.findAll();
+        List<ServicioHorarioDTO> respuesta = new ArrayList<>();
+
+        for (Horario horario : horarios) {
+            Servicio servicio = horario.getServicio();
+            if (servicio != null) {
+                respuesta.add(new ServicioHorarioDTO(servicio, horario));
+            }
+        }
+
+        return ResponseEntity.ok(respuesta);
+    }
 }
