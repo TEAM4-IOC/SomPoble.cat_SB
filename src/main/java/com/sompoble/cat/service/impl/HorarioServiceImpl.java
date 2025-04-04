@@ -31,7 +31,7 @@ public class HorarioServiceImpl implements HorarioService {
   
     @Override
     public Optional<Horario> findById(Long id) {
-        return horarioRepository.findById(id);
+        return Optional.ofNullable(horarioRepository.findById(id));
     }
 
   

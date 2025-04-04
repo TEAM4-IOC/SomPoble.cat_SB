@@ -25,5 +25,7 @@ public interface EmpresarioService {
     
     boolean existsByEmail(String email);
     
+    Empresario findByEmail(String email);
+  
     EmpresarioDTO findByEmail(String email);
 }

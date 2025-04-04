@@ -70,4 +70,6 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public EmpresarioDTO findByEmail(String email) {
         return empresarioRepository.findByEmail(email);
     }
+
+	
 }

@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+/**
+ * Representa el horario laboral asociado a un servicio y una empresa.
+ */
 @Entity
 @Table(name = "HORARIO")
 public class Horario implements Serializable {
@@ -18,13 +21,7 @@ public class Horario implements Serializable {
     @Column(name = "ID_HORARIO")
     private Long idHorario;
 
-   
-    @Pattern(
-        regexp = "^(Lunes|Martes|Miercoles|Jueves|Viernes|Sabado|Domingo)(,(Lunes|Martes|Miercoles|Jueves|Viernes|Sabado|Domingo))*$",
-        message = "Días laborables deben ser una lista válida de días separados por comas (ej: 'Lunes,Martes')"
-    )
-    @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
-    @Column(name = "DIAS_LABORALES", nullable = false, length = 255)
+    @Column(name = "DIAS_LABORABLES")
     private String diasLaborables;
 
     @Column(name = "HORARIO_INICIO", nullable = false)
@@ -44,13 +41,27 @@ public class Horario implements Serializable {
     private LocalDateTime fechaModificacion;
 
     @ManyToOne
-    @JoinColumn(name = "ID_EMPRESA",referencedColumnName = "ID_EMPRESA", nullable = false)
+    @JoinColumn(name = "ID_EMPRESA", referencedColumnName = "ID_EMPRESA", nullable = false)
     @NotNull(message = "Debe asociarse a una empresa/autónomo")
     private Empresa empresa;
 
-    
+    @ManyToOne
+    @JoinColumn(name = "ID_SERVICIO", referencedColumnName = "ID_SERVICIO", nullable = false)
+    private Servicio servicio;
+
+    /**
+     * Constructor vacío.
+     */
     public Horario() {}
 
+    /**
+     * Constructor con parámetros.
+     *
+     * @param diasLaborables Días laborables en formato String.
+     * @param horarioInicio Hora de inicio del servicio.
+     * @param horarioFin Hora de fin del servicio.
+     * @param empresa Empresa asociada al horario.
+     */
     public Horario(String diasLaborables, LocalTime horarioInicio, LocalTime horarioFin, Empresa empresa) {
         this.diasLaborables = diasLaborables;
         this.horarioInicio = horarioInicio;
@@ -58,9 +69,12 @@ public class Horario implements Serializable {
         this.empresa = empresa;
     }
 
-  
     public Long getIdHorario() {
         return idHorario;
+    }
+
+    public void setIdHorario(Long idHorario) {
+        this.idHorario = idHorario;
     }
 
     public String getDiasLaborables() {
@@ -99,15 +113,31 @@ public class Horario implements Serializable {
         return fechaAlta;
     }
 
+    public void setFechaAlta(LocalDateTime fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
+
     public LocalDateTime getFechaModificacion() {
         return fechaModificacion;
+    }
+
+    public void setFechaModificacion(LocalDateTime fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+
+    public Servicio getServicio() {
+        return servicio;
+    }
+
+    public void setServicio(Servicio servicio) {
+        this.servicio = servicio;
     }
 
     @Override
     public String toString() {
         return "Horario{" +
                 "idHorario=" + idHorario +
-                ", diasLaborables='" + diasLaborables + '\'' +
+                ", diasLaborables=" + diasLaborables +
                 ", horarioInicio=" + horarioInicio +
                 ", horarioFin=" + horarioFin +
                 ", empresa=" + empresa +

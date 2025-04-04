@@ -91,6 +91,8 @@ public interface EmpresarioRepository {
      */
     boolean existsByEmail(String email);
 
+    Empresario findByEmail(String email);
+
     /**
      * Busca un empresario por su correo electrónico.
      *
@@ -98,4 +100,5 @@ public interface EmpresarioRepository {
      * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null si no se encuentra.
      */
     EmpresarioDTO findByEmail(String email);
+
 }

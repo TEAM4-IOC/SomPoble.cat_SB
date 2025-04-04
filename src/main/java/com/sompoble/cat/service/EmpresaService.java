@@ -22,4 +22,6 @@ public interface EmpresaService {
     boolean existsByIdentificadorFiscal(String identificadorFiscal);
 
     void deleteByIdentificadorFiscal(String identificadorFiscal);
+
+	
 }
