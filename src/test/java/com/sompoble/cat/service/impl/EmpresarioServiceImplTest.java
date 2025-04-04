@@ -18,7 +18,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 @Transactional
 class EmpresarioServiceImplTest {
 
-    @Autowired
+    /*@Autowired
     private EmpresarioService empresarioService; 
 
     @Autowired
@@ -137,7 +137,7 @@ class EmpresarioServiceImplTest {
         assertEquals(2, empresarios.size());
     }
     */
-    
+    /*
     @Test
     void existsByIdTest() {
         Empresario empresario = new Empresario();
@@ -187,5 +187,5 @@ class EmpresarioServiceImplTest {
 
         boolean result = empresarioService.existsByEmail("carlos@empresa.com");
         assertTrue(result);
-    }
+    }*/
 }

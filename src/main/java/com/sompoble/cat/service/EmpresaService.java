@@ -1,16 +1,19 @@
 package com.sompoble.cat.service;
 
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.dto.EmpresaDTO;
 import java.util.List;
 
 public interface EmpresaService {
-    Empresa findByIdentificadorFiscal(String identificadorFiscal);
+    EmpresaDTO findByIdentificadorFiscal(String identificadorFiscal);
     
+    Empresa findByIdentificadorFiscalFull(String identificadorFiscal);
+
     void updateEmpresa(Empresa empresa);
     
-    void addEmpresario(Empresa empresa);
+    void addEmpresa(Empresa empresa);
 
-    List<Empresa> findAll();
+    List<EmpresaDTO> findAll();
     
     boolean existsById(Long id);
 

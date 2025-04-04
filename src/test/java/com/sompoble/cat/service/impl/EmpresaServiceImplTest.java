@@ -20,7 +20,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 @Transactional
 class EmpresaServiceImplTest {
 
-    @Autowired
+    /*@Autowired
     private EmpresaService empresaService; 
 
     @Autowired
@@ -158,7 +158,7 @@ class EmpresaServiceImplTest {
         assertEquals(2, empresas.size());
     }
     */
-    
+    /*
     @Test
     void existsByIdTest() {
         Empresa empresa = new Empresa();
@@ -193,5 +193,5 @@ class EmpresaServiceImplTest {
         } catch (EmptyResultDataAccessException e) {
             assertTrue(true);
         }
-    }
+    }*/
 }

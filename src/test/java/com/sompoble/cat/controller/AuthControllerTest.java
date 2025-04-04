@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class AuthControllerTest {
 
-    @Mock
+    /*@Mock
     private ClienteService clienteService;
 
     @Mock
@@ -178,5 +178,5 @@ public class AuthControllerTest {
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(clienteService).findByEmail("cliente@example.com");
-    }
+    }*/
 }

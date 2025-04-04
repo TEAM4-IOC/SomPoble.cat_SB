@@ -1,16 +1,19 @@
 package com.sompoble.cat.service;
 
 import com.sompoble.cat.domain.Empresario;
+import com.sompoble.cat.dto.EmpresarioDTO;
 import java.util.List;
 
 public interface EmpresarioService {
-    Empresario findByDNI(String dni);
+    EmpresarioDTO findByDni(String dni);
     
-    void updateEmpresario (Empresario empresario);
+    Empresario findEmpresarioByDNI(String dni);
+    
+    void updateEmpresario(EmpresarioDTO empresario);
     
     void addEmpresario(Empresario empresario);
 
-    List<Empresario> findAll();
+    List<EmpresarioDTO> findAll();
     
     boolean existsById(Long id);
 
@@ -23,6 +26,6 @@ public interface EmpresarioService {
     boolean existsByEmail(String email);
     
     Empresario findByEmail(String email);
-
-	
+  
+    EmpresarioDTO findByEmail(String email);
 }

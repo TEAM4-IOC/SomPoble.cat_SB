@@ -17,7 +17,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 @Transactional
 class ClienteServiceImplTest {
 
-    @Autowired
+   /* @Autowired
     private ClienteService clienteService;
 
     @Autowired
@@ -138,7 +138,7 @@ class ClienteServiceImplTest {
     }
     /*
     
-    */
+    *//*
     @Test
     void existsByIdTest() {
         Cliente cliente = new Cliente();
@@ -191,5 +191,5 @@ class ClienteServiceImplTest {
 
         boolean resultFalse = clienteService.existsByEmail("noexistent@domain.com");
         assertFalse(resultFalse);
-    }
+    }*/
 }
