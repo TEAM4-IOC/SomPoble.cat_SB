@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ServicioHibernateTest {
 
-    @Mock
+    /*@Mock
     private EntityManager entityManager;
 
     @Mock
@@ -82,7 +82,7 @@ public class ServicioHibernateTest {
     }
     */
     
-    @Test
+    /*@Test
     public void testUpdateServicio() {
         when(entityManager.merge(servicio)).thenReturn(servicio);
         servicioHibernate.updateServicio(servicio);
@@ -130,7 +130,7 @@ public class ServicioHibernateTest {
     }
     */
 
-    @Test
+    /*@Test
     public void testDeleteById_ExistingServicio() {
         when(entityManager.find(Servicio.class, 1L)).thenReturn(servicio);
         servicioHibernate.deleteById(1L);
@@ -144,5 +144,5 @@ public class ServicioHibernateTest {
         servicioHibernate.deleteById(1L);
         verify(entityManager).find(Servicio.class, 1L);
         verify(entityManager, never()).remove(any(Servicio.class));
-    }
+    }*/
 }

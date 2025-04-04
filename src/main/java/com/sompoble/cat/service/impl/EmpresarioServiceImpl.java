@@ -70,6 +70,11 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public EmpresarioDTO findByEmail(String email) {
         return empresarioRepository.findByEmail(email);
     }
+    
+    @Override
+    public Empresario findByEmailFull(String email) {
+            return empresarioRepository.findByEmailFull(email);
+    }
 
 	
 }

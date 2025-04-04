@@ -58,7 +58,7 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
     @Override
     public List<ServicioHorarioDTO> obtenerServiciosConHorariosPorEmpresa(String identificadorFiscal) {
         // 1. Buscar la empresa por identificador fiscal
-        Optional<Empresa> optionalEmpresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscal(identificadorFiscal));
+        Optional<Empresa> optionalEmpresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal));
         
         if (optionalEmpresa.isEmpty()) {
             return Collections.emptyList(); // Empresa no encontrada

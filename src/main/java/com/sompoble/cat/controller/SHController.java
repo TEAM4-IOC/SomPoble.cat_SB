@@ -41,7 +41,7 @@ public class SHController {
      */
     @PostMapping("/crear")
     public ResponseEntity<ServicioHorarioDTO> crearServicioConHorario(@RequestBody ServicioHorarioDTO dto) {
-        Empresa empresa = empresaRepository.findByIdentificadorFiscal(dto.getIdentificadorFiscal());
+        Empresa empresa = empresaRepository.findByIdentificadorFiscalFull(dto.getIdentificadorFiscal());
         if (empresa == null) {
             throw new RuntimeException("Empresa no encontrada con Identificador Fiscal: " + dto.getIdentificadorFiscal());
         }
@@ -75,7 +75,7 @@ public class SHController {
     @GetMapping("/obtener")
     public ResponseEntity<List<ServicioHorarioDTO>> obtenerServicioConHorario(@RequestParam String identificadorFiscal) {
        
-        Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscal(identificadorFiscal))
+        Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal))
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
 
         List<Horario> horarios = horarioRepository.findByServicio_Empresa_IdentificadorFiscal(identificadorFiscal);
@@ -115,7 +115,7 @@ public class SHController {
      */
     @PutMapping("/actualizar")
     public ResponseEntity<ServicioHorarioDTO> actualizarServicioConHorario(@RequestParam String identificadorFiscal, @RequestBody ServicioHorarioDTO dto) {
-        Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscal(identificadorFiscal))
+        Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal))
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
         
         List<Servicio> servicios = servicioRepository.findAllByEmpresaIdentificador(identificadorFiscal);
@@ -166,7 +166,7 @@ public class SHController {
         @RequestParam String identificadorFiscal) {
 
         // Verificar existencia de la empresa
-        Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscal(identificadorFiscal))
+        Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal))
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
 
         // Buscar el servicio específico por ID y verificar que pertenezca a la empresa

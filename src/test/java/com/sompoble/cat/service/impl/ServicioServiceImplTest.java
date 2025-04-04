@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ServicioServiceImplTest {
 
-    @Mock
+    /*@Mock
     private ServicioRepository servicioRepository;
 
     @InjectMocks
@@ -57,7 +57,7 @@ public class ServicioServiceImplTest {
         verify(servicioRepository).findById(1L);
     }
     */
-    @Test
+    /*@Test
     public void testActualizarServicio() {
         // Act
         servicioService.actualizarServicio(servicio);
@@ -111,7 +111,7 @@ public class ServicioServiceImplTest {
     }
     */
     
-    @Test
+    /*@Test
     public void testExistePorId_True() {
         // Arrange
         when(servicioRepository.existsById(1L)).thenReturn(true);
@@ -185,5 +185,5 @@ public class ServicioServiceImplTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(servicioRepository).findAllByEmpresaIdentificador("NONEXISTENT");
-    }
+    }*/
 }

@@ -91,7 +91,7 @@ public interface EmpresarioRepository {
      */
     boolean existsByEmail(String email);
 
-    Empresario findByEmail(String email);
+    Empresario findByEmailFull(String email);
 
     /**
      * Busca un empresario por su correo electrónico.
