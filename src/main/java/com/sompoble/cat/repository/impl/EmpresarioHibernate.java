@@ -1,16 +1,21 @@
 package com.sompoble.cat.repository.impl;
 
+import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
+import com.sompoble.cat.dto.EmpresaDTO;
+import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.repository.EmpresarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
@@ -25,12 +30,25 @@ public class EmpresarioHibernate implements EmpresarioRepository {
     }
 
     @Override
-    public void updateEmpresario(Empresario empresario) {
+    public void updateEmpresario(EmpresarioDTO empresario) {
         entityManager.merge(empresario);
     }
 
     @Override
-    public Empresario findByDNI(String dni) {
+    public EmpresarioDTO findByDNI(String dni) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Empresario> cq = cb.createQuery(Empresario.class);
+        Root<Empresario> root = cq.from(Empresario.class);
+
+        Predicate dniPredicate = cb.equal(root.get("dni"), dni);
+        cq.where(dniPredicate);
+
+        List<Empresario> result = entityManager.createQuery(cq).getResultList();
+        return result.isEmpty() ? null : convertToDTO(result.get(0));
+    }
+
+    @Override
+    public Empresario findEmpresarioByDNI(String dni) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Empresario> cq = cb.createQuery(Empresario.class);
         Root<Empresario> root = cq.from(Empresario.class);
@@ -42,12 +60,13 @@ public class EmpresarioHibernate implements EmpresarioRepository {
     }
 
     @Override
-    public List<Empresario> findAll() {
+    public List<EmpresarioDTO> findAll() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Empresario> cq = cb.createQuery(Empresario.class);
         Root<Empresario> root = cq.from(Empresario.class);
 
-        return entityManager.createQuery(cq).getResultList();
+        List<Empresario> empresarios = entityManager.createQuery(cq).getResultList();
+        return empresarios.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -60,9 +79,17 @@ public class EmpresarioHibernate implements EmpresarioRepository {
 
     @Override
     public void deleteByDni(String dni) {
-        Empresario empresario = findByDNI(dni);
-        if (empresario != null) {
-            entityManager.remove(empresario);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Empresario> cq = cb.createQuery(Empresario.class);
+        Root<Empresario> root = cq.from(Empresario.class);
+
+        Predicate dniPredicate = cb.equal(root.get("dni"), dni);
+        cq.where(dniPredicate);
+
+        List<Empresario> result = entityManager.createQuery(cq).getResultList();
+
+        if (!result.isEmpty()) {
+            entityManager.remove(result.get(0));
         }
     }
 
@@ -104,9 +131,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;
     }
-    
+
     @Override
-    public Empresario findByEmail(String email) {
+    public EmpresarioDTO findByEmail(String email) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Empresario> cq = cb.createQuery(Empresario.class);
         Root<Empresario> root = cq.from(Empresario.class);
@@ -115,6 +142,68 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         cq.where(emailPredicate);
 
         List<Empresario> result = entityManager.createQuery(cq).getResultList();
-        return result.isEmpty() ? null : result.get(0);
+        return result.isEmpty() ? null : convertToDTO(result.get(0));
     }
+
+    private EmpresarioDTO convertToDTO(Empresario empresario) {
+        List<Long> notificacionesIds = new ArrayList<>();
+
+        List<EmpresaDTO> empresasDTO = empresario.getEmpresas() != null
+                ? empresario.getEmpresas().stream().map(empresa -> new EmpresaDTO(
+                empresa.getIdEmpresa(),
+                empresa.getEmpresario().getDni(),
+                empresa.getIdentificadorFiscal(),
+                empresa.getNombre(),
+                empresa.getActividad(),
+                empresa.getDireccion(),
+                empresa.getEmail(),
+                empresa.getTelefono(),
+                empresa.getTipo(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+        )).collect(Collectors.toList())
+                : new ArrayList<>();
+
+        return new EmpresarioDTO(
+                empresario.getIdPersona(),
+                empresario.getDni(),
+                empresario.getNombre(),
+                empresario.getApellidos(),
+                empresario.getEmail(),
+                empresario.getTelefono(),
+                empresario.getPass(),
+                notificacionesIds,
+                empresasDTO
+        );
+    }
+
+    public Empresario convertToEntity(EmpresarioDTO empresarioDTO) {
+        Empresario empresario = new Empresario();
+
+        empresario.setDni(empresarioDTO.getDni());
+        empresario.setNombre(empresarioDTO.getNombre());
+        empresario.setApellidos(empresarioDTO.getApellidos());
+        empresario.setEmail(empresarioDTO.getEmail());
+        empresario.setTelefono(empresarioDTO.getTelefono());
+        empresario.setPass(empresarioDTO.getPass());
+
+        if (empresarioDTO.getEmpresas() != null) {
+            List<Empresa> empresas = empresarioDTO.getEmpresas().stream().map(empresaDTO -> {
+                Empresa empresa = new Empresa();
+                empresa.setIdentificadorFiscal(empresaDTO.getIdentificadorFiscal());
+                empresa.setNombre(empresaDTO.getNombre());
+                empresa.setDireccion(empresaDTO.getDireccion());
+                empresa.setEmail(empresaDTO.getEmail());
+                empresa.setTelefono(empresaDTO.getTelefono());
+                empresa.setActividad(empresaDTO.getActividad());
+                return empresa;
+            }).collect(Collectors.toList());
+
+            empresario.setEmpresas(empresas);
+        }
+
+        return empresario;
+    }
+
 }

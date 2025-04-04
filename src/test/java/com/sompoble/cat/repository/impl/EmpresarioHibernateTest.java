@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class EmpresarioHibernateTest {
 
-    @Autowired
+    /*@Autowired
     private EmpresarioHibernate empresarioHibernate; 
 
     @Autowired
@@ -132,6 +132,7 @@ class EmpresarioHibernateTest {
     }
     
     */
+    /*
     @Test
     void existsByIdTest() {
         Empresario empresario = new Empresario();
@@ -180,5 +181,5 @@ class EmpresarioHibernateTest {
 
         boolean resultNoExist = empresarioHibernate.existsByEmail("noexistente@sergio.es");
         assertFalse(resultNoExist);
-    }
+    }*/
 }

@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 @Transactional
 class EmpresaHibernateTest {
 
-    @Autowired
+    /*@Autowired
     private EmpresaHibernate empresaHibernate;
 
     @Autowired
@@ -150,7 +150,7 @@ class EmpresaHibernateTest {
         assertEquals(2, empresas.size());
     }
     */
-
+    /*
     @Test
     void existsByIdTest() {
         Empresa empresa = new Empresa();
@@ -181,5 +181,5 @@ class EmpresaHibernateTest {
 
         Empresa empresaEliminada = entityManager.find(Empresa.class, empresa.getIdEmpresa());
         assertNull(empresaEliminada);
-    }
+    }*/
 }

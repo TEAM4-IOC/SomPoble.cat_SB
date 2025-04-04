@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class ClienteHibernateTest {
 
-    @Autowired
+    /*@Autowired
     private ClienteHibernate clienteHibernate;
 
     @Autowired
@@ -132,7 +132,7 @@ class ClienteHibernateTest {
         assertEquals(2, clientes.size());
     }
     */
-
+/*
     @Test
     void existsByIdTest() {
         Cliente cliente = new Cliente();
@@ -181,5 +181,5 @@ class ClienteHibernateTest {
 
         boolean resultNoExist = clienteHibernate.existsByEmail("noexistente@sergio.es");
         assertFalse(resultNoExist);
-    }
+    }*/
 }

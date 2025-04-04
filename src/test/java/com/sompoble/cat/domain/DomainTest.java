@@ -35,7 +35,7 @@ public class DomainTest {
         empresario.setNotificaciones(List.of(notificacion2));
 
         Servicio servicio = new Servicio("Servicio A", "Descripción del servicio A", "60", "150.0", 10, empresa);
-        Reserva reserva = new Reserva(empresa, cliente, servicio, java.sql.Date.valueOf("2025-03-15"), LocalTime.of(10, 30), "Confirmada");
+        Reserva reserva = new Reserva(empresa, cliente, servicio, "2025-03-15", "10:30", "Confirmada");
 
         Empresario result = empresa.getEmpresario();
         assertEquals(empresario, result, "El empresario no coincide con el valor esperado");
