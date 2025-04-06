@@ -111,4 +111,16 @@ public class ReservaServiceImpl implements ReservaService {
     public void deleteByEmpresaIdentificadorFiscal(String identificadorFiscal) {
         reservaRepository.deleteByEmpresaIdentificadorFiscal(identificadorFiscal);
     }
+    
+    /**
+    * Cuenta el número de reservas para un servicio específico en una fecha determinada.
+    *
+    * @param servicioId el identificador del servicio.
+    * @param fechaReserva la fecha de la reserva en formato String.
+    * @return el número de reservas existentes para ese servicio en esa fecha.
+    */
+   @Override
+   public int countReservasByServicioIdAndFecha(Long servicioId, String fechaReserva) {
+       return reservaRepository.countByServicioIdAndFechaReserva(servicioId, fechaReserva);
+   }
 }

@@ -22,6 +22,7 @@ public class ServicioServiceImpl implements ServicioService  {
      * @param id Identificador único del servicio.
      * @return El servicio correspondiente o {@code null} si no se encuentra.
      */
+    @Override
     public Servicio obtenerPorId(Long id) {
         return servicioRepository.findById(id);
     }
@@ -31,6 +32,7 @@ public class ServicioServiceImpl implements ServicioService  {
      *
      * @param servicio Objeto {@link Servicio} con la información actualizada.
      */
+    @Override
     public void actualizarServicio(Servicio servicio) {
         servicioRepository.updateServicio(servicio);
     }
@@ -40,6 +42,7 @@ public class ServicioServiceImpl implements ServicioService  {
      *
      * @param servicio Objeto {@link Servicio} a persistir.
      */
+    @Override
     public void agregarServicio(Servicio servicio) {
         servicioRepository.addServicio(servicio);
     }
@@ -50,6 +53,7 @@ public class ServicioServiceImpl implements ServicioService  {
      * @param empresaId Identificador único de la empresa.
      * @return Lista de servicios asociados a la empresa.
      */
+    @Override
     public List<Servicio> obtenerPorEmpresaId(Long empresaId) {
         return servicioRepository.findAllByEmpresaId(empresaId);
     }
@@ -60,6 +64,7 @@ public class ServicioServiceImpl implements ServicioService  {
      * @param identificadorFiscal Identificador fiscal de la empresa.
      * @return Lista de servicios asociados a la empresa con el identificador fiscal dado.
      */
+    @Override
     public List<Servicio> obtenerPorEmpresaIdentificador(String identificadorFiscal) {
         return servicioRepository.findAllByEmpresaIdentificador(identificadorFiscal);
     }
@@ -70,6 +75,7 @@ public class ServicioServiceImpl implements ServicioService  {
      * @param id Identificador único del servicio.
      * @return {@code true} si el servicio existe, {@code false} en caso contrario.
      */
+    @Override
     public boolean existePorId(Long id) {
         return servicioRepository.existsById(id);
     }
@@ -79,6 +85,7 @@ public class ServicioServiceImpl implements ServicioService  {
      *
      * @param id Identificador único del servicio a eliminar.
      */
+    @Override
     public void eliminarPorId(Long id) {
         servicioRepository.deleteById(id);
     }

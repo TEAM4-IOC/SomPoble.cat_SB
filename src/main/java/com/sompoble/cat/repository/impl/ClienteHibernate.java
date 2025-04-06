@@ -50,7 +50,7 @@ public class ClienteHibernate implements ClienteRepository {
             return convertToDTO(cliente);
         }
     }
-    
+
     @Override
     public Cliente findByDNIFull(String dni) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -98,7 +98,7 @@ public class ClienteHibernate implements ClienteRepository {
         cq.where(dniPredicate);
 
         List<Cliente> result = entityManager.createQuery(cq).getResultList();
-        
+
         if (!result.isEmpty()) {
             entityManager.remove(result.get(0));
         }
@@ -153,7 +153,7 @@ public class ClienteHibernate implements ClienteRepository {
         cq.where(emailPredicate);
 
         List<Cliente> result = entityManager.createQuery(cq).getResultList();
-        
+
         if (result.isEmpty()) {
             return null;
         } else {
@@ -165,6 +165,18 @@ public class ClienteHibernate implements ClienteRepository {
     private ClienteDTO convertToDTO(Cliente cliente) {
         List<Long> reservasIds = new ArrayList<>();
         List<Long> notificacionesIds = new ArrayList<>();
+
+        if (cliente.getReservas() != null) {
+            reservasIds = cliente.getReservas().stream()
+                    .map(reserva -> reserva.getIdReserva())
+                    .collect(Collectors.toList());
+        }
+
+        if (cliente.getNotificaciones() != null) {
+            notificacionesIds = cliente.getNotificaciones().stream()
+                    .map(notificacion -> notificacion.getIdNotificacion())
+                    .collect(Collectors.toList());
+        }
 
         return new ClienteDTO(
                 cliente.getIdPersona(),
@@ -178,7 +190,7 @@ public class ClienteHibernate implements ClienteRepository {
                 notificacionesIds
         );
     }
-    
+
     public Cliente convertToEntity(ClienteDTO clienteDTO) {
         Cliente cliente = new Cliente();
 
@@ -188,8 +200,8 @@ public class ClienteHibernate implements ClienteRepository {
         cliente.setEmail(clienteDTO.getEmail());
         cliente.setTelefono(clienteDTO.getTelefono());
         cliente.setPass(clienteDTO.getPass());
-        
+
         return cliente;
     }
-    
+
 }

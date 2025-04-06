@@ -1,6 +1,8 @@
 package com.sompoble.cat.repository.impl;
 
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.domain.Reserva;
+import com.sompoble.cat.domain.Servicio;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
 import jakarta.persistence.EntityManager;
@@ -194,13 +196,35 @@ public class EmpresaHibernate implements EmpresaRepository {
      * @return el objeto {@link EmpresaDTO} correspondiente.
      */
     private EmpresaDTO convertToDTO(Empresa empresa) {
+        System.out.println("Entrando a convertToDTO para la empresa: " + empresa);
+
         List<Long> reservasIds = new ArrayList<>();
         List<Long> serviciosIds = new ArrayList<>();
-        List<Long> horariosIds = new ArrayList<>();
 
-        return new EmpresaDTO(
+        if (empresa.getReservas() != null) {
+            System.out.println("Reservas encontradas para la empresa: " + empresa.getIdEmpresa());
+            for (Reserva reserva : empresa.getReservas()) {
+                System.out.println("Reserva encontrada: " + reserva);
+                reservasIds.add(reserva.getIdReserva());
+            }
+        } else {
+            System.out.println("No se encontraron reservas para la empresa: " + empresa.getIdEmpresa());
+        }
+
+        if (empresa.getServicios() != null) {
+            System.out.println("Servicios encontrados para la empresa: " + empresa.getIdEmpresa());
+            for (Servicio servicio : empresa.getServicios()) {
+                System.out.println("Servicio encontrado: " + servicio);
+                serviciosIds.add(servicio.getIdServicio());
+            }
+        } else {
+            System.out.println("No se encontraron servicios para la empresa: " + empresa.getIdEmpresa());
+        }
+
+        // Crear y devolver el DTO
+        EmpresaDTO empresaDTO = new EmpresaDTO(
                 empresa.getIdEmpresa(),
-                empresa.getEmpresario().getDni(),
+                empresa.getEmpresario() != null ? empresa.getEmpresario().getDni() : null,
                 empresa.getIdentificadorFiscal(),
                 empresa.getNombre(),
                 empresa.getActividad(),
@@ -209,9 +233,11 @@ public class EmpresaHibernate implements EmpresaRepository {
                 empresa.getTelefono(),
                 empresa.getTipo(),
                 reservasIds,
-                serviciosIds,
-                horariosIds
+                serviciosIds
         );
+
+        System.out.println("EmpresaDTO generado: " + empresaDTO);
+        return empresaDTO;
     }
 
     public Empresa convertToEntity(EmpresaDTO empresaDTO) {

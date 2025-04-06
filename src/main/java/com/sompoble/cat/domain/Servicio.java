@@ -137,7 +137,7 @@ public class Servicio implements Serializable {
         this.precio = precio;
     }
     
-    public float getLimiteReservas() {
+    public int getLimiteReservas() {
         return limiteReservas;
     }
 

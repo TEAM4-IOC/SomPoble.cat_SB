@@ -64,24 +64,22 @@ public interface ServicioRepository {
     
     List<Servicio> findByNombreContainingIgnoreCase(String nombre);
 
-	/**
-	 * Obtiene todos los servicios de una empresa específica, incluyendo los horarios asociados mediante un LEFT JOIN.
-	 * Este método realiza una consulta para recuperar todos los servicios de una empresa, junto con sus horarios,
-	 * sin necesidad de que exista un horario asignado a cada servicio.
-	 *
-	 * @param empresaId El identificador de la empresa cuyos servicios se quieren obtener.
-	 * @return Una lista de servicios asociados a la empresa indicada. Si no se encuentran servicios, se devuelve una lista vacía.
-	 */
-	List<Servicio> findAllHorariosByEmpresaId(Long empresaId);
+    /**
+     * Obtiene todos los servicios de una empresa específica, incluyendo los horarios asociados mediante un LEFT JOIN.
+     * Este método realiza una consulta para recuperar todos los servicios de una empresa, junto con sus horarios,
+     * sin necesidad de que exista un horario asignado a cada servicio.
+     *
+     * @param empresaId El identificador de la empresa cuyos servicios se quieren obtener.
+     * @return Una lista de servicios asociados a la empresa indicada. Si no se encuentran servicios, se devuelve una lista vacía.
+     */
+    List<Servicio> findAllHorariosByEmpresaId(Long empresaId);
 
-	/**
-	 * Busca un servicio por su ID y verifica que pertenezca a una empresa específica.
-	 * 
-	 * @param servicioId ID único del servicio.
-	 * @param empresaId ID de la empresa propietaria del servicio.
-	 * @return Un {@link Optional} con el servicio encontrado, o vacío si no existe.
-	 */
-	Optional<Servicio> findByIdAndEmpresaId(Long servicioId, Long empresaId);
-    
-    
+    /**
+     * Busca un servicio por su ID y verifica que pertenezca a una empresa específica.
+     * 
+     * @param servicioId ID único del servicio.
+     * @param empresaId ID de la empresa propietaria del servicio.
+     * @return Un {@link Optional} con el servicio encontrado, o vacío si no existe.
+     */
+    Optional<Servicio> findByIdAndEmpresaId(Long servicioId, Long empresaId);
 }
