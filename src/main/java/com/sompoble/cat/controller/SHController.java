@@ -3,6 +3,7 @@ package com.sompoble.cat.controller;
 import com.sompoble.cat.domain.Horario;
 import com.sompoble.cat.domain.Servicio;
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.dto.ServicioHorarioDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
 import com.sompoble.cat.repository.HorarioRepository;
@@ -113,17 +114,30 @@ public class SHController {
      * @param dto Objeto DTO con los datos actualizados.
      * @return ResponseEntity con el DTO del servicio y horario actualizados.
      */
-    @PutMapping("/actualizar")
-    public ResponseEntity<ServicioHorarioDTO> actualizarServicioConHorario(@RequestParam String identificadorFiscal, @RequestBody ServicioHorarioDTO dto) {
-        Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal))
+    /**
+     * Actualiza un servicio y su horario asociado para una empresa específica.
+     *
+     * @param idServicio ID del servicio a actualizar.
+     * @param identificadorFiscal Identificador fiscal de la empresa dueña del servicio.
+     * @param dto Objeto que contiene los datos actualizados del servicio y su horario.
+     * @return ResponseEntity con el objeto actualizado {@link ServicioHorarioDTO}.
+     * @throws RuntimeException si la empresa, el servicio o el horario no se encuentran.
+     */
+    @PutMapping("/actualizar/{idServicio}")
+    public ResponseEntity<ServicioHorarioDTO> actualizarServicioConHorario(
+            @PathVariable Long idServicio,
+            @RequestParam String identificadorFiscal,
+            @RequestBody ServicioHorarioDTO dto) {
+
+        // Verificar existencia de la empresa
+        EmpresaDTO empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscal(identificadorFiscal))
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
-        
-        List<Servicio> servicios = servicioRepository.findAllByEmpresaIdentificador(identificadorFiscal);
-        if (servicios.isEmpty()) {
-            throw new RuntimeException("No se encontraron servicios para la empresa con identificador fiscal: " + identificadorFiscal);
-        }
-        
-        Servicio servicio = servicios.get(0);
+
+        // Buscar el servicio específico por ID y verificar que pertenezca a la empresa
+        Servicio servicio = servicioRepository.findByIdAndEmpresaId(idServicio, empresa.getIdEmpresa())
+                .orElseThrow(() -> new RuntimeException("Servicio no encontrado para la empresa"));
+
+        // Actualizar datos del servicio
         servicio.setNombre(dto.getNombre());
         servicio.setDescripcion(dto.getDescripcion());
         servicio.setDuracion(dto.getDuracion());
@@ -131,16 +145,17 @@ public class SHController {
         servicio.setLimiteReservas(dto.getLimiteReservas());
         servicio.setFechaModificacion(LocalDateTime.now());
         servicioRepository.addServicio(servicio);
-        
+
+        // Buscar y actualizar el horario asociado
         Horario horario = horarioRepository.findByServicio_IdServicio(servicio.getIdServicio())
                 .orElseThrow(() -> new RuntimeException("Horario no encontrado para el servicio"));
-        
+
         horario.setDiasLaborables(dto.getDiasLaborables());
         horario.setHorarioInicio(dto.getHorarioInicio());
         horario.setHorarioFin(dto.getHorarioFin());
         horario.setFechaModificacion(LocalDateTime.now());
         horarioRepository.save(horario);
-        
+
         return ResponseEntity.ok(new ServicioHorarioDTO(servicio, horario));
     }
 
@@ -208,5 +223,33 @@ public class SHController {
         }
 
         return ResponseEntity.ok(respuesta);
+    }
+    
+    /**
+     * Obtiene un servicio específico con su horario validando que pertenezca a la empresa indicada
+     * 
+     * @param identificadorFiscal Identificador fiscal de la empresa (para validación)
+     * @param idServicio ID del servicio a consultar
+     * @return Servicio con su horario si cumple las validaciones
+     */
+    @GetMapping("/obtener-empresa-idservicio")
+    public ResponseEntity<ServicioHorarioDTO> obtenerServicioEspecifico(
+            @RequestParam String identificadorFiscal,
+            @RequestParam Long idServicio) {
+
+        // Validar que existe la empresa
+        EmpresaDTO empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscal(identificadorFiscal))
+                .orElseThrow(() -> new RuntimeException("Empresa no encontrada con identificador: " + identificadorFiscal));
+
+        // Obtener el servicio validando pertenencia
+        Servicio servicio = servicioRepository.findByIdAndEmpresaIdentificadorFiscal(idServicio, identificadorFiscal)
+                .orElseThrow(() -> new RuntimeException(
+                    "Servicio no encontrado o no pertenece a la empresa (ID: " + idServicio + ", IF: " + identificadorFiscal + ")"));
+
+        // Obtener el horario asociado
+        Horario horario = horarioRepository.findFirstByServicioId(idServicio)
+                .orElseThrow(() -> new RuntimeException("No existe horario registrado para este servicio"));
+
+        return ResponseEntity.ok(new ServicioHorarioDTO(servicio, horario));
     }
 }
