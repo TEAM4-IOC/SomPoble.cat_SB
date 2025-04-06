@@ -146,14 +146,7 @@ public interface HorarioRepository {
 
     Optional<Horario> findByEmpresaIdAndServicioId(Long idEmpresa, Long idServicio);
 
-	
-
-
-
-	
-
-	
-
+    Optional<Horario> findFirstByServicioId(Long servicioId);
 	
 
 	
