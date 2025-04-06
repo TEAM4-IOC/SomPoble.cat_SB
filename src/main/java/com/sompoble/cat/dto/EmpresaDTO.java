@@ -18,9 +18,8 @@ public class EmpresaDTO implements Serializable {
     private String email;
     private String telefono;
     private int tipo;
-    private List<Long> reservas;
-    private List<Long> servicios;
-    private List<Long> horarios;
+    private List<Long> idReservas;
+    private List<Long> idServicios;
 
     /**
      * Constructor con parámetros.
@@ -34,13 +33,12 @@ public class EmpresaDTO implements Serializable {
      * @param email Correo electrónico de la empresa
      * @param telefono Número de teléfono de la empresa
      * @param tipo Tipo de la empresa
-     * @param reservas Lista de IDs de reservas asociadas
-     * @param servicios Lista de IDs de servicios asociados
-     * @param horarios Lista de IDs de horarios asociados
+     * @param idReservas Lista de IDs de reservas asociadas
+     * @param idServicios Lista de IDs de servicios asociados
      */
     public EmpresaDTO(Long idEmpresa, String dniEmpresario, String identificadorFiscal, String nombre, String actividad,
             String direccion, String email, String telefono, int tipo,
-            List<Long> reservas, List<Long> servicios, List<Long> horarios) {
+            List<Long> idReservas, List<Long> idServicios) {
         this.idEmpresa = idEmpresa;
         this.dniEmpresario = dniEmpresario;
         this.identificadorFiscal = identificadorFiscal;
@@ -50,9 +48,8 @@ public class EmpresaDTO implements Serializable {
         this.email = email;
         this.telefono = telefono;
         this.tipo = tipo;
-        this.reservas = reservas;
-        this.servicios = servicios;
-        this.horarios = horarios;
+        this.idReservas = idReservas;
+        this.idServicios = idServicios;
     }
 
     /**
@@ -72,7 +69,7 @@ public class EmpresaDTO implements Serializable {
     public void setIdEmpresa(Long idEmpresa) {
         this.idEmpresa = idEmpresa;
     }
-    
+
     /**
      * Obtiene el DNI del empresario.
      *
@@ -215,5 +212,21 @@ public class EmpresaDTO implements Serializable {
      */
     public void setTipo(int tipo) {
         this.tipo = tipo;
+    }
+
+    public List<Long> getIdReservas() {
+        return idReservas;
+    }
+
+    public void setIdReservas(List<Long> idReservas) {
+        this.idReservas = idReservas;
+    }
+
+    public List<Long> getIdServicios() {
+        return idServicios;
+    }
+
+    public void setIdServicios(List<Long> idServicios) {
+        this.idServicios = idServicios;
     }
 }

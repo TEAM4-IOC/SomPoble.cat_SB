@@ -78,4 +78,13 @@ public interface ReservaRepository {
      * @param identificadorFiscal el identificador fiscal de la empresa o autónomo.
      */
     void deleteByEmpresaIdentificadorFiscal(String identificadorFiscal);
+    
+    /**
+    * Cuenta el número de reservas para un servicio específico en una fecha determinada.
+    *
+    * @param servicioId el identificador del servicio.
+    * @param fechaReserva la fecha de la reserva en formato String.
+    * @return el número de reservas existentes para ese servicio en esa fecha.
+    */
+    int countByServicioIdAndFechaReserva(Long servicioId, String fechaReserva);
 }

@@ -144,7 +144,7 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         List<Empresario> result = entityManager.createQuery(cq).getResultList();
         return result.isEmpty() ? null : convertToDTO(result.get(0));
     }
-    
+
     @Override
     public Empresario findByEmailFull(String email){
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -158,25 +158,38 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return result.isEmpty() ? null : result.get(0);
     }
 
-
     private EmpresarioDTO convertToDTO(Empresario empresario) {
         List<Long> notificacionesIds = new ArrayList<>();
 
         List<EmpresaDTO> empresasDTO = empresario.getEmpresas() != null
-                ? empresario.getEmpresas().stream().map(empresa -> new EmpresaDTO(
-                empresa.getIdEmpresa(),
-                empresa.getEmpresario().getDni(),
-                empresa.getIdentificadorFiscal(),
-                empresa.getNombre(),
-                empresa.getActividad(),
-                empresa.getDireccion(),
-                empresa.getEmail(),
-                empresa.getTelefono(),
-                empresa.getTipo(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>()
-        )).collect(Collectors.toList())
+                ? empresario.getEmpresas().stream().map(empresa -> {
+
+                    List<Long> reservasIds = empresa.getReservas() != null
+                            ? empresa.getReservas().stream()
+                                    .map(reserva -> reserva.getIdReserva())
+                                    .collect(Collectors.toList())
+                            : new ArrayList<>();
+
+                    List<Long> serviciosIds = empresa.getServicios() != null
+                            ? empresa.getServicios().stream()
+                                    .map(servicio -> servicio.getIdServicio())
+                                    .collect(Collectors.toList())
+                            : new ArrayList<>();
+
+                    return new EmpresaDTO(
+                            empresa.getIdEmpresa(),
+                            empresa.getEmpresario().getDni(),
+                            empresa.getIdentificadorFiscal(),
+                            empresa.getNombre(),
+                            empresa.getActividad(),
+                            empresa.getDireccion(),
+                            empresa.getEmail(),
+                            empresa.getTelefono(),
+                            empresa.getTipo(),
+                            reservasIds,
+                            serviciosIds
+                    );
+                }).collect(Collectors.toList())
                 : new ArrayList<>();
 
         return new EmpresarioDTO(

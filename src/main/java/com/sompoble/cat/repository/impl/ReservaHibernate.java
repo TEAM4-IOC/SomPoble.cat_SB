@@ -223,4 +223,25 @@ public class ReservaHibernate implements ReservaRepository {
 
         return reserva;
     }
+    
+    /**
+    * Cuenta el número de reservas para un servicio específico en una fecha determinada.
+    *
+    * @param servicioId el identificador del servicio.
+    * @param fechaReserva la fecha de la reserva en formato String.
+    * @return el número de reservas existentes para ese servicio en esa fecha.
+    */
+    @Override
+    public int countByServicioIdAndFechaReserva(Long servicioId, String fechaReserva) {
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+    Root<Reserva> root = cq.from(Reserva.class);
+
+    Predicate servicioIdPredicate = cb.equal(root.get("servicio").get("idServicio"), servicioId);
+    Predicate fechaPredicate = cb.equal(root.get("fechaReserva"), fechaReserva);
+
+    cq.select(cb.count(root)).where(cb.and(servicioIdPredicate, fechaPredicate));
+
+    return entityManager.createQuery(cq).getSingleResult().intValue();
+    }
 }

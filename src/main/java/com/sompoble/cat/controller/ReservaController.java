@@ -53,7 +53,7 @@ public class ReservaController {
 
     @Autowired
     private EmpresaHibernate empresaHibernate;
-    
+
     @Autowired
     private ReservaHibernate reservaHibernate;
 
@@ -155,6 +155,13 @@ public class ReservaController {
             throw new BadRequestException("Fecha, hora y estado son obligatorios");
         }
 
+        int currentReservations = reservaService.countReservasByServicioIdAndFecha(idServicio, fechaReserva);
+        Integer limiteReservasServicio = servicio.getLimiteReservas();
+
+        if (currentReservations >= limiteReservasServicio) {
+            throw new BadRequestException("Se ha alcanzado el límite de reservas para este servicio en la fecha indicada");
+        }
+
         Reserva reserva = new Reserva();
         reserva.setFechaReserva(fechaReserva);
         reserva.setHora(hora);
@@ -179,8 +186,19 @@ public class ReservaController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReserva(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         try {
+            // Obtener la reserva existente completa para comparar valores originales
+            Reserva originalReserva = reservaService.findByIdFull(id);
+            if (originalReserva == null) {
+                throw new ResourceNotFoundException("No se encontró una reserva con ID " + id);
+            }
+
             ReservaDTO existingReserva = reservaService.findById(id);
 
+            // Guardar valores originales para comparación
+            String originalFecha = existingReserva.getFechaReserva();
+            Long originalServicioId = existingReserva.getIdServicio();
+
+            // Actualizar los campos con los nuevos valores
             updates.forEach((key, value) -> {
                 if (value != null) {
                     switch (key) {
@@ -199,14 +217,42 @@ public class ReservaController {
                     }
                 }
             });
-                
+
+            // Verificar si cambió la fecha o el servicio
+            boolean fechaChanged = !originalFecha.equals(existingReserva.getFechaReserva());
+            boolean servicioChanged = !originalServicioId.equals(existingReserva.getIdServicio());
+
+            if (fechaChanged || servicioChanged) {
+                // Obtener el servicio para verificar el límite
+                Long servicioId = existingReserva.getIdServicio();
+                String fechaReserva = existingReserva.getFechaReserva();
+                Servicio servicio = servicioService.obtenerPorId(servicioId);
+
+                // Contar reservas actuales para esa fecha y servicio, excluyendo esta reserva
+                int currentReservations = reservaService.countReservasByServicioIdAndFecha(servicioId, fechaReserva);
+
+                // Si no hemos cambiado la fecha ni el servicio, estamos contando la reserva actual también
+                // así que debemos restar 1 para no contarla dos veces
+                if (!fechaChanged && !servicioChanged) {
+                    currentReservations--;
+                }
+
+                Integer limiteReservasServicio = servicio.getLimiteReservas();
+
+                if (currentReservations >= limiteReservasServicio) {
+                    throw new BadRequestException("Se ha alcanzado el límite de reservas para este servicio en la fecha indicada");
+                }
+            }
+
+            // Convertir y guardar la reserva actualizada
             Reserva reserva = reservaHibernate.convertToEntity(existingReserva);
             reservaService.updateReserva(reserva);
-            
-            return ResponseEntity.ok("Reserva con ID " + id + " actualizada correctamente");
 
+            return ResponseEntity.ok("Reserva con ID " + id + " actualizada correctamente");
+        } catch (ResourceNotFoundException | BadRequestException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ResourceNotFoundException("No se encontró una reserva con ID " + id);
+            throw new BadRequestException("Error al actualizar la reserva: " + e.getMessage());
         }
     }
 
