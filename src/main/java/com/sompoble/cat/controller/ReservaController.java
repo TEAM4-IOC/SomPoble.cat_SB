@@ -335,13 +335,13 @@ public class ReservaController {
      * @return 200 OK si la reserva se elimina, o 404 si no se encuentra.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReserva(@PathVariable Long id) {
+    public ResponseEntity<String> deleteReserva(@PathVariable Long id) {
         ReservaDTO existing = reservaService.findById(id);
         if (existing == null) {
             throw new ResourceNotFoundException("No se encontró una reserva con ID " + id);
         }
         reservaService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Reserva con ID " + id + " eliminada correctamente");
     }
 
     /**
@@ -351,12 +351,12 @@ public class ReservaController {
      * @return 200 OK si las reservas se eliminan.
      */
     @DeleteMapping("/clientes/{dni}")
-    public ResponseEntity<Void> deleteReservasByCliente(@PathVariable String dni) {
+    public ResponseEntity<String> deleteReservasByCliente(@PathVariable String dni) {
         if (!clienteService.existsByDni(dni)) {
             throw new BadRequestException("No existe un cliente con DNI " + dni + ".");
         }
         reservaService.deleteByClienteDni(dni);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Reservas para el cliente con DNI " + dni + " eliminadas correctamente");
     }
 
     /**
@@ -368,11 +368,11 @@ public class ReservaController {
      * @return 200 OK si las reservas se eliminan.
      */
     @DeleteMapping("/empresas/{identificadorFiscal}")
-    public ResponseEntity<Void> deleteReservasByEmpresa(@PathVariable String identificadorFiscal) {
+    public ResponseEntity<String> deleteReservasByEmpresa(@PathVariable String identificadorFiscal) {
         if (!empresaService.existsByIdentificadorFiscal(identificadorFiscal)) {
             throw new BadRequestException("No existe una empresa con identificador fiscal " + identificadorFiscal);
         }
         reservaService.deleteByEmpresaIdentificadorFiscal(identificadorFiscal);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Reservas para la empresa con identificador fiscal " + identificadorFiscal + " eliminadas correctamente");
     }
 }
