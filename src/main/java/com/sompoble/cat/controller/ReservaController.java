@@ -2,6 +2,7 @@ package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.domain.Horario;
 import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.domain.Servicio;
@@ -9,13 +10,12 @@ import com.sompoble.cat.dto.ClienteDTO;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.exception.BadRequestException;
 import com.sompoble.cat.exception.ResourceNotFoundException;
-import com.sompoble.cat.repository.impl.ClienteHibernate;
-import com.sompoble.cat.repository.impl.EmpresaHibernate;
 import com.sompoble.cat.repository.impl.ReservaHibernate;
 import com.sompoble.cat.service.ClienteService;
 import com.sompoble.cat.service.EmpresaService;
 import com.sompoble.cat.service.ReservaService;
 import com.sompoble.cat.service.ServicioService;
+import java.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,12 +47,6 @@ public class ReservaController {
 
     @Autowired
     private ServicioService servicioService;
-
-    @Autowired
-    private ClienteHibernate clienteHibernate;
-
-    @Autowired
-    private EmpresaHibernate empresaHibernate;
 
     @Autowired
     private ReservaHibernate reservaHibernate;
@@ -162,6 +156,27 @@ public class ReservaController {
             throw new BadRequestException("Se ha alcanzado el límite de reservas para este servicio en la fecha indicada");
         }
 
+        LocalTime horaReserva = LocalTime.parse(hora);
+
+        List<Horario> horariosServicio = servicio.getHorarios();
+        if (horariosServicio == null || horariosServicio.isEmpty()) {
+            throw new BadRequestException("El servicio no tiene horarios definidos");
+        }
+
+        boolean horaValida = false;
+        for (Horario horario : horariosServicio) {
+            if (horaReserva.isAfter(horario.getHorarioInicio())
+                    && horaReserva.isBefore(horario.getHorarioFin())
+                    || horaReserva.equals(horario.getHorarioInicio())) {
+                horaValida = true;
+                break;
+            }
+        }
+
+        if (!horaValida) {
+            throw new BadRequestException("La hora de reserva no está dentro del horario disponible para este servicio");
+        }
+
         Reserva reserva = new Reserva();
         reserva.setFechaReserva(fechaReserva);
         reserva.setHora(hora);
@@ -197,8 +212,30 @@ public class ReservaController {
             // Guardar valores originales para comparación
             String originalFecha = existingReserva.getFechaReserva();
             Long originalServicioId = existingReserva.getIdServicio();
+            String originalHora = existingReserva.getHora();
+            String originalDniCliente = existingReserva.getDniCliente();
+            String originalIdentificadorFiscalEmpresa = existingReserva.getIdentificadorFiscalEmpresa();
 
-            // Actualizar los campos con los nuevos valores
+            if (updates.containsKey("empresa")) {
+                Map<String, Object> empresaData = (Map<String, Object>) updates.get("empresa");
+                if (empresaData != null && empresaData.containsKey("identificadorFiscal")) {
+                    String identificadorFiscal = (String) empresaData.get("identificadorFiscal");
+                    if (!empresaService.existsByIdentificadorFiscal(identificadorFiscal)) {
+                        throw new BadRequestException("No existe una empresa con identificador fiscal " + identificadorFiscal);
+                    }
+                }
+            }
+
+            if (updates.containsKey("cliente")) {
+                Map<String, Object> clienteData = (Map<String, Object>) updates.get("cliente");
+                if (clienteData != null && clienteData.containsKey("dni")) {
+                    String dniCliente = (String) clienteData.get("dni");
+                    if (!clienteService.existsByDni(dniCliente)) {
+                        throw new BadRequestException("No existe un cliente con DNI " + dniCliente);
+                    }
+                }
+            }
+
             updates.forEach((key, value) -> {
                 if (value != null) {
                     switch (key) {
@@ -214,15 +251,27 @@ public class ReservaController {
                             existingReserva.setIdentificadorFiscalEmpresa(value.toString());
                         case "idServicio" ->
                             existingReserva.setIdServicio(Long.valueOf(value.toString()));
+                        case "cliente" -> {
+                            Map<String, Object> clienteData = (Map<String, Object>) value;
+                            if (clienteData.containsKey("dni")) {
+                                existingReserva.setDniCliente((String) clienteData.get("dni"));
+                            }
+                        }
+                        case "empresa" -> {
+                            Map<String, Object> empresaData = (Map<String, Object>) value;
+                            if (empresaData.containsKey("identificadorFiscal")) {
+                                existingReserva.setIdentificadorFiscalEmpresa((String) empresaData.get("identificadorFiscal"));
+                            }
+                        }
                     }
                 }
             });
 
-            // Verificar si cambió la fecha o el servicio
             boolean fechaChanged = !originalFecha.equals(existingReserva.getFechaReserva());
             boolean servicioChanged = !originalServicioId.equals(existingReserva.getIdServicio());
+            boolean horaChanged = !originalHora.equals(existingReserva.getHora());
 
-            if (fechaChanged || servicioChanged) {
+            if (fechaChanged || servicioChanged || horaChanged) {
                 // Obtener el servicio para verificar el límite
                 Long servicioId = existingReserva.getIdServicio();
                 String fechaReserva = existingReserva.getFechaReserva();
@@ -241,6 +290,29 @@ public class ReservaController {
 
                 if (currentReservations >= limiteReservasServicio) {
                     throw new BadRequestException("Se ha alcanzado el límite de reservas para este servicio en la fecha indicada");
+                }
+
+                String hora = existingReserva.getHora();
+                LocalTime horaReserva = LocalTime.parse(hora);
+
+                List<Horario> horariosServicio = servicio.getHorarios();
+                if (horariosServicio == null || horariosServicio.isEmpty()) {
+                    throw new BadRequestException("El servicio no tiene horarios definidos");
+                }
+
+                boolean horaValida = false;
+                for (Horario horario : horariosServicio) {
+
+                    if (horaReserva.isAfter(horario.getHorarioInicio())
+                            && horaReserva.isBefore(horario.getHorarioFin())
+                            || horaReserva.equals(horario.getHorarioInicio())) {
+                        horaValida = true;
+                        break;
+                    }
+                }
+
+                if (!horaValida) {
+                    throw new BadRequestException("La hora de reserva no está dentro del horario disponible para este servicio");
                 }
             }
 
