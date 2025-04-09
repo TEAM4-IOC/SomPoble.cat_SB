@@ -44,7 +44,11 @@ public class EmpresarioDTO implements Serializable {
         this.notificacionesIds = notificacionesIds;
         this.empresas = empresas != null ? empresas : new ArrayList<>();
     }
-
+    
+    public EmpresarioDTO() {
+       
+    }
+ 
     /**
      * Obtiene el ID del empresario.
      *

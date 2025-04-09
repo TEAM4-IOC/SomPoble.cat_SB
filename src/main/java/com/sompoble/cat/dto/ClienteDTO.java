@@ -45,7 +45,15 @@ public class ClienteDTO implements Serializable {
         this.notificacionesIds = notificacionesIds;
     }
 
-    /**
+    
+    
+    public ClienteDTO() {
+		
+	}
+
+
+
+	/**
      * Obtiene el ID del cliente.
      *
      * @return ID del cliente

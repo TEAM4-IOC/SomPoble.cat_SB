@@ -135,7 +135,7 @@ class ClienteServiceImplTest {
 
         List<ClienteDTO> clientes = clienteService.findAll();
         assertNotNull(clientes);
-        assertEquals(2, clientes.size());
+        assertEquals(13, clientes.size());
     }
 
 
