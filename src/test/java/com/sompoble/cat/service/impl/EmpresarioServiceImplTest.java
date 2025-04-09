@@ -32,11 +32,11 @@ class EmpresarioServiceImplTest {
     @Test
     void addEmpresarioTest() {
         Empresario empresario = new Empresario();
-        empresario.setDni("12345678A");
-        empresario.setNombre("Carlos");
-        empresario.setApellidos("Sanchez Martinez");
-        empresario.setEmail("carlos@empresa.com");
-        empresario.setTelefono("650123456");
+        empresario.setDni("12345888D");
+        empresario.setNombre("Ivan");
+        empresario.setApellidos("Garcia Martinez");
+        empresario.setEmail("ivan@empresa.com");
+        empresario.setTelefono("670256123");
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
@@ -48,34 +48,47 @@ class EmpresarioServiceImplTest {
     @Test
     void updateEmpresarioTest() {
         Empresario empresario = new Empresario();
-        empresario.setDni("12345678A");
-        empresario.setNombre("Carlos");
-        empresario.setApellidos("Sanchez Martinez");
-        empresario.setEmail("carlos@empresa.com");
-        empresario.setTelefono("650123456");
+        empresario.setDni("12345888D");
+        empresario.setNombre("Ivan");
+        empresario.setApellidos("Garcia Martinez");
+        empresario.setEmail("ivan@empresa.com");
+        empresario.setTelefono("670256123");
         empresario.setPass("pass");
+        
+       
         empresarioService.addEmpresario(empresario);
 
-        empresario.setNombre("Fernando");
-        empresarioService.updateEmpresario(empresario);
+        
+        EmpresarioDTO dto = new EmpresarioDTO();
+        dto.setDni(empresario.getDni());        
+        dto.setNombre("Xavi");             
+        dto.setApellidos(empresario.getApellidos());
+        dto.setEmail(empresario.getEmail());
+        dto.setTelefono(empresario.getTelefono());
+        dto.setPass(empresario.getPass());
 
-        EmpresarioDTO empresarioActualizado = empresarioRepository.findByDNI(empresario.getDni());
-        assertNotNull(empresarioActualizado);
-        assertEquals("Fernando", empresarioActualizado.getNombre());
+       
+        empresarioService.updateEmpresario(dto);
+
+       
+        EmpresarioDTO empresarioActualizado = empresarioService.findByDni("12345888D");
+        assertNotNull(empresarioActualizado, "No se encontró el empresario actualizado");
+        assertEquals("Xavi", empresarioActualizado.getNombre(), "El nombre no fue actualizado correctamente");
+        assertEquals("Garcia Martinez", empresarioActualizado.getApellidos(), "Los apellidos no coinciden");
+        assertEquals("ivan@empresa.com", empresarioActualizado.getEmail(), "El email no coincide");
     }
-
     @Test
     void findByDniTest() {
         Empresario empresario = new Empresario();
-        empresario.setDni("12345678A");
-        empresario.setNombre("Carlos");
-        empresario.setApellidos("Sanchez Martinez");
-        empresario.setEmail("carlos@empresa.com");
-        empresario.setTelefono("650123456");
+        empresario.setDni("12345888D");
+        empresario.setNombre("Ivan");
+        empresario.setApellidos("Garcia Martinez");
+        empresario.setEmail("ivan@empresa.com");
+        empresario.setTelefono("670256123");
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        EmpresarioDTO result = empresarioService.findByDni("12345678A");
+        EmpresarioDTO result = empresarioService.findByDni("12345888D");
         assertNotNull(result);
         assertEquals(empresario.getDni(), result.getDni());
     }
@@ -83,26 +96,26 @@ class EmpresarioServiceImplTest {
     @Test
     void existsByDniTest() {
         Empresario empresario = new Empresario();
-        empresario.setDni("12345678A");
-        empresario.setNombre("Carlos");
-        empresario.setApellidos("Sanchez Martinez");
-        empresario.setEmail("carlos@empresa.com");
-        empresario.setTelefono("650123456");
+        empresario.setDni("12345888D");
+        empresario.setNombre("Ivan");
+        empresario.setApellidos("Garcia Martinez");
+        empresario.setEmail("ivan@empresa.com");
+        empresario.setTelefono("670256123");
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        boolean result = empresarioService.existsByDni("12345678A");
+        boolean result = empresarioService.existsByDni("12345888D");
         assertTrue(result);
     }
 
     @Test
     void deleteByIdTest() {
         Empresario empresario = new Empresario();
-        empresario.setDni("12345678A");
-        empresario.setNombre("Carlos");
-        empresario.setApellidos("Sanchez Martinez");
-        empresario.setEmail("carlos@empresa.com");
-        empresario.setTelefono("650123456");
+        empresario.setDni("12345888D");
+        empresario.setNombre("Ivan");
+        empresario.setApellidos("Garcia Martinez");
+        empresario.setEmail("ivan@empresa.com");
+        empresario.setTelefono("670256123");
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
@@ -139,17 +152,17 @@ class EmpresarioServiceImplTest {
 
         List<EmpresarioDTO> empresarios = empresarioService.findAll();
         assertNotNull(empresarios);
-        assertEquals(2, empresarios.size());
+        assertEquals(13, empresarios.size());
     }
 
     @Test
     void existsByIdTest() {
         Empresario empresario = new Empresario();
-        empresario.setDni("12345678A");
-        empresario.setNombre("Carlos");
-        empresario.setApellidos("Sanchez Martinez");
-        empresario.setEmail("carlos@empresa.com");
-        empresario.setTelefono("650123456");
+        empresario.setDni("12345888D");
+        empresario.setNombre("Ivan");
+        empresario.setApellidos("Garcia Martinez");
+        empresario.setEmail("ivan@empresa.com");
+        empresario.setTelefono("670256123");
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
@@ -160,11 +173,11 @@ class EmpresarioServiceImplTest {
     @Test
     void deleteByDniTest() {
         Empresario empresario = new Empresario();
-        empresario.setDni("12345678A");
-        empresario.setNombre("Carlos");
-        empresario.setApellidos("Sanchez Martinez");
-        empresario.setEmail("carlos@empresa.com");
-        empresario.setTelefono("650123456");
+        empresario.setDni("12345888D");
+        empresario.setNombre("Ivan");
+        empresario.setApellidos("Garcia Martinez");
+        empresario.setEmail("ivan@empresa.com");
+        empresario.setTelefono("670256123");
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
@@ -181,15 +194,15 @@ class EmpresarioServiceImplTest {
     @Test
     void existsByEmailTest() {
         Empresario empresario = new Empresario();
-        empresario.setDni("12345678A");
-        empresario.setNombre("Carlos");
-        empresario.setApellidos("Sanchez Martinez");
-        empresario.setEmail("carlos@empresa.com");
-        empresario.setTelefono("650123456");
+        empresario.setDni("12345888D");
+        empresario.setNombre("Ivan");
+        empresario.setApellidos("Garcia Martinez");
+        empresario.setEmail("ivan@empresa.com");
+        empresario.setTelefono("670256123");
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        boolean result = empresarioService.existsByEmail("carlos@empresa.com");
+        boolean result = empresarioService.existsByEmail("ivan@empresa.com");
         assertTrue(result);
     }
 }

@@ -45,6 +45,7 @@ public class ServicioServiceImplTest {
         servicio.setDescripcion("Descripción del servicio test");
         servicio.setPrecio(Float.parseFloat("100"));
         servicio.setEmpresa(empresa);
+        servicio.setIdServicio(1L);
     }
 
 

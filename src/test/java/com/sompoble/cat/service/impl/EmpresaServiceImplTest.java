@@ -162,7 +162,7 @@ class EmpresaServiceImplTest {
 
         List<EmpresaDTO> empresas = empresaService.findAll();
         assertNotNull(empresas);
-        assertEquals(2, empresas.size());
+        assertEquals(10, empresas.size());
     }
 
     @Test

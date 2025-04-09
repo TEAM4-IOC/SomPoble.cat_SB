@@ -1,24 +1,21 @@
 package com.sompoble.cat.repository.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.repository.EmpresarioRepository;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
@@ -32,10 +29,20 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         entityManager.persist(empresario);
     }
 
-    @Override //merge directamente sobre un DTO, pero entityManager.merge() solo trabaja con entidades, no con DTOs--se cambia-Gemma
+    @Override
     public void updateEmpresario(EmpresarioDTO empresarioDTO) {
-        Empresario empresario = convertToEntity(empresarioDTO);
-        entityManager.merge(empresario);
+        Empresario existing = findEmpresarioByDNI(empresarioDTO.getDni());
+        if (existing == null) {
+            throw new RuntimeException("Empresario no encontrado con DNI: " + empresarioDTO.getDni());
+        }
+
+        existing.setNombre(empresarioDTO.getNombre());
+        existing.setApellidos(empresarioDTO.getApellidos());
+        existing.setEmail(empresarioDTO.getEmail());
+        existing.setTelefono(empresarioDTO.getTelefono());
+        existing.setPass(empresarioDTO.getPass());
+
+        entityManager.merge(existing);
     }
 
     @Override
@@ -209,7 +216,7 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         );
     }
 
-    public Empresario convertToEntity(Empresario empresarioDTO) {
+    public Empresario convertToEntity(EmpresarioDTO empresarioDTO) {
         Empresario empresario = new Empresario();
 
         empresario.setDni(empresarioDTO.getDni());
