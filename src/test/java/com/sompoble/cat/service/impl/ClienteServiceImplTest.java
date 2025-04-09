@@ -5,14 +5,14 @@ import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.dto.ClienteDTO;
 import com.sompoble.cat.repository.ClienteRepository;
 import com.sompoble.cat.service.ClienteService;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 @SpringBootTest(classes = Application.class)
 @Transactional
@@ -24,165 +24,172 @@ class ClienteServiceImplTest {
     @Autowired
     private ClienteRepository clienteRepository;
 
-  
-
-    /**
-     * Convierte un ClienteDTO a Cliente usando el constructor correcto.
-     */
-    private Cliente mapToCliente(ClienteDTO dto) {
-        return new Cliente(
-                dto.getDni(),        
-                dto.getNombre(),     
-                dto.getApellidos(),  
-                dto.getEmail(),      
-                dto.getTelefono(),   
-                dto.getPass()        
-        );
-    }
-
-    /**
-     * Crea un ClienteDTO con valores de prueba.
-     */
-    private ClienteDTO buildClienteDTO() {
-        return new ClienteDTO(
-                null,                
-                "12345678A",        
-                "Juan",             
-                "Perez Garcia",      
-                "sergio@sergio.es",  
-                "650180800",        
-                "pass",             
-                Collections.emptyList(), 
-                Collections.emptyList()  
-        );
-    }
-
-
-
     @Test
     void addClienteTest() {
-        ClienteDTO clienteDTO = buildClienteDTO();
-        clienteService.addCliente(mapToCliente(clienteDTO));
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setPass("pass");
 
-        // Verifica que el cliente se guardó en la base de datos
-        ClienteDTO clientePersistido = clienteRepository.findByDNI(clienteDTO.getDni());
+        clienteService.addCliente(cliente);
+
+        ClienteDTO clientePersistido = clienteRepository.findByDNI(cliente.getDni());
         assertNotNull(clientePersistido);
-        assertEquals(clienteDTO.getDni(), clientePersistido.getDni());
+        assertEquals(cliente.getDni(), clientePersistido.getDni());
     }
 
     @Test
     void updateClienteTest() {
-        ClienteDTO clienteDTO = buildClienteDTO();
-        clienteService.addCliente(mapToCliente(clienteDTO));
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setPass("pass");
+        clienteService.addCliente(cliente);
 
-        // Actualiza el nombre y llama al servicio
-        clienteDTO.setNombre("Pedro");
-        clienteService.updateCliente(mapToCliente(clienteDTO));
+        cliente.setNombre("Pedro");
+        clienteService.updateCliente(cliente);
 
-        // Verifica que el nombre se actualizó en la base de datos
-        ClienteDTO clienteActualizado = clienteRepository.findByDNI(clienteDTO.getDni());
+        ClienteDTO clienteActualizado = clienteRepository.findByDNI(cliente.getDni());
         assertNotNull(clienteActualizado);
         assertEquals("Pedro", clienteActualizado.getNombre());
     }
 
     @Test
     void findByDniTest() {
-        ClienteDTO clienteDTO = buildClienteDTO();
-        clienteService.addCliente(mapToCliente(clienteDTO));
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setPass("pass");
+        clienteService.addCliente(cliente);
 
-        // Busca por DNI y verifica el resultado
-        ClienteDTO result = clienteService.findByDni(clienteDTO.getDni());
+        ClienteDTO result = clienteService.findByDni("12345678A");
         assertNotNull(result);
-        assertEquals(clienteDTO.getDni(), result.getDni());
+        assertEquals(cliente.getDni(), result.getDni());
     }
 
     @Test
     void existsByDniTest() {
-        ClienteDTO clienteDTO = buildClienteDTO();
-        clienteService.addCliente(mapToCliente(clienteDTO));
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setPass("pass");
+        clienteService.addCliente(cliente);
 
-        // Verifica que el DNI existe en la base de datos
-        assertTrue(clienteService.existsByDni(clienteDTO.getDni()));
+        boolean result = clienteService.existsByDni("12345678A");
+        assertTrue(result);
     }
 
     @Test
     void deleteByIdTest() {
-        ClienteDTO clienteDTO = buildClienteDTO();
-        clienteService.addCliente(mapToCliente(clienteDTO));
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setPass("pass");
+        clienteService.addCliente(cliente);
 
-        // Obtiene el ID del cliente y lo elimina
-        ClienteDTO cliente = clienteRepository.findByDNI(clienteDTO.getDni());
         clienteService.deleteById(cliente.getIdPersona());
 
-        // Verifica que el cliente fue eliminado
-        ClienteDTO clienteEliminado = clienteRepository.findByDNI(clienteDTO.getDni());
-        assertNull(clienteEliminado);
+        try {
+            ClienteDTO clienteEliminado = clienteRepository.findByDNI(cliente.getDni());
+            assertNull(clienteEliminado);
+        } catch (EmptyResultDataAccessException e) {
+            assertTrue(true);
+        }
     }
+
 
     @Test
     void findAllTest() {
-        // Crea dos clientes para probar
-        ClienteDTO cliente1 = new ClienteDTO(
-                null,
-                "12345678A",
-                "Juan",
-                "Perez",
-                "juan@example.com",
-                "650123456",
-                "pass",
-                Collections.emptyList(),
-                Collections.emptyList()
-        );
+        Cliente cliente1 = new Cliente();
+        cliente1.setDni("12345678A");
+        cliente1.setNombre("Juan");
+        cliente1.setApellidos("Perez Garcia");
+        cliente1.setEmail("juan@juan.es");
+        cliente1.setTelefono("650180800");
+        cliente1.setPass("pass");
+        clienteService.addCliente(cliente1);
 
-        ClienteDTO cliente2 = new ClienteDTO(
-                null,
-                "87654321B",
-                "Ana",
-                "López",
-                "ana@example.com",
-                "650987654",
-                "pass",
-                Collections.emptyList(),
-                Collections.emptyList()
-        );
+        Cliente cliente2 = new Cliente();
+        cliente2.setDni("87654321B");
+        cliente2.setNombre("Maria");
+        cliente2.setApellidos("Lopez Garcia");
+        cliente2.setEmail("maria@maria.es");
+        cliente2.setTelefono("650180801");
+        cliente2.setPass("pass");
+        clienteService.addCliente(cliente2);
 
-        // Guarda ambos clientes
-        clienteService.addCliente(mapToCliente(cliente1));
-        clienteService.addCliente(mapToCliente(cliente2));
-
-        // Verifica que ambos estén en la lista
         List<ClienteDTO> clientes = clienteService.findAll();
         assertNotNull(clientes);
         assertEquals(2, clientes.size());
     }
 
+
     @Test
     void existsByIdTest() {
-        ClienteDTO clienteDTO = buildClienteDTO();
-        clienteService.addCliente(mapToCliente(clienteDTO));
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setPass("pass");
+        clienteService.addCliente(cliente);
 
-        // Obtiene el ID del cliente y verifica su existencia
-        ClienteDTO cliente = clienteRepository.findByDNI(clienteDTO.getDni());
-        assertTrue(clienteService.existsById(cliente.getIdPersona()));
+        boolean result = clienteService.existsById(cliente.getIdPersona());
+        assertTrue(result);
     }
 
     @Test
     void deleteByDniTest() {
-        ClienteDTO clienteDTO = buildClienteDTO();
-        clienteService.addCliente(mapToCliente(clienteDTO));
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setPass("pass");
+        clienteService.addCliente(cliente);
 
-        // Elimina por DNI y verifica que ya no existe
-        clienteService.deleteByDni(clienteDTO.getDni());
-        assertNull(clienteRepository.findByDNI(clienteDTO.getDni()));
+        clienteService.deleteByDni(cliente.getDni());
+
+        try {
+            ClienteDTO clienteEliminado = clienteRepository.findByDNI(cliente.getDni());
+            assertNull(clienteEliminado);
+        } catch (EmptyResultDataAccessException e) {
+            assertTrue(true);
+        }
     }
 
     @Test
     void existsByEmailTest() {
-        ClienteDTO clienteDTO = buildClienteDTO();
-        clienteService.addCliente(mapToCliente(clienteDTO));
+        Cliente cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Perez Garcia");
+        cliente.setEmail("sergio@sergio.es");
+        cliente.setTelefono("650180800");
+        cliente.setPass("pass");
+        clienteService.addCliente(cliente);
 
-        // Verifica existencia por email
-        assertTrue(clienteService.existsByEmail(clienteDTO.getEmail()));
-        assertFalse(clienteService.existsByEmail("noexiste@example.com"));
+        boolean result = clienteService.existsByEmail("sergio@sergio.es");
+        assertTrue(result);
+
+        boolean resultFalse = clienteService.existsByEmail("noexistent@domain.com");
+        assertFalse(resultFalse);
     }
 }
