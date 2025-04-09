@@ -195,4 +195,8 @@ public class Empresa implements Serializable {
     public void setHorarios(List<Horario> horarios) {
         this.horarios = horarios;
     }
+
+    public void setIdEmpresa(Long idEmpresa) {
+        this.idEmpresa = idEmpresa;
+    }
 }
