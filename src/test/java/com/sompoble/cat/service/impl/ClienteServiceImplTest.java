@@ -24,19 +24,19 @@ class ClienteServiceImplTest {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    // --- MÉTODOS DE AYUDA --- //
+  
 
     /**
      * Convierte un ClienteDTO a Cliente usando el constructor correcto.
      */
     private Cliente mapToCliente(ClienteDTO dto) {
         return new Cliente(
-                dto.getDni(),        // DNI (String)
-                dto.getNombre(),     // Nombre (String)
-                dto.getApellidos(),  // Apellidos (String)
-                dto.getEmail(),      // Email (String)
-                dto.getTelefono(),   // Teléfono (String)
-                dto.getPass()        // Contraseña (String)
+                dto.getDni(),        
+                dto.getNombre(),     
+                dto.getApellidos(),  
+                dto.getEmail(),      
+                dto.getTelefono(),   
+                dto.getPass()        
         );
     }
 
@@ -45,19 +45,19 @@ class ClienteServiceImplTest {
      */
     private ClienteDTO buildClienteDTO() {
         return new ClienteDTO(
-                null,                // ID (Long)
-                "12345678A",        // DNI (String)
-                "Juan",             // Nombre (String)
-                "Perez Garcia",      // Apellidos (String)
-                "sergio@sergio.es",  // Email (String)
-                "650180800",        // Teléfono (String)
-                "pass",             // Contraseña (String)
-                Collections.emptyList(), // Reservas (List<Long>)
-                Collections.emptyList()  // Notificaciones (List<Long>)
+                null,                
+                "12345678A",        
+                "Juan",             
+                "Perez Garcia",      
+                "sergio@sergio.es",  
+                "650180800",        
+                "pass",             
+                Collections.emptyList(), 
+                Collections.emptyList()  
         );
     }
 
-    // --- TESTS --- //
+
 
     @Test
     void addClienteTest() {
