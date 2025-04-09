@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EmpresarioServiceImpl implements EmpresarioService {
@@ -70,7 +69,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public EmpresarioDTO findByEmail(String email) {
         return empresarioRepository.findByEmail(email);
     }
-    
+
     @Override
     public Empresario findByEmailFull(String email) {
             return empresarioRepository.findByEmailFull(email);

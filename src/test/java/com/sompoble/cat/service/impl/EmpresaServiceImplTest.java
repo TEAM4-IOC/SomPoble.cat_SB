@@ -3,6 +3,7 @@ package com.sompoble.cat.service.impl;
 import com.sompoble.cat.Application;
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
+import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
 import com.sompoble.cat.service.EmpresaService;
 import jakarta.persistence.EntityManager;
@@ -20,7 +21,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 @Transactional
 class EmpresaServiceImplTest {
 
-    /*@Autowired
+    @Autowired
     private EmpresaService empresaService; 
 
     @Autowired
@@ -54,9 +55,9 @@ class EmpresaServiceImplTest {
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
         empresa.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa);
+        empresaService.addEmpresa(empresa);
 
-        Empresa empresaPersistida = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
+        EmpresaDTO empresaPersistida = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
         assertNotNull(empresaPersistida);
         assertEquals(empresa.getIdentificadorFiscal(), empresaPersistida.getIdentificadorFiscal());
     }
@@ -70,12 +71,12 @@ class EmpresaServiceImplTest {
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
         empresa.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa);
+        empresaService.addEmpresa(empresa);
 
         empresa.setNombre("Nueva Empresa S.A.");
         empresaService.updateEmpresa(empresa);
 
-        Empresa empresaActualizada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
+        EmpresaDTO empresaActualizada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
         assertNotNull(empresaActualizada);
         assertEquals("Nueva Empresa S.A.", empresaActualizada.getNombre());
     }
@@ -89,9 +90,9 @@ class EmpresaServiceImplTest {
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
         empresa.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa);
+        empresaService.addEmpresa(empresa);
 
-        Empresa result = empresaService.findByIdentificadorFiscal("A12345678");
+        EmpresaDTO result = empresaService.findByIdentificadorFiscal("A12345678");
         assertNotNull(result);
         assertEquals(empresa.getIdentificadorFiscal(), result.getIdentificadorFiscal());
     }
@@ -105,7 +106,7 @@ class EmpresaServiceImplTest {
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
         empresa.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa);
+        empresaService.addEmpresa(empresa);
 
         boolean result = empresaService.existsByIdentificadorFiscal("A12345678");
         assertTrue(result);
@@ -120,19 +121,19 @@ class EmpresaServiceImplTest {
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
         empresa.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa);
+        empresaService.addEmpresa(empresa);
 
         empresaService.deleteById(empresa.getIdEmpresa());
 
         try {
-            Empresa empresaEliminada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
+            EmpresaDTO empresaEliminada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
             assertNull(empresaEliminada);
         } catch (EmptyResultDataAccessException e) {
             assertTrue(true);
         }
     }
     
-    /*
+
     @Test
     void findAllTest() {
         Empresa empresa1 = new Empresa();
@@ -142,7 +143,7 @@ class EmpresaServiceImplTest {
         empresa1.setTelefono("912345678");
         empresa1.setEmail("empresa@empresa.com");
         empresa1.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa1);
+        empresaService.addEmpresa(empresa1);
 
         Empresa empresa2 = new Empresa();
         empresa2.setIdentificadorFiscal("B98765432");
@@ -151,14 +152,13 @@ class EmpresaServiceImplTest {
         empresa2.setTelefono("913456789");
         empresa2.setEmail("otra@empresa.com");
         empresa2.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa2);
+        empresaService.addEmpresa(empresa2);
 
-        List<Empresa> empresas = empresaService.findAll();
+        List<EmpresaDTO> empresas = empresaService.findAll();
         assertNotNull(empresas);
         assertEquals(2, empresas.size());
     }
-    */
-    /*
+
     @Test
     void existsByIdTest() {
         Empresa empresa = new Empresa();
@@ -168,7 +168,7 @@ class EmpresaServiceImplTest {
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
         empresa.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa);
+        empresaService.addEmpresa(empresa);
 
         boolean result = empresaService.existsById(empresa.getIdEmpresa());
         assertTrue(result);
@@ -183,15 +183,15 @@ class EmpresaServiceImplTest {
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
         empresa.setEmpresario(empresario);
-        empresaService.addEmpresario(empresa);
+        empresaService.addEmpresa(empresa);
 
         empresaService.deleteByIdentificadorFiscal(empresa.getIdentificadorFiscal());
 
         try {
-            Empresa empresaEliminada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
+            EmpresaDTO empresaEliminada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
             assertNull(empresaEliminada);
         } catch (EmptyResultDataAccessException e) {
             assertTrue(true);
         }
-    }*/
+    }
 }

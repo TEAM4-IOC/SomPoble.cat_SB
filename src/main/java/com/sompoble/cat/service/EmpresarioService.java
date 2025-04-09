@@ -28,4 +28,6 @@ public interface EmpresarioService {
     Empresario findByEmailFull(String email);
   
     EmpresarioDTO findByEmail(String email);
+
+
 }
