@@ -1,21 +1,7 @@
 package com.sompoble.cat.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sompoble.cat.domain.Cliente;
-import com.sompoble.cat.exception.GlobalExceptionHandler;
-import com.sompoble.cat.service.ClienteService;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ClienteControllerTest {
@@ -27,7 +13,7 @@ public class ClienteControllerTest {
     private ClienteService clienteService;
 
     private MockMvc mockMvc;
-    
+
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -122,7 +108,7 @@ public class ClienteControllerTest {
         verify(clienteService, times(1)).addCliente(cliente);
     }
     */
-    
+
     /*@Test
     public void testCreateClienteBadRequest() throws Exception {
         Cliente cliente = new Cliente();
@@ -141,7 +127,7 @@ public class ClienteControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("Bad Request"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Cliente con DNI 12345678A ya existe")); 
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Cliente con DNI 12345678A ya existe"));
 
         verify(clienteService, times(1)).existsByDni("12345678A");
     }
@@ -182,7 +168,7 @@ public class ClienteControllerTest {
         updatedCliente.setEmail("sergio@sergio.es");
         updatedCliente.setTelefono("650180800");
         updatedCliente.setPass("pass");
-        
+
         when(clienteService.findByDni("12345678A")).thenReturn(null);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/clientes/12345678A")
@@ -198,7 +184,7 @@ public class ClienteControllerTest {
         when(clienteService.existsByDni("12345678A")).thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/clientes/12345678A"))
-                .andExpect(MockMvcResultMatchers.status().isOk()); 
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(clienteService, times(1)).deleteByDni("12345678A");
     }

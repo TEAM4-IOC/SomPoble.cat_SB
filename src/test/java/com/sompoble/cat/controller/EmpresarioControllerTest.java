@@ -1,22 +1,7 @@
 package com.sompoble.cat.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sompoble.cat.domain.Empresario;
-import com.sompoble.cat.exception.GlobalExceptionHandler;
-import com.sompoble.cat.service.EmpresarioService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import java.util.List;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EmpresarioControllerTest {
@@ -28,7 +13,7 @@ public class EmpresarioControllerTest {
     private EmpresarioService empresarioService;
 
     private MockMvc mockMvc;
-    
+
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -67,7 +52,7 @@ public class EmpresarioControllerTest {
 
         verify(empresarioService, times(1)).findAll();
     }
-    
+
     @Test
     public void testGetEmpresarioByDni() throws Exception {
         Empresario empresario = new Empresario();

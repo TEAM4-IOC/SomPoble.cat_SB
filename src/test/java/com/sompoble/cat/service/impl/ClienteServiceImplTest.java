@@ -1,18 +1,24 @@
 package com.sompoble.cat.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sompoble.cat.Application;
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.dto.ClienteDTO;
 import com.sompoble.cat.repository.ClienteRepository;
 import com.sompoble.cat.service.ClienteService;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 @SpringBootTest(classes = Application.class)
 @Transactional

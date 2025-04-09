@@ -23,7 +23,7 @@ public class ServicioHorarioDTO {
 
     // Campos de Horario
     private Long idHorario;
-    private String diasLaborables; 
+    private String diasLaborables;
     private LocalTime horarioInicio;
     private LocalTime horarioFin;
     private LocalDateTime fechaAltaHorario;
@@ -39,21 +39,21 @@ public class ServicioHorarioDTO {
         this.descripcion = servicio.getDescripcion();
         this.duracion = servicio.getDuracion();
         this.precio = servicio.getPrecio();
-        this.limiteReservas = (int) servicio.getLimiteReservas();
+        this.limiteReservas = servicio.getLimiteReservas();
         this.fechaAltaServicio = servicio.getFechaAlta();
         this.fechaModificacionServicio = servicio.getFechaModificacion();
         this.empresaId = servicio.getEmpresa().getIdEmpresa();
         this.identificadorFiscal = servicio.getEmpresa().getIdentificadorFiscal();
 
         this.idHorario = horario.getIdHorario();
-        this.diasLaborables = String.join(",", horario.getDiasLaborables());  
+        this.diasLaborables = String.join(",", horario.getDiasLaborables());
         this.horarioInicio = horario.getHorarioInicio();
         this.horarioFin = horario.getHorarioFin();
         this.fechaAltaHorario = horario.getFechaAlta();
         this.fechaModificacionHorario = horario.getFechaModificacion();
     }
 
-  
+
     public Long getIdServicio() { return idServicio; }
     public void setIdServicio(Long idServicio) { this.idServicio = idServicio; }
 
@@ -87,7 +87,7 @@ public class ServicioHorarioDTO {
     public Long getIdHorario() { return idHorario; }
     public void setIdHorario(Long idHorario) { this.idHorario = idHorario; }
 
-    public String getDiasLaborables() { return (String) diasLaborables; } 
+    public String getDiasLaborables() { return diasLaborables; }
     public void setDiasLaborables(String diasLaborables) { this.diasLaborables = diasLaborables; }
 
     public LocalTime getHorarioInicio() { return horarioInicio; }
@@ -116,7 +116,7 @@ public class ServicioHorarioDTO {
                 ", empresaId=" + empresaId +
                 ", identificadorFiscal='" + identificadorFiscal + '\'' +
                 ", idHorario=" + idHorario +
-                ", diasLaborables=" + diasLaborables +  
+                ", diasLaborables=" + diasLaborables +
                 ", horarioInicio=" + horarioInicio +
                 ", horarioFin=" + horarioFin +
                 ", fechaAltaHorario=" + fechaAltaHorario +

@@ -1,28 +1,7 @@
 package com.sompoble.cat.controller;
 
-import com.sompoble.cat.domain.Cliente;
-import com.sompoble.cat.domain.Empresario;
-import com.sompoble.cat.exception.BadRequestException;
-import com.sompoble.cat.exception.UnauthorizedException;
-import com.sompoble.cat.service.ClienteService;
-import com.sompoble.cat.service.EmpresarioService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthControllerTest {
@@ -65,7 +44,7 @@ public class AuthControllerTest {
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
             authController.login(loginRequest);
         });
-        
+
         assertEquals("Email y contraseña son obligatorios", exception.getMessage());
     }
 
@@ -76,7 +55,7 @@ public class AuthControllerTest {
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
             authController.login(loginRequest);
         });
-        
+
         assertEquals("Email y contraseña son obligatorios", exception.getMessage());
     }
 
@@ -94,7 +73,7 @@ public class AuthControllerTest {
         assertEquals("Inicio de sesión exitoso", responseBody.get("message"));
         assertEquals(1, responseBody.get("tipoUsuario"));
         assertEquals(cliente, responseBody.get("usuario"));
-        
+
         verify(clienteService).findByEmail("cliente@example.com");
         verify(passwordEncoder).matches(any(), any());
     }
@@ -114,7 +93,7 @@ public class AuthControllerTest {
         assertEquals("Inicio de sesión exitoso", responseBody.get("message"));
         assertEquals(2, responseBody.get("tipoUsuario"));
         assertEquals(empresario, responseBody.get("usuario"));
-        
+
         verify(clienteService).findByEmail("empresario@example.com");
         verify(empresarioService).findByEmail("empresario@example.com");
         verify(passwordEncoder).matches(any(), any());
@@ -128,9 +107,9 @@ public class AuthControllerTest {
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
             authController.login(loginRequest);
         });
-        
+
         assertEquals("El usuario introducido no se encuentra dado de alta en la plataforma", exception.getMessage());
-        
+
         verify(clienteService).findByEmail(anyString());
         verify(empresarioService).findByEmail(anyString());
         verifyNoInteractions(passwordEncoder);
@@ -144,9 +123,9 @@ public class AuthControllerTest {
         UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
             authController.login(loginRequest);
         });
-        
+
         assertEquals("Credenciales incorrectas", exception.getMessage());
-        
+
         verify(clienteService).findByEmail(anyString());
         verify(passwordEncoder).matches(any(), any());
     }
@@ -160,9 +139,9 @@ public class AuthControllerTest {
         UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
             authController.login(loginRequest);
         });
-        
+
         assertEquals("Credenciales incorrectas", exception.getMessage());
-        
+
         verify(clienteService).findByEmail(anyString());
         verify(empresarioService).findByEmail(anyString());
         verify(passwordEncoder).matches(any(), any());
@@ -175,7 +154,7 @@ public class AuthControllerTest {
         doReturn(true).when(passwordEncoder).matches(any(), any());
 
         ResponseEntity<?> response = authController.login(loginRequest);
-        
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(clienteService).findByEmail("cliente@example.com");
     }*/

@@ -52,9 +52,9 @@ public class EmpresaDTO implements Serializable {
         this.idServicios = idServicios;
     }
 
-       
+
     public EmpresaDTO() {
-		
+
 	}
 
 

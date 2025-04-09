@@ -1,21 +1,24 @@
 package com.sompoble.cat.repository.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.repository.EmpresarioRepository;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
@@ -29,8 +32,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         entityManager.persist(empresario);
     }
 
-    @Override
-    public void updateEmpresario(EmpresarioDTO empresario) {
+    @Override //merge directamente sobre un DTO, pero entityManager.merge() solo trabaja con entidades, no con DTOs--se cambia-Gemma
+    public void updateEmpresario(EmpresarioDTO empresarioDTO) {
+        Empresario empresario = convertToEntity(empresarioDTO);
         entityManager.merge(empresario);
     }
 
@@ -205,7 +209,7 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         );
     }
 
-    public Empresario convertToEntity(EmpresarioDTO empresarioDTO) {
+    public Empresario convertToEntity(Empresario empresarioDTO) {
         Empresario empresario = new Empresario();
 
         empresario.setDni(empresarioDTO.getDni());

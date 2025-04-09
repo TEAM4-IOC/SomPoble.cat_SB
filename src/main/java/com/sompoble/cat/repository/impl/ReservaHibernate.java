@@ -1,22 +1,27 @@
 package com.sompoble.cat.repository.impl;
 
-import com.sompoble.cat.domain.Cliente;
-import com.sompoble.cat.domain.Empresa;
-import com.sompoble.cat.dto.ReservaDTO;
-import com.sompoble.cat.domain.Reserva;
-import com.sompoble.cat.domain.Servicio;
-import com.sompoble.cat.repository.ReservaRepository;
-import com.sompoble.cat.service.ClienteService;
-import com.sompoble.cat.service.EmpresaService;
-import com.sompoble.cat.service.ServicioService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.sompoble.cat.domain.Cliente;
+import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.domain.Reserva;
+import com.sompoble.cat.domain.Servicio;
+import com.sompoble.cat.dto.ReservaDTO;
+import com.sompoble.cat.repository.ReservaRepository;
+import com.sompoble.cat.service.ClienteService;
+import com.sompoble.cat.service.EmpresaService;
+import com.sompoble.cat.service.ServicioService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 /**
  * Implementación de {@link ReservaRepository} utilizando Hibernate con Criteria
@@ -33,13 +38,13 @@ public class ReservaHibernate implements ReservaRepository {
 
     @Autowired
     private EntityManager entityManager;
-    
+
     @Autowired
     private ClienteService clienteService;
-    
+
     @Autowired
     private EmpresaService empresaService;
-    
+
     @Autowired
     private ServicioService servicioService;
 
@@ -202,19 +207,19 @@ public class ReservaHibernate implements ReservaRepository {
 
     public Reserva convertToEntity(ReservaDTO reservaDTO) {
         Reserva reserva = new Reserva();
-        
+
         reserva.setIdReserva(reservaDTO.getIdReserva());
         reserva.setFechaReserva(reservaDTO.getFechaReserva());
         reserva.setHora(reservaDTO.getHora());
         reserva.setEstado(reservaDTO.getEstado());
-        
+
         String dniCliente = reservaDTO.getDniCliente();
         String identificadorFiscal = reservaDTO.getIdentificadorFiscalEmpresa();
         Long idServicio = reservaDTO.getIdServicio();
-        
+
         Cliente cliente = clienteService.findByDniFull(dniCliente);
         reserva.setCliente(cliente);
-        
+
         Empresa empresa = empresaService.findByIdentificadorFiscalFull(identificadorFiscal);
         reserva.setEmpresa(empresa);
 
@@ -223,7 +228,7 @@ public class ReservaHibernate implements ReservaRepository {
 
         return reserva;
     }
-    
+
     /**
     * Cuenta el número de reservas para un servicio específico en una fecha determinada.
     *

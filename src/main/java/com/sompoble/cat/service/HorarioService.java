@@ -1,23 +1,24 @@
 package com.sompoble.cat.service;
 
-import com.sompoble.cat.domain.Horario;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.sompoble.cat.domain.Horario;
+
 public interface HorarioService {
 
-   
+
     Horario save(Horario horario);
-    
+
     void deleteById(Long id);
-    
+
     Optional<Horario> findById(Long id);
-    
+
     List<Horario> findAll();
 
-   
+
     List<Horario> findByEmpresa_IdEmpresa(Long idEmpresa);
 
     // Búsqueda por días laborables

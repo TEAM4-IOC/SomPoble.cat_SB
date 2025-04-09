@@ -1,16 +1,18 @@
 package com.sompoble.cat.repository;
 
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.dto.EmpresaDTO;
-import org.springframework.stereotype.Repository;
-import java.util.List;
 
 /**
  * Repositorio para la entidad {@code Empresa}.
  * <p>
  * Proporciona métodos para gestionar empresas en la base de datos.
  * </p>
- * 
+ *
  * @author SomPoble
  */
 @Repository
@@ -25,7 +27,7 @@ public interface EmpresaRepository {
     EmpresaDTO findByIdentificadorFiscal(String identificadorFiscal);
 
     Empresa findByIdentificadorFiscalFull(String identificadorFiscal);
-    
+
     /**
      * Actualiza la información de una empresa en la base de datos.
      *

@@ -1,20 +1,21 @@
 package com.sompoble.cat.service.impl;
 
-import com.sompoble.cat.dto.ReservaDTO;
-import com.sompoble.cat.domain.Reserva;
-import com.sompoble.cat.repository.ReservaRepository;
-import com.sompoble.cat.service.ReservaService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.sompoble.cat.domain.Reserva;
+import com.sompoble.cat.dto.ReservaDTO;
+import com.sompoble.cat.repository.ReservaRepository;
+import com.sompoble.cat.service.ReservaService;
 
 /**
  * Implementación de {@link ReservaService}.
  * <p>
  * Proporciona la lógica de negocio para gestionar las reservas, delegando las operaciones al repositorio.
  * </p>
- * 
+ *
  * @author SomPoble
  */
 @Service
@@ -55,7 +56,7 @@ public class ReservaServiceImpl implements ReservaService {
     public ReservaDTO findById(Long id) {
         return reservaRepository.findById(id);
     }
-    
+
     @Override
     public Reserva findByIdFull(Long id) {
         return reservaRepository.findByIdFull(id);
@@ -111,7 +112,7 @@ public class ReservaServiceImpl implements ReservaService {
     public void deleteByEmpresaIdentificadorFiscal(String identificadorFiscal) {
         reservaRepository.deleteByEmpresaIdentificadorFiscal(identificadorFiscal);
     }
-    
+
     /**
     * Cuenta el número de reservas para un servicio específico en una fecha determinada.
     *

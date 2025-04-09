@@ -1,16 +1,9 @@
 package com.sompoble.cat.repository.impl;
 
-import com.sompoble.cat.Application;
-import com.sompoble.cat.domain.Cliente;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import com.sompoble.cat.Application;
 
 @SpringBootTest(classes = Application.class)
 @Transactional
@@ -20,7 +13,7 @@ class ClienteHibernateTest {
     private ClienteHibernate clienteHibernate;
 
     @Autowired
-    private EntityManager entityManager; 
+    private EntityManager entityManager;
 
     @Test
     void addClienteTest() {
@@ -105,7 +98,7 @@ class ClienteHibernateTest {
         Cliente clienteEliminado = entityManager.find(Cliente.class, cliente.getIdPersona());
         assertNull(clienteEliminado);
     }
-    
+
     /*
     @Test
     void findAllTest() {

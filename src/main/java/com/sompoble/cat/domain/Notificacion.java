@@ -1,5 +1,10 @@
 package com.sompoble.cat.domain;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,9 +15,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "NOTIFICACION")
@@ -22,7 +24,7 @@ public class Notificacion implements Serializable {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "ID_NOTIFICACION")
     private Long idNotificacion;
-    
+
     @ManyToOne
     @JoinColumn(name = "ID_CLIENTE", nullable = true)
     private Cliente cliente;
@@ -34,12 +36,12 @@ public class Notificacion implements Serializable {
     @Column(name = "MENSAJE", nullable = false)
     @NotNull
     private String mensaje;
-    
-    @Column(name = "TIPO", nullable = false, length = 50) 
+
+    @Column(name = "TIPO", nullable = false, length = 50)
     @NotNull
     @Size(max = 50)
     private String tipo;
-    
+
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
     @CreationTimestamp
     @NotNull
@@ -47,14 +49,14 @@ public class Notificacion implements Serializable {
 
     public Notificacion() {
     }
-    
+
     public Notificacion(Cliente cliente, Empresario empresario, String mensaje, String tipo){
         this.cliente = cliente;
         this.empresario = empresario;
         this.mensaje = mensaje;
         this.tipo = tipo;
     }
-    
+
     public Long getIdNotificacion() {
         return idNotificacion;
     }

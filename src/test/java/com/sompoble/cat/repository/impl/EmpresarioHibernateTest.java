@@ -1,23 +1,16 @@
 package com.sompoble.cat.repository.impl;
 
-import com.sompoble.cat.Application;
-import com.sompoble.cat.domain.Empresario;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import com.sompoble.cat.Application;
 
 @SpringBootTest(classes = Application.class)
 @Transactional
 class EmpresarioHibernateTest {
 
     /*@Autowired
-    private EmpresarioHibernate empresarioHibernate; 
+    private EmpresarioHibernate empresarioHibernate;
 
     @Autowired
     private EntityManager entityManager;
@@ -104,7 +97,7 @@ class EmpresarioHibernateTest {
         Empresario empresarioEliminado = entityManager.find(Empresario.class, empresario.getIdPersona());
         assertNull(empresarioEliminado);
     }
-    
+
     /*
     @Test
     void findAllTest() {
@@ -130,7 +123,7 @@ class EmpresarioHibernateTest {
         assertNotNull(empresarios);
         assertEquals(2, empresarios.size());
     }
-    
+
     */
     /*
     @Test

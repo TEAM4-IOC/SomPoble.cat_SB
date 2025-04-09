@@ -1,15 +1,17 @@
 package com.sompoble.cat.service.impl;
 
-import com.sompoble.cat.service.EventoService;
-import com.sompoble.cat.domain.Evento;
-import com.sompoble.cat.repository.EventoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import static java.util.Objects.requireNonNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.Objects.requireNonNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.sompoble.cat.domain.Evento;
+import com.sompoble.cat.repository.EventoRepository;
+import com.sompoble.cat.service.EventoService;
 
 /**
  * Implementación del servicio para gestionar eventos.
@@ -24,7 +26,7 @@ public class EventoServiceImpl implements EventoService {
 
     /**
      * Guarda un nuevo evento o actualiza uno existente.
-     * 
+     *
      * @param evento Objeto {@link Evento} a persistir.
      * @return El evento guardado con su ID asignado.
      */
@@ -37,7 +39,7 @@ public class EventoServiceImpl implements EventoService {
 
     /**
      * Elimina un evento por su ID.
-     * 
+     *
      * @param id ID del evento a eliminar.
      */
     @Override
@@ -49,7 +51,7 @@ public class EventoServiceImpl implements EventoService {
 
     /**
      * Obtiene un evento por su ID.
-     * 
+     *
      * @param id ID del evento.
      * @return El evento encontrado o {@code null} si no existe.
      */
@@ -61,7 +63,7 @@ public class EventoServiceImpl implements EventoService {
 
     /**
      * Lista todos los eventos almacenados.
-     * 
+     *
      * @return Lista de eventos.
      */
     @Override
@@ -71,7 +73,7 @@ public class EventoServiceImpl implements EventoService {
 
     /**
      * Busca eventos dentro de un rango de fechas.
-     * 
+     *
      * @param start Fecha de inicio del rango.
      * @param end   Fecha de fin del rango.
      * @return Lista de eventos dentro del rango.
@@ -85,7 +87,7 @@ public class EventoServiceImpl implements EventoService {
 
     /**
      * Busca eventos por ubicación.
-     * 
+     *
      * @param ubicacion Ubicación del evento.
      * @return Lista de eventos en la ubicación especificada.
      */

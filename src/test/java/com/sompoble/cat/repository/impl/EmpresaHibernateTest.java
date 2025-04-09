@@ -1,18 +1,9 @@
 package com.sompoble.cat.repository.impl;
 
-import com.sompoble.cat.Application;
-import com.sompoble.cat.domain.Empresa;
-import com.sompoble.cat.domain.Empresario;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
+import com.sompoble.cat.Application;
 
 @SpringBootTest(classes = Application.class)
 @Transactional
@@ -22,10 +13,10 @@ class EmpresaHibernateTest {
     private EmpresaHibernate empresaHibernate;
 
     @Autowired
-    private EntityManager entityManager; 
-    
+    private EntityManager entityManager;
+
     private Empresario empresario;
-    
+
     @BeforeEach
     void setUp() {
         empresario = new Empresario();
@@ -35,12 +26,12 @@ class EmpresaHibernateTest {
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650180800");
         empresario.setPass("pass");
-        
+
         entityManager.persist(empresario);
         entityManager.flush();
     }
 
-    
+
     @Test
     void addEmpresaTest() {
         Empresa empresa = new Empresa();
@@ -123,7 +114,7 @@ class EmpresaHibernateTest {
         Empresa empresaEliminada = entityManager.find(Empresa.class, empresa.getIdEmpresa());
         assertNull(empresaEliminada);
     }
-    
+
     /*
     @Test
     void findAllTest() {

@@ -1,34 +1,40 @@
 package com.sompoble.cat.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sompoble.cat.Application;
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
 import com.sompoble.cat.service.EmpresaService;
-import jakarta.persistence.EntityManager;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.dao.EmptyResultDataAccessException;
+import jakarta.persistence.EntityManager;
 
 @SpringBootTest(classes = Application.class)
 @Transactional
 class EmpresaServiceImplTest {
 
     @Autowired
-    private EmpresaService empresaService; 
+    private EmpresaService empresaService;
 
     @Autowired
-    private EmpresaRepository empresaRepository; 
-    
+    private EmpresaRepository empresaRepository;
+
     @Autowired
-    private EntityManager entityManager; 
+    private EntityManager entityManager;
 
     private Empresario empresario;
 
@@ -132,7 +138,7 @@ class EmpresaServiceImplTest {
             assertTrue(true);
         }
     }
-    
+
 
     @Test
     void findAllTest() {

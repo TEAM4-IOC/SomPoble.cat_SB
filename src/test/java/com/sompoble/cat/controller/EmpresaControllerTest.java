@@ -1,26 +1,7 @@
 package com.sompoble.cat.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sompoble.cat.domain.Empresa;
-import com.sompoble.cat.domain.Empresario;
-import com.sompoble.cat.exception.GlobalExceptionHandler;
-import com.sompoble.cat.service.EmpresaService;
-import com.sompoble.cat.service.EmpresarioService;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EmpresaControllerTest {
@@ -30,7 +11,7 @@ public class EmpresaControllerTest {
 
     @Mock
     private EmpresaService empresaService;
-    
+
     @Mock
     private EmpresarioService empresarioService;
 
@@ -51,7 +32,7 @@ public class EmpresaControllerTest {
         // Create test data
         Empresario empresario1 = new Empresario();
         empresario1.setDni("12345678X");
-        
+
         Empresa empresa1 = new Empresa();
         empresa1.setIdentificadorFiscal("A12345678");
         empresa1.setNombre("Empresa 1");
@@ -63,7 +44,7 @@ public class EmpresaControllerTest {
 
         Empresario empresario2 = new Empresario();
         empresario2.setDni("87654321Y");
-        
+
         Empresa empresa2 = new Empresa();
         empresa2.setIdentificadorFiscal("B12345678");
         empresa2.setActividad("Peluqueria");
@@ -74,7 +55,7 @@ public class EmpresaControllerTest {
         empresa2.setEmpresario(empresario2);
 
         List<Empresa> empresas = List.of(empresa1, empresa2);
-        
+
         when(empresaService.findAll()).thenReturn(empresas);
 
         // Execute and verify
@@ -94,7 +75,7 @@ public class EmpresaControllerTest {
         // Create test data
         Empresario empresario = new Empresario();
         empresario.setDni("12345678X");
-        
+
         Empresa empresa = new Empresa();
         empresa.setIdentificadorFiscal("A12345678");
         empresa.setNombre("Empresa 1");
@@ -114,7 +95,7 @@ public class EmpresaControllerTest {
 
         verify(empresaService, times(1)).findByIdentificadorFiscal("A12345678");
     }
-    
+
     @Test
     public void testGetEmpresaByIdentificadorFiscalNotFound() throws Exception {
         when(empresaService.findByIdentificadorFiscal("A12345678")).thenThrow(new RuntimeException("Empresa no encontrada"));
@@ -124,21 +105,21 @@ public class EmpresaControllerTest {
 
         verify(empresaService, times(1)).findByIdentificadorFiscal("A12345678");
     }
-    
+
     @Test
     public void testCreateEmpresa() throws Exception {
         // Create test data for a company (tipo 1)
         String dni = "12345678X";
         Empresario empresario = new Empresario();
         empresario.setDni(dni);
-        
+
         Map<String, Object> empresaData = new HashMap<>();
         empresaData.put("identificadorFiscal", "A12345678");
         empresaData.put("nombre", "Empresa 1");
         empresaData.put("direccion", "Dirección 1");
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
-        
+
         Map<String, Object> request = new HashMap<>();
         request.put("empresa", empresaData);
         request.put("dni", dni);
@@ -158,7 +139,7 @@ public class EmpresaControllerTest {
         verify(empresarioService, times(1)).findByDNI(dni);
         verify(empresaService, times(1)).addEmpresario(any(Empresa.class));
     }
-    
+
     @Test
     public void testCreateEmpresaWithExistingIdentificadorFiscal() throws Exception {
         // Create test data
@@ -168,7 +149,7 @@ public class EmpresaControllerTest {
         empresaData.put("direccion", "Dirección 1");
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
-        
+
         Map<String, Object> request = new HashMap<>();
         request.put("empresa", empresaData);
         request.put("dni", "12345678X");
@@ -185,7 +166,7 @@ public class EmpresaControllerTest {
         verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
         verify(empresarioService, never()).existsByDni(anyString());
     }
-    
+
     @Test
     public void testCreateEmpresaWithoutDni() throws Exception {
         // Create test data without dni
@@ -195,7 +176,7 @@ public class EmpresaControllerTest {
         empresaData.put("direccion", "Dirección 1");
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
-        
+
         Map<String, Object> request = new HashMap<>();
         request.put("empresa", empresaData);
         // No dni provided
@@ -211,7 +192,7 @@ public class EmpresaControllerTest {
 
         verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
     }
-    
+
     @Test
     public void testCreateEmpresaWithNonExistentEmpresario() throws Exception {
         // Create test data with non-existent empresario
@@ -222,7 +203,7 @@ public class EmpresaControllerTest {
         empresaData.put("direccion", "Dirección 1");
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
-        
+
         Map<String, Object> request = new HashMap<>();
         request.put("empresa", empresaData);
         request.put("dni", dni);

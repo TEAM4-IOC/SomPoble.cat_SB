@@ -1,29 +1,33 @@
 package com.sompoble.cat.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sompoble.cat.Application;
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.repository.EmpresarioRepository;
 import com.sompoble.cat.service.EmpresarioService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 @SpringBootTest(classes = Application.class)
 @Transactional
 class EmpresarioServiceImplTest {
 
     @Autowired
-    private EmpresarioService empresarioService; 
+    private EmpresarioService empresarioService;
 
     @Autowired
-    private EmpresarioRepository empresarioRepository; 
+    private EmpresarioRepository empresarioRepository;
 
     @Test
     void addEmpresarioTest() {
@@ -36,7 +40,7 @@ class EmpresarioServiceImplTest {
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        Empresario empresarioPersistido = empresarioRepository.findByDNI(empresario.getDni());
+        EmpresarioDTO empresarioPersistido = empresarioRepository.findByDNI(empresario.getDni());
         assertNotNull(empresarioPersistido);
         assertEquals(empresario.getDni(), empresarioPersistido.getDni());
     }
@@ -52,22 +56,10 @@ class EmpresarioServiceImplTest {
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        // Cambiar el nombre
         empresario.setNombre("Fernando");
+        empresarioService.updateEmpresario(empresario);
 
-        // Convertimos a DTO
-        EmpresarioDTO dto = new EmpresarioDTO(); 
-        dto.setDni(empresario.getDni());
-        dto.setNombre(empresario.getNombre());
-        dto.setApellidos(empresario.getApellidos());
-        dto.setEmail(empresario.getEmail());
-        dto.setTelefono(empresario.getTelefono());
-        dto.setPass(empresario.getPass());
-
-        // Usamos el DTO
-        empresarioService.updateEmpresario(dto);
-
-        Empresario empresarioActualizado = empresarioRepository.findByDNI(empresario.getDni());
+        EmpresarioDTO empresarioActualizado = empresarioRepository.findByDNI(empresario.getDni());
         assertNotNull(empresarioActualizado);
         assertEquals("Fernando", empresarioActualizado.getNombre());
     }
@@ -83,10 +75,11 @@ class EmpresarioServiceImplTest {
         empresario.setPass("pass");
         empresarioService.addEmpresario(empresario);
 
-        EmpresarioDTO result = empresarioService.findByDni("12345678A"); // ✅ Tipo corregido
+        EmpresarioDTO result = empresarioService.findByDni("12345678A");
         assertNotNull(result);
         assertEquals(empresario.getDni(), result.getDni());
     }
+
     @Test
     void existsByDniTest() {
         Empresario empresario = new Empresario();
@@ -116,13 +109,13 @@ class EmpresarioServiceImplTest {
         empresarioService.deleteById(empresario.getIdPersona());
 
         try {
-            Empresario empresarioEliminado = (Empresario) empresarioRepository.findByDNI(empresario.getDni());
+            EmpresarioDTO empresarioEliminado = empresarioRepository.findByDNI(empresario.getDni());
             assertNull(empresarioEliminado);
         } catch (EmptyResultDataAccessException e) {
             assertTrue(true);
         }
     }
-    
+
 
     @Test
     void findAllTest() {
@@ -146,9 +139,8 @@ class EmpresarioServiceImplTest {
 
         List<EmpresarioDTO> empresarios = empresarioService.findAll();
         assertNotNull(empresarios);
-        assertEquals(13, empresarios.size());
+        assertEquals(2, empresarios.size());
     }
-
 
     @Test
     void existsByIdTest() {
@@ -179,7 +171,7 @@ class EmpresarioServiceImplTest {
         empresarioService.deleteByDni(empresario.getDni());
 
         try {
-            Empresario empresarioEliminado = (Empresario) empresarioRepository.findByDNI(empresario.getDni());
+            EmpresarioDTO empresarioEliminado = empresarioRepository.findByDNI(empresario.getDni());
             assertNull(empresarioEliminado);
         } catch (EmptyResultDataAccessException e) {
             assertTrue(true);

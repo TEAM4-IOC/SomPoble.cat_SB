@@ -1,19 +1,21 @@
 package com.sompoble.cat.service.impl;
 
-import com.sompoble.cat.service.ServicioHorarioService;
-import com.sompoble.cat.dto.ServicioHorarioDTO;
-import com.sompoble.cat.domain.Servicio;
-import com.sompoble.cat.domain.Empresa;
-import com.sompoble.cat.domain.Horario;
-import com.sompoble.cat.repository.ServicioRepository;
-import com.sompoble.cat.repository.EmpresaRepository;
-import com.sompoble.cat.repository.HorarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.domain.Horario;
+import com.sompoble.cat.domain.Servicio;
+import com.sompoble.cat.dto.ServicioHorarioDTO;
+import com.sompoble.cat.repository.EmpresaRepository;
+import com.sompoble.cat.repository.HorarioRepository;
+import com.sompoble.cat.repository.ServicioRepository;
+import com.sompoble.cat.service.ServicioHorarioService;
 
 @Service
 public class ServicioHorarioServiceImpl implements ServicioHorarioService {
@@ -23,7 +25,7 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
 
     @Autowired
     private HorarioRepository horarioRepository;
-    
+
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -59,7 +61,7 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
     public List<ServicioHorarioDTO> obtenerServiciosConHorariosPorEmpresa(String identificadorFiscal) {
         // 1. Buscar la empresa por identificador fiscal
         Optional<Empresa> optionalEmpresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal));
-        
+
         if (optionalEmpresa.isEmpty()) {
             return Collections.emptyList(); // Empresa no encontrada
         }
@@ -103,7 +105,7 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
         }
         Horario horario = horarioOptional.get();
 
-        // 3. Validar que pertenezcan a la misma empresa 
+        // 3. Validar que pertenezcan a la misma empresa
         if (!servicio.getEmpresa().getIdEmpresa().equals(horario.getEmpresa().getIdEmpresa())) {
             throw new RuntimeException("El servicio y el horario deben pertenecer a la misma empresa");
         }
@@ -112,5 +114,5 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
         return new ServicioHorarioDTO(servicio, horario);
     }
 
-	
+
 	}

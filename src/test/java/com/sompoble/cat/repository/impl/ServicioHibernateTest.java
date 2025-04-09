@@ -1,28 +1,7 @@
 package com.sompoble.cat.repository.impl;
 
-import com.sompoble.cat.domain.Empresa;
-import com.sompoble.cat.domain.Servicio;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ServicioHibernateTest {
@@ -81,7 +60,7 @@ public class ServicioHibernateTest {
         verify(entityManager).find(Servicio.class, 1L);
     }
     */
-    
+
     /*@Test
     public void testUpdateServicio() {
         when(entityManager.merge(servicio)).thenReturn(servicio);
@@ -94,7 +73,7 @@ public class ServicioHibernateTest {
         servicioHibernate.addServicio(servicio);
         verify(entityManager).persist(servicio);
     }
-    
+
     /*
     @Test
     public void testFindAllByEmpresaId() {
@@ -113,7 +92,7 @@ public class ServicioHibernateTest {
         assertEquals(1L, result.get(0).getIdServicio());
         verify(criteriaQuery).where(any(Predicate.class));
     }
-    
+
     @Test
     public void testExistsById() {
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
