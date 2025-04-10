@@ -89,4 +89,7 @@ public interface EventoRepository {
 	 * @return El número total de eventos.
 	 */
 	Long count();
+
+
+	boolean existsById(Long id);
 }

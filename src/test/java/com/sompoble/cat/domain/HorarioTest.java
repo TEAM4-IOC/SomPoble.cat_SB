@@ -1,8 +1,15 @@
 package com.sompoble.cat.domain;
 
+import java.time.LocalTime;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 class HorarioTest {
 
-    /*private Horario horario;
+    private Horario horario;
     private Empresa empresaMock;
 
     @BeforeEach
@@ -21,7 +28,7 @@ class HorarioTest {
         assertEquals(empresaMock, horario.getEmpresa());
     }
 
-    @Test
+	@Test
     void testSetters() {
         horario.setDiasLaborables("Miercoles,Jueves");
         assertEquals("Miercoles,Jueves", horario.getDiasLaborables());
@@ -38,5 +45,5 @@ class HorarioTest {
         String expectedString = "Horario{" +
                 "idHorario=null, diasLaborables='Lunes,Martes', horarioInicio=09:00, horarioFin=18:00, empresa=" + empresaMock + "} ";
         assertTrue(horario.toString().contains("Lunes,Martes"));
-    }*/
+    }
 }

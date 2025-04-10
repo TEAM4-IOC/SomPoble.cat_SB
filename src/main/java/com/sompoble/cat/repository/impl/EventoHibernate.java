@@ -182,4 +182,12 @@ public class EventoHibernate implements EventoRepository {
         return entityManager.createQuery(cq).getSingleResult();
     }
 
+    @Override
+    public boolean existsById(Long id) {
+        return entityManager.find(Evento.class, id) != null;
+    }
+
+	
+	
+
 }
