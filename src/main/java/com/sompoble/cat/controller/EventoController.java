@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,9 +32,6 @@ public class EventoController {
 
     @Autowired
     private EventoService eventoService;
-
-
-
     /**
      * Crea un nuevo evento.
      *
@@ -48,17 +46,46 @@ public class EventoController {
     }
 
     /**
-     * Elimina un evento por su ID.
+     * Endpoint para eliminar un evento por su ID.
+     *
+     * Este método maneja las solicitudes HTTP DELETE al endpoint `/api/eventos/{id}`.
+     * Verifica si el evento con el ID proporcionado existe en el sistema. Si el evento no existe,
+     * devuelve un código de estado HTTP 404 (Not Found). Si el evento existe, intenta eliminarlo
+     * y devuelve un código de estado HTTP 204 (No Content) para indicar que la operación se realizó
+     * exitosamente.
+     *
+     * Requisitos:
+     *
+     *     El ID proporcionado no puede ser nulo. Si es nulo, se lanzará una excepción.
+     *     El evento debe existir en el sistema para que la eliminación sea exitosa.
+     *
+     *
+     * Código de Estado HTTP:
+     * 
+     *    204 No Content: El evento se eliminó correctamente.
+     *    404 Not Found: El evento con el ID proporcionado no existe.
+     * 
      *
      * @param id ID del evento a eliminar.
+     * @return ResponseEntity con el código de estado HTTP apropiado.
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminarEvento(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarEvento(@PathVariable Long id) {
         requireNonNull(id, "El ID no puede ser nulo");
-        eventoService.eliminarEvento(id);
-    }
+        Evento evento = eventoService.obtenerEventoPorId(id);
+        if (evento == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); 
+        }
 
+        boolean eliminado = eventoService.eliminarEvento(id);
+        if (!eliminado) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); 
+        }
+
+        return ResponseEntity.noContent().build(); 
+    }
+ 
     /**
      * Obtiene un evento por su ID.
      *
@@ -103,7 +130,6 @@ public class EventoController {
             eventoService.buscarEventosPorFecha(start, end)
         );
     }
-
     /**
      * Busca eventos por ubicación.
      *
@@ -120,4 +146,28 @@ public class EventoController {
             eventoService.buscarEventosPorUbicacion(ubicacion)
         );
     }
+    
+    /**
+     * Actualiza un evento existente por su ID.
+     *
+     * @param id     ID del evento a actualizar.
+     * @param evento Datos actualizados del evento.
+     * @return Evento actualizado con código 200 o 404 si no se encuentra.
+     */
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<Evento> actualizarEvento(@PathVariable Long id, @RequestBody Evento evento) {
+        requireNonNull(id, "El ID no puede ser nulo");
+        requireNonNull(evento, "El evento no puede ser nulo");
+
+        Evento actualizado = eventoService.actualizarEvento(id, evento);
+
+        if (actualizado == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(actualizado);
+    }
+    
+    
+    
 }

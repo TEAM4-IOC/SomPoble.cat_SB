@@ -23,13 +23,6 @@ public interface EventoService {
     Evento guardarEvento(Evento evento);
 
     /**
-     * Elimina un evento por su ID.
-     *
-     * @param id ID del evento a eliminar.
-     */
-    void eliminarEvento(Long id);
-
-    /**
      * Obtiene un evento por su ID.
      *
      * @param id ID del evento.
@@ -60,4 +53,16 @@ public interface EventoService {
      * @return Lista de eventos en la ubicación especificada.
      */
     List<Evento> buscarEventosPorUbicacion(String ubicacion);
+
+	Evento actualizarEvento(Long id, Evento evento);
+
+	/**
+	 * Elimina un evento por su ID.
+	 *
+	 * @param id ID del evento a eliminar.
+	 * @return true si el evento se eliminó correctamente, false si no existe.
+	 */
+	boolean eliminarEvento(Long id);
+
+	
 }

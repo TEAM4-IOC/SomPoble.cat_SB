@@ -1,7 +1,7 @@
 package com.sompoble.cat.service.impl;
 
 import static java.util.Objects.requireNonNull;
-
+import com.sompoble.cat.exception.EventoNoEncontradoException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,9 +44,19 @@ public class EventoServiceImpl implements EventoService {
      */
     @Override
     @Transactional
-    public void eliminarEvento(Long id) {
-        requireNonNull(id, "El ID no puede ser nulo");
-        eventoRepository.delete(id);
+    public boolean eliminarEvento(Long id) {
+        Evento evento = obtenerEventoPorId(id);
+        if (evento == null) {
+            return false; // Evento no existe
+        }
+
+        // Intentar eliminar el evento
+        try {
+            eventoRepository.delete(id);
+            return true; // Evento eliminado correctamente
+        } catch (Exception e) {
+            return false; // Error al eliminar el evento
+        }
     }
 
     /**
@@ -96,4 +106,23 @@ public class EventoServiceImpl implements EventoService {
         requireNonNull(ubicacion, "La ubicación no puede ser nula");
         return eventoRepository.findByUbicacion(ubicacion);
     }
+
+   
+    @Override
+    public Evento actualizarEvento(Long id, Evento evento) {
+        Evento existente = eventoRepository.findById(id);
+
+        if (existente == null) {
+            throw new EventoNoEncontradoException(id);
+        }
+
+        existente.setNombre(evento.getNombre());
+        existente.setDescripcion(evento.getDescripcion());
+        existente.setFechaEvento(evento.getFechaEvento());
+        existente.setUbicacion(evento.getUbicacion());
+
+        return eventoRepository.save(existente);
+    
+    
+    }   
 }
