@@ -1,13 +1,5 @@
 package com.sompoble.cat.domain;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +11,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "SERVICIO")
@@ -27,33 +26,33 @@ public class Servicio implements Serializable {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "ID_SERVICIO")
     private Long idServicio;
-
-    @Column(name = "NOMBRE", nullable = false, length = 100)
+    
+    @Column(name = "NOMBRE", nullable = false, length = 100) 
     @NotNull
     @Size(max = 100)
     private String nombre;
-
-    @Column(name = "DESCRIPCION", nullable = false)
+    
+    @Column(name = "DESCRIPCION", nullable = false) 
     @NotNull
     private String descripcion;
-
-    @Column(name = "DURACION", nullable = false)
+    
+    @Column(name = "DURACION", nullable = false) 
     @NotNull
     private int duracion;
-
-    @Column(name = "PRECIO", nullable = false)
+    
+    @Column(name = "PRECIO", nullable = false) 
     @NotNull
     private float precio;
-
+    
     @Column(name="LIMITE_RESERVAS", nullable = false)
     @NotNull
     private int limiteReservas;
-
+    
     @ManyToOne
     @JoinColumn(name="ID_EMPRESA", referencedColumnName = "ID_EMPRESA", nullable = false)
     @NotNull
     private Empresa empresa;
-
+    
     @CreationTimestamp
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
     private LocalDateTime fechaAlta = LocalDateTime.now();
@@ -65,11 +64,11 @@ public class Servicio implements Serializable {
     @OneToMany(mappedBy = "servicio")
     @NotNull
     private List<Reserva> reservas = new ArrayList<>();
-
+    
     @OneToMany(mappedBy = "servicio")
     private List<Horario> horarios;
-
-
+    
+    
     public List<Horario> getHorarios() {
 		return horarios;
 	}
@@ -137,7 +136,7 @@ public class Servicio implements Serializable {
     public void setPrecio(float precio) {
         this.precio = precio;
     }
-
+    
     public int getLimiteReservas() {
         return limiteReservas;
     }
@@ -161,7 +160,7 @@ public class Servicio implements Serializable {
     public LocalDateTime getFechaModificacion() {
         return fechaModificacion;
     }
-
+    
     public List<Reserva> getReservas() {
         return reservas;
     }

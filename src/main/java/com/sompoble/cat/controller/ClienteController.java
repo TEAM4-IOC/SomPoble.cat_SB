@@ -1,24 +1,15 @@
 package com.sompoble.cat.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.dto.ClienteDTO;
-import com.sompoble.cat.exception.BadRequestException;
-import com.sompoble.cat.exception.ResourceNotFoundException;
 import com.sompoble.cat.service.ClienteService;
+import com.sompoble.cat.exception.ResourceNotFoundException;
+import com.sompoble.cat.exception.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -63,7 +54,7 @@ public class ClienteController {
 
     // Actualizar un cliente
     @PutMapping("/{dni}")
-    public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) { 
         try {
             Cliente existingCliente= clienteService.findByDniFull(dni);
             updates.forEach((key, value) -> {
@@ -87,7 +78,7 @@ public class ClienteController {
 
         clienteService.updateCliente(existingCliente);
         return ResponseEntity.ok("Cliente con DNI " + dni + " actualizado correctamente");
-
+        
         } catch (Exception e) {
             throw new ResourceNotFoundException("Cliente con DNI " + dni + " no encontrado");
         }

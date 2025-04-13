@@ -1,16 +1,8 @@
 package com.sompoble.cat.repository.impl;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.sompoble.cat.domain.Horario;
 import com.sompoble.cat.domain.Servicio;
 import com.sompoble.cat.repository.ServicioRepository;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -19,6 +11,12 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementación de {@link ServicioRepository} utilizando Hibernate con Criteria API.
@@ -159,19 +157,19 @@ public class ServicioHibernate implements ServicioRepository {
         CriteriaQuery<Servicio> cq = cb.createQuery(Servicio.class);
         Root<Servicio> root = cq.from(Servicio.class);
 
-
+        
         Join<Servicio, Horario> horarioJoin = root.join("horarios", JoinType.LEFT);
 
-
+        
         Predicate empresaPredicate = cb.equal(root.get("empresa").get("id"), empresaId);
         cq.where(empresaPredicate);
 
-
+       
         return entityManager.createQuery(cq).getResultList();
     }
     /**
      * Busca un servicio por su ID y verifica que pertenezca a una empresa específica.
-     *
+     * 
      * @param servicioId ID único del servicio.
      * @param empresaId ID de la empresa propietaria del servicio.
      * @return Un {@link Optional} con el servicio encontrado, o vacío si no existe.

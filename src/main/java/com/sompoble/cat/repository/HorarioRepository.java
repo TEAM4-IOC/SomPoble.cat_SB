@@ -1,21 +1,20 @@
 package com.sompoble.cat.repository;
 
+import com.sompoble.cat.domain.Horario;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
-import com.sompoble.cat.domain.Horario;
-
 
 @Repository
 public interface HorarioRepository {
 
-
+ 
 	void delete(Long id);
 
 	Horario findById(Long id);
@@ -23,43 +22,43 @@ public interface HorarioRepository {
 	List<Horario> findAll();
 
 	Horario save(Horario horario);
-
-
+	
+  
     List<Horario> findByEmpresa_IdEmpresa(Long idEmpresa);
 
-
+    
     List<Horario> findByDiasLaborablesContainingIgnoreCase(String dia);
 
-
+   
     List<Horario> findByHorarioInicioBetween(LocalTime inicio, LocalTime fin);
 
-
+   
     List<Horario> findByHorarioFinBetween(LocalTime inicio, LocalTime fin);
 
-
+   
     List<Horario> findByEmpresa_IdEmpresaAndDiasLaborablesContaining(
         Long idEmpresa, String dia);
 
-
+    
     List<Horario> findByHorarioInicioBefore(LocalTime hora);
 
-
+    
     List<Horario> findByHorarioFinAfter(LocalTime hora);
 
-
+   
     List<Horario> findByOrderByHorarioInicioAsc();
 
-
+   
     List<Horario> findByEmpresa_IdEmpresaAndHorarioInicioBetween(
         Long idEmpresa, LocalTime inicio, LocalTime fin);
 
-
+    
     List<Horario> findByEmpresa_IdEmpresaAndHorarioFinBetween(
         Long idEmpresa, LocalTime inicio, LocalTime fin);
 
+    
 
-
-    // Buscar horarios que incluyan un día específico
+    // Buscar horarios que incluyan un día específico 
     @Query("SELECT h FROM Horario h WHERE h.diasLaborables LIKE %:dia%")
     List<Horario> findByDiaExacto(@Param("dia") String dia);
 
@@ -93,7 +92,7 @@ public interface HorarioRepository {
         @Param("inicio") LocalTime inicio,
         @Param("fin") LocalTime fin);
 
-    // Buscar horarios que no estén asociados a una Empresa
+    // Buscar horarios que no estén asociados a una Empresa 
     @Query("SELECT h FROM Horario h WHERE h.empresa IS NULL")
     List<Horario> findOrphanHorarios();
 
@@ -131,8 +130,8 @@ public interface HorarioRepository {
            "WHERE h.fechaModificacion >= :fecha")
     List<Horario> findByFechaModificacionAfter(
         @Param("fecha") LocalDateTime fecha);
-
-
+    
+    
  // Buscar horarios por idServicio
     @Query("SELECT h FROM Horario h WHERE h.servicio.idServicio = :idServicio")
     Optional<Horario> findByServicio_IdServicio(@Param("idServicio") Long idServicio);
@@ -147,15 +146,8 @@ public interface HorarioRepository {
 
     Optional<Horario> findByEmpresaIdAndServicioId(Long idEmpresa, Long idServicio);
 
+    Optional<Horario> findFirstByServicioId(Long servicioId);
+	
 
-
-
-
-
-
-
-
-
-
-
+	
 }

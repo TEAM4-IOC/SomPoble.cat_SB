@@ -1,11 +1,5 @@
 package com.sompoble.cat.domain;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +9,10 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  * Entidad que representa un evento en el sistema.
@@ -87,22 +85,13 @@ public class Evento implements Serializable {
 
     /**
      * Constructor con parámetros para inicializar un evento.
-     *
+     * 
      * @param nombre      Nombre del evento.
      * @param descripcion Descripción del evento.
      * @param ubicacion   Ubicación del evento.
      * @param fechaEvento Fecha y hora del evento.
      */
     public Evento(String nombre, String descripcion, String ubicacion, LocalDateTime fechaEvento) {
-    	if (nombre != null && nombre.length() > 100) {
-            throw new IllegalArgumentException("El nombre no puede exceder 100 caracteres");
-        }
-    	 
-    	if (ubicacion.length() > 255) {
-    	        throw new IllegalArgumentException("La ubicación no puede exceder 255 caracteres");
-    	 }
-    	
-    	
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
@@ -117,7 +106,7 @@ public class Evento implements Serializable {
             this.fechaModificacion = LocalDateTime.now();
         }
     }
-
+  
 
     public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -133,7 +122,7 @@ public class Evento implements Serializable {
 
 	/**
      * Obtiene el ID único del evento.
-     *
+     * 
      * @return ID del evento.
      */
     public Long getIdEvento() {
@@ -142,7 +131,7 @@ public class Evento implements Serializable {
 
     /**
      * Establece el ID único del evento.
-     *
+     * 
      * @param idEvento ID del evento.
      */
     public void setIdEvento(Long idEvento) {
@@ -151,7 +140,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene el nombre del evento.
-     *
+     * 
      * @return Nombre del evento.
      */
     public String getNombre() {
@@ -160,19 +149,16 @@ public class Evento implements Serializable {
 
     /**
      * Establece el nombre del evento.
-     *
+     * 
      * @param nombre Nombre del evento.
      */
     public void setNombre(String nombre) {
-        if (nombre != null && nombre.length() > 100) {
-            throw new IllegalArgumentException("El nombre no puede exceder 100 caracteres");
-        }
         this.nombre = nombre;
     }
 
     /**
      * Obtiene la descripción del evento.
-     *
+     * 
      * @return Descripción del evento.
      */
     public String getDescripcion() {
@@ -181,7 +167,7 @@ public class Evento implements Serializable {
 
     /**
      * Establece la descripción del evento.
-     *
+     * 
      * @param descripcion Descripción del evento.
      */
     public void setDescripcion(String descripcion) {
@@ -190,7 +176,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene la ubicación del evento.
-     *
+     * 
      * @return Ubicación del evento.
      */
     public String getUbicacion() {
@@ -199,19 +185,16 @@ public class Evento implements Serializable {
 
     /**
      * Establece la ubicación del evento.
-     *
+     * 
      * @param ubicacion Ubicación del evento.
      */
     public void setUbicacion(String ubicacion) {
-        if (ubicacion != null && ubicacion.length() > 255) {
-            throw new IllegalArgumentException("La ubicación no puede exceder 255 caracteres");
-        }
         this.ubicacion = ubicacion;
     }
 
     /**
      * Obtiene la fecha y hora programada para el evento.
-     *
+     * 
      * @return Fecha y hora del evento.
      */
     public LocalDateTime getFechaEvento() {
@@ -220,7 +203,7 @@ public class Evento implements Serializable {
 
     /**
      * Establece la fecha y hora del evento.
-     *
+     * 
      * @param fechaEvento Fecha y hora del evento.
      */
     public void setFechaEvento(LocalDateTime fechaEvento) {
@@ -229,7 +212,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene la fecha de creación del evento.
-     *
+     * 
      * @return Fecha de creación (autogenerada).
      */
     public LocalDateTime getFechaAlta() {
@@ -238,7 +221,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene la fecha de última modificación del evento.
-     *
+     * 
      * @return Fecha de última modificación (autogenerada).
      */
     public LocalDateTime getFechaModificacion() {

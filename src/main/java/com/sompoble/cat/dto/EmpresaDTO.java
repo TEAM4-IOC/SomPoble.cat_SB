@@ -52,13 +52,7 @@ public class EmpresaDTO implements Serializable {
         this.idServicios = idServicios;
     }
 
-
-    public EmpresaDTO() {
-
-	}
-
-
-	/**
+    /**
      * Obtiene el ID de la empresa.
      *
      * @return ID de la empresa

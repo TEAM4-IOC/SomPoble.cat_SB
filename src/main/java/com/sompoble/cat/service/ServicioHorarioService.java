@@ -1,10 +1,9 @@
 package com.sompoble.cat.service;
 
-import java.util.List;
-
-import com.sompoble.cat.domain.Horario;
-import com.sompoble.cat.domain.Servicio;
 import com.sompoble.cat.dto.ServicioHorarioDTO;
+import com.sompoble.cat.domain.Servicio;
+import com.sompoble.cat.domain.Horario;
+import java.util.List;
 
 public interface ServicioHorarioService {
 
@@ -20,5 +19,5 @@ public interface ServicioHorarioService {
 
 	ServicioHorarioDTO crearDTO(Servicio servicio, Horario horario);
 
-
+	
 }

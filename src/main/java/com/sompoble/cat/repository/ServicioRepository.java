@@ -1,9 +1,8 @@
 package com.sompoble.cat.repository;
 
+import com.sompoble.cat.domain.Servicio;
 import java.util.List;
 import java.util.Optional;
-
-import com.sompoble.cat.domain.Servicio;
 
 /**
  * Repositorio para gestionar operaciones de acceso a datos de la entidad {@link Servicio}.
@@ -62,7 +61,7 @@ public interface ServicioRepository {
      * @param id Identificador del servicio a eliminar.
      */
     void deleteById(Long id);
-
+    
     List<Servicio> findByNombreContainingIgnoreCase(String nombre);
 
     /**
@@ -77,7 +76,7 @@ public interface ServicioRepository {
 
     /**
      * Busca un servicio por su ID y verifica que pertenezca a una empresa específica.
-     *
+     * 
      * @param servicioId ID único del servicio.
      * @param empresaId ID de la empresa propietaria del servicio.
      * @return Un {@link Optional} con el servicio encontrado, o vacío si no existe.

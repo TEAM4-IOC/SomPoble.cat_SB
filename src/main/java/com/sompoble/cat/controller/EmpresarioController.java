@@ -1,24 +1,15 @@
 package com.sompoble.cat.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.EmpresarioDTO;
-import com.sompoble.cat.exception.BadRequestException;
-import com.sompoble.cat.exception.ResourceNotFoundException;
 import com.sompoble.cat.service.EmpresarioService;
+import com.sompoble.cat.exception.ResourceNotFoundException;
+import com.sompoble.cat.exception.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/empresarios")
@@ -58,7 +49,7 @@ public class EmpresarioController {
         }
 
         empresarioService.addEmpresario(empresario);
-        return ResponseEntity.created(null).build();
+        return ResponseEntity.created(null).build(); 
     }
 
     // Actualizar un empresario

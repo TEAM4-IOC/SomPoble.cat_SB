@@ -1,26 +1,20 @@
 package com.sompoble.cat.repository.impl;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.sompoble.cat.domain.Horario;
 import com.sompoble.cat.repository.HorarioRepository;
-
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -39,7 +33,7 @@ public class HorarioHibernate implements HorarioRepository {
      * @param idEmpresa Identificador de la empresa.
      * @return Lista de horarios de la empresa.
      */
-
+    
     @Override
     public List<Horario> findByEmpresa_IdEmpresa(Long idEmpresa) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -66,14 +60,14 @@ public class HorarioHibernate implements HorarioRepository {
         cq.where(diaPredicate);
         return entityManager.createQuery(cq).getResultList();
     }
-
+    
     /**
      * Encuentra horarios cuyo inicio esté entre un rango de horas.
      * @param inicio Hora de inicio del rango.
      * @param fin Hora de fin del rango.
      * @return Lista de horarios dentro del rango.
      */
-
+    
 
     @Override
     public List<Horario> findByHorarioInicioBetween(LocalTime inicio, LocalTime fin) {
@@ -91,7 +85,7 @@ public class HorarioHibernate implements HorarioRepository {
      * @param fin Hora de fin del rango.
      * @return Lista de horarios dentro del rango.
      */
-
+    
     @Override
     public List<Horario> findByHorarioFinBetween(LocalTime inicio, LocalTime fin) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -108,7 +102,7 @@ public class HorarioHibernate implements HorarioRepository {
      * @param dia Día de la semana.
      * @return Lista de horarios.
      */
-
+    
     @Override
     public List<Horario> findByEmpresa_IdEmpresaAndDiasLaborablesContaining(
         Long idEmpresa, String dia) {
@@ -123,9 +117,9 @@ public class HorarioHibernate implements HorarioRepository {
         cq.where(cb.and(empresaIdPredicate, diaPredicate));
         return entityManager.createQuery(cq).getResultList();
     }
-
-
-
+    
+    
+    
 
     @Override
     public List<Horario> findByHorarioInicioBefore(LocalTime hora) {
@@ -180,7 +174,7 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.createQuery(cq).getResultList();
     }
 
-
+ 
 
     @Override
     public List<Horario> findByDiaExacto(String dia) {
@@ -262,7 +256,7 @@ public class HorarioHibernate implements HorarioRepository {
 
     @Override
     public List<Horario> findByHorarioRanges(
-        LocalTime inicio1, LocalTime fin1,
+        LocalTime inicio1, LocalTime fin1, 
         LocalTime inicio2, LocalTime fin2) {
         return entityManager.createQuery(
             "SELECT h FROM Horario h " +
@@ -336,8 +330,8 @@ public class HorarioHibernate implements HorarioRepository {
         }
         return horario;
     }
-
-
+    
+    
 
     @Override
     public Horario findById(Long id) {
@@ -357,7 +351,7 @@ public class HorarioHibernate implements HorarioRepository {
      */
     @Override
     public Optional<Horario> findByServicio_IdServicio(Long idServicio) {
-
+       
         String jpql = "SELECT h FROM Horario h WHERE h.servicio.idServicio = :idServicio";
         TypedQuery<Horario> query = entityManager.createQuery(jpql, Horario.class);
         query.setParameter("idServicio", idServicio);
@@ -382,7 +376,7 @@ public class HorarioHibernate implements HorarioRepository {
    }
 	/**
 	 * Busca un horario basado en el identificador de la empresa y el identificador del servicio.
-	 *
+	 * 
 	 * @param idEmpresa El identificador de la empresa a buscar en la tabla de horarios.
 	 * @param idServicio El identificador del servicio asociado al horario.
 	 * @return Un {@link Optional} que contiene el horario encontrado, o {@link Optional#empty()} si no se encuentra.

@@ -1,18 +1,16 @@
 package com.sompoble.cat.repository;
 
-import java.util.List;
-
-import org.springframework.stereotype.Repository;
-
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.EmpresarioDTO;
+import org.springframework.stereotype.Repository;
+import java.util.List;
 
 /**
  * Repositorio para la entidad {@code Empresario}.
  * <p>
  * Proporciona métodos para gestionar empresarios en la base de datos.
  * </p>
- *
+ * 
  * @author SomPoble
  */
 @Repository
@@ -25,7 +23,7 @@ public interface EmpresarioRepository {
      * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null si no se encuentra.
      */
     EmpresarioDTO findByDNI(String dni);
-
+    
     /**
      * Busca un empresario completo por su DNI.
      *

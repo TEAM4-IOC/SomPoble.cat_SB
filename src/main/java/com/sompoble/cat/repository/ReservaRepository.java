@@ -1,18 +1,16 @@
 package com.sompoble.cat.repository;
 
-import java.util.List;
-
-import org.springframework.stereotype.Repository;
-
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.dto.ReservaDTO;
+import org.springframework.stereotype.Repository;
+import java.util.List;
 
 /**
  * Repositorio para la entidad {@code Reserva}.
  * <p>
  * Proporciona métodos para gestionar reservas en la base de datos.
  * </p>
- *
+ * 
  * @author SomPoble
  */
 
@@ -42,7 +40,7 @@ public interface ReservaRepository {
      * @return un {@code Optional} que contiene la reserva si existe, o vacío si no se encuentra.
      */
     ReservaDTO findById(Long id);
-
+    
     Reserva findByIdFull(Long id);
 
     /**
@@ -59,14 +57,14 @@ public interface ReservaRepository {
      * @param reserva Objeto {@link Reserva} con la información actualizada.
      */
     void updateReserva(Reserva reserva);
-
+    
     /**
      * Elimina una reserva de la base de datos mediante su identificador.
      *
      * @param id el identificador de la reserva a eliminar.
      */
     void deleteById(Long id);
-
+    
     /**
      * Elimina todas las reservas asociadas a un cliente mediante su DNI.
      *
@@ -80,7 +78,7 @@ public interface ReservaRepository {
      * @param identificadorFiscal el identificador fiscal de la empresa o autónomo.
      */
     void deleteByEmpresaIdentificadorFiscal(String identificadorFiscal);
-
+    
     /**
     * Cuenta el número de reservas para un servicio específico en una fecha determinada.
     *
