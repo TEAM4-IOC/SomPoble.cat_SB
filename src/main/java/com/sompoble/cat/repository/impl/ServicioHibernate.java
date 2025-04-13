@@ -198,6 +198,35 @@ public class ServicioHibernate implements ServicioRepository {
         }
     }
 
+    /**
+     * Busca un servicio por su ID y verifica que pertenezca a una empresa con el identificador fiscal especificado.
+     * 
+     * @param id ID del servicio a buscar
+     * @param identificadorFiscal Identificador fiscal de la empresa
+     * @return Optional con el servicio encontrado o vacío si no cumple las condiciones
+     */
+    @Override
+    public Optional<Servicio> findByIdAndEmpresaIdentificadorFiscal(Long id, String identificadorFiscal) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Servicio> cq = cb.createQuery(Servicio.class);
+        Root<Servicio> root = cq.from(Servicio.class);
+
+        // Filtro por ID del servicio
+        Predicate idPredicate = cb.equal(root.get("id"), id);
+        // Filtro por identificador fiscal de la empresa
+        Predicate fiscalPredicate = cb.equal(root.get("empresa").get("identificadorFiscal"), identificadorFiscal);
+
+        // Combinar los predicados
+        cq.where(cb.and(idPredicate, fiscalPredicate));
+
+        try {
+            Servicio servicio = entityManager.createQuery(cq).getSingleResult();
+            return Optional.ofNullable(servicio);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
 }
 
 

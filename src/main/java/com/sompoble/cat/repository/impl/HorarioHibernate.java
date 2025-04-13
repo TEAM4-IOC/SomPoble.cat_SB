@@ -422,6 +422,30 @@ public class HorarioHibernate implements HorarioRepository {
 	        return Optional.empty(); // Retornamos Optional vacío si algo falla
 	    }
 	}
+	/**
+	 * Encuentra el primer horario asociado a un servicio por su identificador
+	 * único.
+	 * 
+	 * <p>
+	 * Este método ejecuta una consulta JPQL para recuperar el primer horario
+	 * vinculado al servicio especificado mediante su ID. Si existen múltiples
+	 * horarios asociados al servicio, se devolverá el primero encontrado (orden
+	 * arbitrario). Si no hay resultados, devuelve un {@link Optional#empty()}.
+	 * </p>
+	 * 
+	 * @param servicioId El identificador único del servicio a buscar.
+	 * @return Un {@link Optional} que contiene el horario encontrado, o vacío si no
+	 *         existe.
+	 */
+	@Override
+	public Optional<Horario> findFirstByServicioId(Long servicioId) {
+		String jpql = "SELECT h FROM Horario h WHERE h.servicio.idServicio = :idServicio";
+		TypedQuery<Horario> query = entityManager.createQuery(jpql, Horario.class);
+		query.setParameter("idServicio", servicioId);
+		query.setMaxResults(1);
+		List<Horario> resultList = query.getResultList();
+		return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.get(0));
+	}
 
 
 }
