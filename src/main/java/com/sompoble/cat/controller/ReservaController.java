@@ -141,6 +141,11 @@ public class ReservaController {
         }
         Servicio servicio = servicioService.obtenerPorId(idServicio);
 
+        if (!servicio.getEmpresa().getIdentificadorFiscal().equals(identificadorFiscal)) {
+            throw new BadRequestException("El servicio con ID " + idServicio + " no pertenece a la empresa con identificador fiscal "
+                    + identificadorFiscal);
+        }
+
         String fechaReserva = (String) reservaData.get("fechaReserva");
         String hora = (String) reservaData.get("hora");
         String estado = (String) reservaData.get("estado");
@@ -216,6 +221,9 @@ public class ReservaController {
             String originalDniCliente = existingReserva.getDniCliente();
             String originalIdentificadorFiscalEmpresa = existingReserva.getIdentificadorFiscalEmpresa();
 
+            Long newServicioId = originalServicioId;
+            String newIdentificadorFiscalEmpresa = originalIdentificadorFiscalEmpresa;
+
             if (updates.containsKey("empresa")) {
                 Map<String, Object> empresaData = (Map<String, Object>) updates.get("empresa");
                 if (empresaData != null && empresaData.containsKey("identificadorFiscal")) {
@@ -233,6 +241,15 @@ public class ReservaController {
                     if (!clienteService.existsByDni(dniCliente)) {
                         throw new BadRequestException("No existe un cliente con DNI " + dniCliente);
                     }
+                }
+            }
+
+            if (updates.containsKey("idServicio")) {
+                newServicioId = Long.valueOf(updates.get("idServicio").toString());
+            } else if (updates.containsKey("servicio")) {
+                Map<String, Object> servicioData = (Map<String, Object>) updates.get("servicio");
+                if (servicioData != null && servicioData.containsKey("idServicio")) {
+                    newServicioId = Long.valueOf(servicioData.get("idServicio").toString());
                 }
             }
 
