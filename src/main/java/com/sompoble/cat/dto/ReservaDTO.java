@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Clase utilizada para transferir datos de una reserva sin exponer la entidad completa.
  * Contiene información esencial para el cliente y la empresa.
  * </p>
- * 
+ *
  * @author SomPoble
  */
 public class ReservaDTO implements Serializable {
@@ -34,7 +34,7 @@ public class ReservaDTO implements Serializable {
      * @param identificadorFiscalEmpresa Identificador fiscal de la empresa.
      * @param idServicio Identificador del servicio reservado.
      */
-    public ReservaDTO(Long idReserva, String fechaReserva, String hora, String estado, 
+    public ReservaDTO(Long idReserva, String fechaReserva, String hora, String estado,
                       String dniCliente, String identificadorFiscalEmpresa, Long idServicio) {
         this.idReserva = idReserva;
         this.fechaReserva = fechaReserva;
@@ -47,7 +47,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Obtiene el identificador único de la reserva.
-     * 
+     *
      * @return ID de la reserva.
      */
     public Long getIdReserva() {
@@ -56,7 +56,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Establece el identificador único de la reserva.
-     * 
+     *
      * @param idReserva ID de la reserva.
      */
     public void setIdReserva(Long idReserva) {
@@ -65,7 +65,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Obtiene la fecha de la reserva.
-     * 
+     *
      * @return Fecha de la reserva.
      */
     public String getFechaReserva() {
@@ -74,7 +74,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Establece la fecha de la reserva.
-     * 
+     *
      * @param fechaReserva Fecha de la reserva.
      */
     public void setFechaReserva(String fechaReserva) {
@@ -83,7 +83,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Obtiene la hora de la reserva.
-     * 
+     *
      * @return Hora de la reserva.
      */
     public String getHora() {
@@ -92,7 +92,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Establece la hora de la reserva.
-     * 
+     *
      * @param hora Hora de la reserva.
      */
     public void setHora(String hora) {
@@ -101,7 +101,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Obtiene el estado actual de la reserva.
-     * 
+     *
      * @return Estado de la reserva.
      */
     public String getEstado() {
@@ -110,7 +110,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Establece el estado de la reserva.
-     * 
+     *
      * @param estado Estado de la reserva.
      */
     public void setEstado(String estado) {
@@ -119,7 +119,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Obtiene el DNI del cliente asociado a la reserva.
-     * 
+     *
      * @return DNI del cliente.
      */
     public String getDniCliente() {
@@ -128,7 +128,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Establece el DNI del cliente asociado a la reserva.
-     * 
+     *
      * @param dniCliente DNI del cliente.
      */
     public void setDniCliente(String dniCliente) {
@@ -137,7 +137,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Obtiene el identificador fiscal de la empresa asociada a la reserva.
-     * 
+     *
      * @return Identificador fiscal de la empresa.
      */
     public String getIdentificadorFiscalEmpresa() {
@@ -146,7 +146,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Establece el identificador fiscal de la empresa asociada a la reserva.
-     * 
+     *
      * @param identificadorFiscalEmpresa Identificador fiscal de la empresa o autónomo.
      */
     public void setIdentificadorFiscalEmpresa(String identificadorFiscalEmpresa) {
@@ -155,7 +155,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Obtiene el identificador del servicio reservado.
-     * 
+     *
      * @return ID del servicio.
      */
     public Long getIdServicio() {
@@ -164,7 +164,7 @@ public class ReservaDTO implements Serializable {
 
     /**
      * Establece el identificador del servicio reservado.
-     * 
+     *
      * @param idServicio ID del servicio.
      */
     public void setIdServicio(Long idServicio) {

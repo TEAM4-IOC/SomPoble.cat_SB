@@ -1,6 +1,14 @@
 package com.sompoble.cat.domain;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,59 +20,54 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.List;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "EMPRESA")
 public class Empresa implements Serializable {
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "ID_EMPRESA")
     private Long idEmpresa;
-    
+
     @OneToOne
     @JoinColumn(name="ID_PERSONA", nullable = false)
     @NotNull(message = "Debe asociarse a un empresario")
     @JsonBackReference
     private Empresario empresario;
-    
-    @Column(name = "IDENTIFICADOR_FISCAL", nullable = false, length = 9) 
+
+    @Column(name = "IDENTIFICADOR_FISCAL", nullable = false, length = 9)
     @NotNull(message = "El identificador fiscal es obligatorio")
     @Size(max = 9)
     private String identificadorFiscal;
-    
-    @Column(name = "NOMBRE", nullable = true, length = 100) 
+
+    @Column(name = "NOMBRE", nullable = true, length = 100)
     @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
     private String nombre;
-    
-    @Column(name = "ACTIVIDAD", nullable = true, length = 100) 
+
+    @Column(name = "ACTIVIDAD", nullable = true, length = 100)
     @Size(max = 100, message = "El campo no puede exceder los 100 caracteres")
     private String actividad;
-        
-    @Column(name = "DIRECCION", nullable = false, length = 255) 
+
+    @Column(name = "DIRECCION", nullable = false, length = 255)
     @NotNull(message = "La dirección es obligatoria")
     @Size(max = 255, message = "El campo no puede exceder los 255 caracteres")
     private String direccion;
-    
-    @Column(name = "EMAIL", nullable = false, length = 100) 
+
+    @Column(name = "EMAIL", nullable = false, length = 100)
     @NotNull(message = "El email es obligatorio")
     @Size(max = 100 , message = "El campo no puede exceder los 100 caracteres")
     private String email;
-    
-    @Column(name = "TELEFONO", nullable = false, length = 20) 
+
+    @Column(name = "TELEFONO", nullable = false, length = 20)
     @NotNull(message = "El teléfono es obligatorio")
     @Size(max = 20, message = "El campo no puede exceder los 20 caracteres")
     private String telefono;
-    
-    @Column(name = "TIPO", nullable = false) 
+
+    @Column(name = "TIPO", nullable = false)
     @NotNull(message = "Es tipo es obligatorio")
     private int tipo;
-    
+
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
     @CreationTimestamp
     private LocalDateTime fechaAlta;
@@ -75,10 +78,10 @@ public class Empresa implements Serializable {
 
     @OneToMany(mappedBy = "empresa")
     private List<Reserva> reservas;
-    
+
     @OneToMany(mappedBy = "empresa")
     private List<Servicio> servicios;
-    
+
     @OneToMany(mappedBy = "empresa")
     private List<Horario> horarios;
 
@@ -123,7 +126,7 @@ public class Empresa implements Serializable {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    
+
     public String getActividad() {
         return actividad;
     }
@@ -139,11 +142,11 @@ public class Empresa implements Serializable {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
-    
+
     public String getEmail() {
         return email;
     }
-    
+
     public void setEmail(String email) {
         this.email = email.toLowerCase();
     }
@@ -155,7 +158,7 @@ public class Empresa implements Serializable {
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
-    
+
     public int getTipo() {
         return tipo;
     }
@@ -179,7 +182,7 @@ public class Empresa implements Serializable {
     public void setReservas(List<Reserva> reservas) {
         this.reservas = reservas;
     }
-    
+
     public List<Servicio> getServicios() {
         return servicios;
     }
@@ -187,12 +190,16 @@ public class Empresa implements Serializable {
     public void setServicios(List<Servicio> servicios) {
         this.servicios = servicios;
     }
-    
+
     public List<Horario> getHorarios() {
         return horarios;
     }
 
     public void setHorarios(List<Horario> horarios) {
         this.horarios = horarios;
+    }
+
+    public void setIdEmpresa(Long idEmpresa) {
+        this.idEmpresa = idEmpresa;
     }
 }

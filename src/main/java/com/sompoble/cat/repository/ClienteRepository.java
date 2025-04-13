@@ -1,16 +1,18 @@
 package com.sompoble.cat.repository;
 
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.dto.ClienteDTO;
-import org.springframework.stereotype.Repository;
-import java.util.List;
 
 /**
  * Repositorio para la entidad {@code Cliente}.
  * <p>
  * Proporciona métodos para gestionar clientes en la base de datos.
  * </p>
- * 
+ *
  * @author SomPoble
  */
 @Repository
@@ -23,7 +25,7 @@ public interface ClienteRepository {
      * @return un objeto {@code ClienteDTO} si el cliente existe, o null si no se encuentra.
      */
     ClienteDTO findByDNI(String dni);
-    
+
     Cliente findByDNIFull(String dni);
 
     /**

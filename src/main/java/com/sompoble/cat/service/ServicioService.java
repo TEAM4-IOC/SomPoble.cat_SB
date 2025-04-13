@@ -1,7 +1,8 @@
 package com.sompoble.cat.service;
 
-import com.sompoble.cat.domain.Servicio;
 import java.util.List;
+
+import com.sompoble.cat.domain.Servicio;
 
 /**
  * Interfaz que define los métodos relacionados con la gestión de servicios.

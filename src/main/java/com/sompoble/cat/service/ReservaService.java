@@ -1,15 +1,16 @@
 package com.sompoble.cat.service;
 
-import com.sompoble.cat.dto.ReservaDTO;
-import com.sompoble.cat.domain.Reserva;
 import java.util.List;
+
+import com.sompoble.cat.domain.Reserva;
+import com.sompoble.cat.dto.ReservaDTO;
 
 /**
  * Servicio para gestionar las reservas.
  * <p>
  * Proporciona métodos para realizar operaciones sobre las reservas.
  * </p>
- * 
+ *
  * @author SomPoble
  */
 public interface ReservaService {
@@ -37,7 +38,7 @@ public interface ReservaService {
      * @return el DTO con la reserva correspondiente.
      */
     ReservaDTO findById(Long id);
-    
+
     Reserva findByIdFull(Long id);
 
     /**
@@ -54,14 +55,14 @@ public interface ReservaService {
      * @param reserva la reserva con la información actualizada.
      */
     void updateReserva(Reserva reserva);
-    
+
     /**
      * Elimina una reserva mediante su identificador.
      *
      * @param id el identificador de la reserva a eliminar.
      */
     void deleteById(Long id);
-    
+
     /**
      * Elimina todas las reservas asociadas a un cliente mediante su DNI.
      *
@@ -75,7 +76,7 @@ public interface ReservaService {
      * @param identificadorFiscal el identificador fiscal de la empresa o autónomo.
      */
     void deleteByEmpresaIdentificadorFiscal(String identificadorFiscal);
-    
+
     /**
     * Cuenta el número de reservas para un servicio específico en una fecha determinada.
     *

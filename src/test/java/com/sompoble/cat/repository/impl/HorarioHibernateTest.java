@@ -1,262 +1,169 @@
 package com.sompoble.cat.repository.impl;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.sompoble.cat.domain.Horario;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
+import com.sompoble.cat.domain.Horario;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 
-      @ExtendWith(MockitoExtension.class)
-      class HorarioHibernateTest {
-/*
-          @Mock
-          private EntityManager entityManager;
+@ExtendWith(MockitoExtension.class)
+class HorarioHibernateTest {
 
-          @Mock
-          private TypedQuery<Horario> typedQuery;
+      @Mock
+      private EntityManager entityManager;
 
-          @InjectMocks
-          private HorarioHibernate horarioRepository;
+      @Mock
+      private TypedQuery<Horario> typedQuery;
 
-          private Horario horario;
+      @InjectMocks
+      private HorarioHibernate horarioRepository;
 
-          @BeforeEach
-          void setUp() {
-              horario = new Horario();
-              horario.setIdHorario(1L);
-              horario.setHorarioInicio(LocalTime.of(9, 0));
-              horario.setHorarioFin(LocalTime.of(18, 0));
-              horario.setDiasLaborables("Lunes,Martes");
-              
-              MockitoAnnotations.openMocks(this);
-            
-          }
-          
-          
-          @Test
-          void findByDiaExacto() {
-              when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-              when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-              when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+      private Horario horario;
 
-              List<Horario> result = horarioRepository.findByDiaExacto("Lunes");
+      @BeforeEach
+      void setUp() {
+            horario = new Horario();
+            horario.setIdHorario(1L);
+            horario.setHorarioInicio(LocalTime.of(9, 0));
+            horario.setHorarioFin(LocalTime.of(18, 0));
+            horario.setDiasLaborables("Lunes,Martes");
+      }
 
-              assertNotNull(result);
-              assertEquals(1, result.size());
-              assertEquals(horario, result.get(0));
-              verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-          }
-          @Test
-          void findByEmpresaAndHorarioBetween() {
-              when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-              when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-              when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+      @Test
+      void findByDiaExacto() {
+            when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
+            when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
+            when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
 
-              List<Horario> result = horarioRepository.findByEmpresaAndHorarioBetween(1L, LocalTime.of(8, 0), LocalTime.of(10, 0));
+            List<Horario> result = horarioRepository.findByDiaExacto("Lunes");
 
-              assertNotNull(result);
-              assertEquals(1, result.size());
-              assertEquals(horario, result.get(0));
-              verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-          }
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(horario, result.get(0));
+            verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
+      }
 
-          @Test
-          void save() {
-              when(entityManager.merge(horario)).thenReturn(horario);
+      @Test
+      void findByEmpresaAndHorarioBetween() {
+            when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
+            when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
+            when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
 
-              Horario result = horarioRepository.save(horario);
+            List<Horario> result = horarioRepository.findByEmpresaAndHorarioBetween(1L, LocalTime.of(8, 0), LocalTime.of(10, 0));
 
-              assertNotNull(result);
-              assertEquals(horario, result);
-              verify(entityManager, times(1)).merge(horario);
-          }
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(horario, result.get(0));
+            verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
+      }
 
-          @Test
-          void delete() {
-              when(entityManager.find(Horario.class, 1L)).thenReturn(horario);
-              doNothing().when(entityManager).remove(horario);
+      @Test
+      void save() {
+            when(entityManager.merge(horario)).thenReturn(horario);
 
-              horarioRepository.delete(1L);
+            Horario result = horarioRepository.save(horario);
 
-              verify(entityManager, times(1)).find(Horario.class, 1L);
-              verify(entityManager, times(1)).remove(horario);
-          }
-          
-     
-/*
-    @Test
-    void findByEmpresa_IdEmpresa() {
-    	 // Mock CriteriaBuilder and CriteriaQuery
-        CriteriaBuilder cb = mock(CriteriaBuilder.class);
-        CriteriaQuery<Horario> cq = mock(CriteriaQuery.class);
-        Root<Horario> root = mock(Root.class);
-        Predicate predicate = mock(Predicate.class);
+            assertNotNull(result);
+            assertEquals(horario, result);
+            verify(entityManager, times(1)).merge(horario);
+      }
 
-        // Set up the mocks
-        when(entityManager.getCriteriaBuilder()).thenReturn(cb);
-        when(cb.createQuery(Horario.class)).thenReturn(cq);
-        when(cq.from(Horario.class)).thenReturn(root);
-        when(cb.equal(root.get("empresa").get("idEmpresa"), 1L)).thenReturn(predicate);
-        when(cq.where(predicate)).thenReturn(cq);
-        when(entityManager.createQuery(cq)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+      @Test
+      void delete() {
+            when(entityManager.find(Horario.class, 1L)).thenReturn(horario);
+            doNothing().when(entityManager).remove(horario);
 
-        // Call the method being tested
-        List<Horario> result = horarioRepository.findByEmpresa_IdEmpresa(1L);
+            horarioRepository.delete(1L);
 
-        // Verify the results
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(cq);
-    }
+            verify(entityManager, times(1)).find(Horario.class, 1L);
+            verify(entityManager, times(1)).remove(horario);
+      }
 
-          
-   /*       
-    @Test
-    void findByDiasLaborablesContainingIgnoreCase() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+      @Test
+      void findByEmpresa_IdEmpresa() {
+            CriteriaBuilder cb = mock(CriteriaBuilder.class);
+            CriteriaQuery<Horario> cq = mock(CriteriaQuery.class);
+            Root<Horario> root = mock(Root.class);
+            Predicate predicate = mock(Predicate.class);
+            Path<Object> empresaPath = mock(Path.class);
+            Path<Object> idEmpresaPath = mock(Path.class);
 
-        List<Horario> result = horarioRepository.findByDiasLaborablesContainingIgnoreCase("Lunes");
+            when(entityManager.getCriteriaBuilder()).thenReturn(cb);
+            when(cb.createQuery(Horario.class)).thenReturn(cq);
+            when(cq.from(Horario.class)).thenReturn(root);
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
+            when(root.get("empresa")).thenReturn(empresaPath);
+            when(empresaPath.get("idEmpresa")).thenReturn(idEmpresaPath);
+            when(cb.equal(idEmpresaPath, 1L)).thenReturn(predicate);
 
-    @Test
-    void findByHorarioInicioBetween() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+            when(cq.where(predicate)).thenReturn(cq);
+            when(entityManager.createQuery(cq)).thenReturn(typedQuery);
+            when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
 
-        List<Horario> result = horarioRepository.findByHorarioInicioBetween(LocalTime.of(8, 0), LocalTime.of(10, 0));
+            List<Horario> result = horarioRepository.findByEmpresa_IdEmpresa(1L);
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(horario, result.get(0));
+            verify(entityManager, times(1)).createQuery(cq);
+      }
 
-    @Test
-    void findByHorarioFinBetween() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
 
-        List<Horario> result = horarioRepository.findByHorarioFinBetween(LocalTime.of(17, 0), LocalTime.of(19, 0));
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
+      @Test
+      void findByOrderByHorarioInicioAsc() {
+            // Mocking the CriteriaBuilder and CriteriaQuery
+            CriteriaBuilder cb = mock(CriteriaBuilder.class);
+            CriteriaQuery<Horario> query = mock(CriteriaQuery.class);
+            Root<Horario> root = mock(Root.class);
 
-    @Test
-    void findByEmpresa_IdEmpresaAndDiasLaborablesContaining() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+            // Mocking the EntityManager to return the CriteriaBuilder and query
+            when(entityManager.getCriteriaBuilder()).thenReturn(cb);
+            when(cb.createQuery(Horario.class)).thenReturn(query);
+            when(query.from(Horario.class)).thenReturn(root);
 
-        List<Horario> result = horarioRepository.findByEmpresa_IdEmpresaAndDiasLaborablesContaining(1L, "Lunes");
+            // Mocking the TypedQuery behavior
+            when(entityManager.createQuery(query)).thenReturn(typedQuery);
+            when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
+            // Call the method being tested
+            List<Horario> result = horarioRepository.findByOrderByHorarioInicioAsc();
 
-    @Test
-    void findByHorarioInicioBefore() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+            // Assert the results
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(horario, result.get(0));
 
-        List<Horario> result = horarioRepository.findByHorarioInicioBefore(LocalTime.of(10, 0));
+            // Verify the mock interactions
+            verify(entityManager, times(1)).getCriteriaBuilder();
+            verify(cb, times(1)).createQuery(Horario.class);
+            verify(entityManager, times(1)).createQuery(query);
+      }
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
-
-    @Test
-    void findByHorarioFinAfter() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
-
-        List<Horario> result = horarioRepository.findByHorarioFinAfter(LocalTime.of(17, 0));
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
-
-    @Test
-    void findByOrderByHorarioInicioAsc() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
-
-        List<Horario> result = horarioRepository.findByOrderByHorarioInicioAsc();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
-
-    @Test
-    void findByEmpresa_IdEmpresaAndHorarioInicioBetween() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
-
-        List<Horario> result = horarioRepository.findByEmpresa_IdEmpresaAndHorarioInicioBetween(1L, LocalTime.of(8, 0), LocalTime.of(10, 0));
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
-
-    @Test
-    void findByEmpresa_IdEmpresaAndHorarioFinBetween() {
-        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
-
-        List<Horario> result = horarioRepository.findByEmpresa_IdEmpresaAndHorarioFinBetween(1L, LocalTime.of(17, 0), LocalTime.of(19, 0));
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(horario, result.get(0));
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Horario.class));
-    }
-    */
-
- 
 }

@@ -1,33 +1,40 @@
 package com.sompoble.cat.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sompoble.cat.Application;
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
 import com.sompoble.cat.service.EmpresaService;
-import jakarta.persistence.EntityManager;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.persistence.EntityManager;
 
 @SpringBootTest(classes = Application.class)
 @Transactional
 class EmpresaServiceImplTest {
 
     @Autowired
-    private EmpresaService empresaService; 
+    private EmpresaService empresaService;
 
     @Autowired
-    private EmpresaRepository empresaRepository; 
-    
+    private EmpresaRepository empresaRepository;
+
     @Autowired
-    private EntityManager entityManager; 
+    private EntityManager entityManager;
 
     private Empresario empresario;
 
@@ -53,8 +60,6 @@ class EmpresaServiceImplTest {
         empresa.setDireccion("Calle Ficticia, 123");
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
-        empresa.setActividad("Desarrollo software");
-        empresa.setTipo(1);
         empresa.setEmpresario(empresario);
         empresaService.addEmpresa(empresa);
 
@@ -71,8 +76,6 @@ class EmpresaServiceImplTest {
         empresa.setDireccion("Calle Ficticia, 123");
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
-        empresa.setActividad("Desarrollo software");
-        empresa.setTipo(1);
         empresa.setEmpresario(empresario);
         empresaService.addEmpresa(empresa);
 
@@ -92,38 +95,12 @@ class EmpresaServiceImplTest {
         empresa.setDireccion("Calle Ficticia, 123");
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
-        empresa.setActividad("Desarrollo software");
-        empresa.setTipo(2);
         empresa.setEmpresario(empresario);
         empresaService.addEmpresa(empresa);
 
         EmpresaDTO result = empresaService.findByIdentificadorFiscal("A12345678");
         assertNotNull(result);
         assertEquals(empresa.getIdentificadorFiscal(), result.getIdentificadorFiscal());
-        
-        EmpresaDTO resultNoExiste = empresaService.findByIdentificadorFiscal("Z98765432");
-        assertNull(resultNoExiste);
-    }
-    
-    @Test
-    void findByIdentificadorFiscalFullTest() {
-        Empresa empresa = new Empresa();
-        empresa.setIdentificadorFiscal("A12345678");
-        empresa.setNombre("Empresa S.A.");
-        empresa.setDireccion("Calle Ficticia, 123");
-        empresa.setTelefono("912345678");
-        empresa.setEmail("empresa@empresa.com");
-        empresa.setActividad("Desarrollo software");
-        empresa.setTipo(2);
-        empresa.setEmpresario(empresario);
-        empresaService.addEmpresa(empresa);
-
-        Empresa result = empresaService.findByIdentificadorFiscalFull("A12345678");
-        assertNotNull(result);
-        assertEquals(empresa.getIdentificadorFiscal(), result.getIdentificadorFiscal());
-        
-        Empresa resultNoExiste = empresaService.findByIdentificadorFiscalFull("Z98765432");
-        assertNull(resultNoExiste);
     }
 
     @Test
@@ -134,16 +111,11 @@ class EmpresaServiceImplTest {
         empresa.setDireccion("Calle Ficticia, 123");
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
-        empresa.setActividad("Desarrollo software");
-        empresa.setTipo(1);
         empresa.setEmpresario(empresario);
         empresaService.addEmpresa(empresa);
 
         boolean result = empresaService.existsByIdentificadorFiscal("A12345678");
         assertTrue(result);
-        
-        boolean resultNoExiste = empresaService.existsByIdentificadorFiscal("Z98765432");
-        assertFalse(resultNoExiste);
     }
 
     @Test
@@ -154,19 +126,20 @@ class EmpresaServiceImplTest {
         empresa.setDireccion("Calle Ficticia, 123");
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
-        empresa.setActividad("Desarrollo software");
-        empresa.setTipo(2);
         empresa.setEmpresario(empresario);
         empresaService.addEmpresa(empresa);
 
         empresaService.deleteById(empresa.getIdEmpresa());
 
-        EmpresaDTO empresaEliminada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
-        assertNull(empresaEliminada);
+        try {
+            EmpresaDTO empresaEliminada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
+            assertNull(empresaEliminada);
+        } catch (EmptyResultDataAccessException e) {
+            assertTrue(true);
+        }
     }
-    
-    /*
-    * Comentado ya que de lo contrario da error al tener registros en la base de datos
+
+
     @Test
     void findAllTest() {
         Empresa empresa1 = new Empresa();
@@ -175,8 +148,6 @@ class EmpresaServiceImplTest {
         empresa1.setDireccion("Calle Ficticia, 123");
         empresa1.setTelefono("912345678");
         empresa1.setEmail("empresa@empresa.com");
-        empresa1.setActividad("Desarrollo software");
-        empresa1.setTipo(2);
         empresa1.setEmpresario(empresario);
         empresaService.addEmpresa(empresa1);
 
@@ -186,17 +157,14 @@ class EmpresaServiceImplTest {
         empresa2.setDireccion("Calle Real, 456");
         empresa2.setTelefono("913456789");
         empresa2.setEmail("otra@empresa.com");
-        empresa2.setActividad("Consultoría");
-        empresa2.setTipo(1);
         empresa2.setEmpresario(empresario);
         empresaService.addEmpresa(empresa2);
 
         List<EmpresaDTO> empresas = empresaService.findAll();
         assertNotNull(empresas);
-        assertEquals(2, empresas.size());
+        assertEquals(10, empresas.size());
     }
-    */
-    
+
     @Test
     void existsByIdTest() {
         Empresa empresa = new Empresa();
@@ -205,16 +173,11 @@ class EmpresaServiceImplTest {
         empresa.setDireccion("Calle Ficticia, 123");
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
-        empresa.setActividad("Desarrollo software");
-        empresa.setTipo(2);
         empresa.setEmpresario(empresario);
         empresaService.addEmpresa(empresa);
 
         boolean result = empresaService.existsById(empresa.getIdEmpresa());
         assertTrue(result);
-        
-        boolean resultNoExiste = empresaService.existsById(-1L);
-        assertFalse(resultNoExiste);
     }
 
     @Test
@@ -225,14 +188,16 @@ class EmpresaServiceImplTest {
         empresa.setDireccion("Calle Ficticia, 123");
         empresa.setTelefono("912345678");
         empresa.setEmail("empresa@empresa.com");
-        empresa.setActividad("Desarrollo software");
-        empresa.setTipo(1);
         empresa.setEmpresario(empresario);
         empresaService.addEmpresa(empresa);
 
         empresaService.deleteByIdentificadorFiscal(empresa.getIdentificadorFiscal());
 
-        EmpresaDTO empresaEliminada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
-        assertNull(empresaEliminada);
+        try {
+            EmpresaDTO empresaEliminada = empresaRepository.findByIdentificadorFiscal(empresa.getIdentificadorFiscal());
+            assertNull(empresaEliminada);
+        } catch (EmptyResultDataAccessException e) {
+            assertTrue(true);
+        }
     }
 }

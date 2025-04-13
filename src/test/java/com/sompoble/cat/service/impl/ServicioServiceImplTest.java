@@ -1,8 +1,16 @@
 package com.sompoble.cat.service.impl;
 
-import com.sompoble.cat.domain.Empresa;
-import com.sompoble.cat.domain.Servicio;
-import com.sompoble.cat.repository.ServicioRepository;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,16 +18,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.domain.Servicio;
+import com.sompoble.cat.repository.ServicioRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class ServicioServiceImplTest {
 
-    /*@Mock
+    @Mock
     private ServicioRepository servicioRepository;
 
     @InjectMocks
@@ -37,11 +43,12 @@ public class ServicioServiceImplTest {
         servicio = new Servicio();
         servicio.setNombre("Servicio Test");
         servicio.setDescripcion("Descripción del servicio test");
-        servicio.setPrecio("100");
+        servicio.setPrecio(Float.parseFloat("100"));
         servicio.setEmpresa(empresa);
+        servicio.setIdServicio(1L);
     }
-    
-    /*
+
+
     @Test
     public void testObtenerPorId() {
         // Arrange
@@ -56,8 +63,7 @@ public class ServicioServiceImplTest {
         assertEquals("Servicio Test", result.getNombre());
         verify(servicioRepository).findById(1L);
     }
-    */
-    /*@Test
+    @Test
     public void testActualizarServicio() {
         // Act
         servicioService.actualizarServicio(servicio);
@@ -74,12 +80,12 @@ public class ServicioServiceImplTest {
         // Assert
         verify(servicioRepository).addServicio(servicio);
     }
-    
-    /*
+
+
     @Test
     public void testObtenerPorEmpresaId() {
         // Arrange
-        List<Servicio> expectedServicios = Arrays.asList(servicio);
+        List<Servicio> expectedServicios = Collections.singletonList(servicio);
         when(servicioRepository.findAllByEmpresaId(1L)).thenReturn(expectedServicios);
 
         // Act
@@ -92,11 +98,11 @@ public class ServicioServiceImplTest {
         assertEquals("Servicio Test", result.get(0).getNombre());
         verify(servicioRepository).findAllByEmpresaId(1L);
     }
-    
+
     @Test
     public void testObtenerPorEmpresaIdentificador() {
         // Arrange
-        List<Servicio> expectedServicios = Arrays.asList(servicio);
+        List<Servicio> expectedServicios = Collections.singletonList(servicio);
         when(servicioRepository.findAllByEmpresaIdentificador("A12345678")).thenReturn(expectedServicios);
 
         // Act
@@ -109,9 +115,9 @@ public class ServicioServiceImplTest {
         assertEquals("Servicio Test", result.get(0).getNombre());
         verify(servicioRepository).findAllByEmpresaIdentificador("A12345678");
     }
-    */
-    
-    /*@Test
+
+
+    @Test
     public void testExistePorId_True() {
         // Arrange
         when(servicioRepository.existsById(1L)).thenReturn(true);
@@ -185,5 +191,5 @@ public class ServicioServiceImplTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(servicioRepository).findAllByEmpresaIdentificador("NONEXISTENT");
-    }*/
+    }
 }

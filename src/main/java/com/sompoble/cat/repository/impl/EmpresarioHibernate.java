@@ -30,8 +30,19 @@ public class EmpresarioHibernate implements EmpresarioRepository {
     }
 
     @Override
-    public void updateEmpresario(EmpresarioDTO empresario) {
-        entityManager.merge(empresario);
+    public void updateEmpresario(EmpresarioDTO empresarioDTO) {
+        Empresario existing = findEmpresarioByDNI(empresarioDTO.getDni());
+        if (existing == null) {
+            throw new RuntimeException("Empresario no encontrado con DNI: " + empresarioDTO.getDni());
+        }
+
+        existing.setNombre(empresarioDTO.getNombre());
+        existing.setApellidos(empresarioDTO.getApellidos());
+        existing.setEmail(empresarioDTO.getEmail());
+        existing.setTelefono(empresarioDTO.getTelefono());
+        existing.setPass(empresarioDTO.getPass());
+
+        entityManager.merge(existing);
     }
 
     @Override

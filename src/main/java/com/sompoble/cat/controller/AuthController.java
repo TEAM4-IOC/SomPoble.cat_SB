@@ -1,19 +1,22 @@
 package com.sompoble.cat.controller;
 
-import com.sompoble.cat.domain.Empresario;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.sompoble.cat.dto.ClienteDTO;
 import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.exception.BadRequestException;
 import com.sompoble.cat.exception.UnauthorizedException;
 import com.sompoble.cat.service.ClienteService;
 import com.sompoble.cat.service.EmpresarioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/login")
