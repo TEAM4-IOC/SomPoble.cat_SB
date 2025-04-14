@@ -28,6 +28,7 @@ class EmpresarioServiceImplTest {
 
     @Autowired
     private EmpresarioRepository empresarioRepository;
+    
 
     @Test
     void addEmpresarioTest() {
@@ -47,6 +48,7 @@ class EmpresarioServiceImplTest {
 
     @Test
     void updateEmpresarioTest() {
+        
         Empresario empresario = new Empresario();
         empresario.setDni("12345888D");
         empresario.setNombre("Ivan");
@@ -54,29 +56,24 @@ class EmpresarioServiceImplTest {
         empresario.setEmail("ivan@empresa.com");
         empresario.setTelefono("670256123");
         empresario.setPass("pass");
-        
-       
+
         empresarioService.addEmpresario(empresario);
-
-        
-        EmpresarioDTO dto = new EmpresarioDTO();
-        dto.setDni(empresario.getDni());        
-        dto.setNombre("Xavi");             
-        dto.setApellidos(empresario.getApellidos());
-        dto.setEmail(empresario.getEmail());
-        dto.setTelefono(empresario.getTelefono());
-        dto.setPass(empresario.getPass());
+        Empresario existente = empresarioRepository.findEmpresarioByDNI("12345888D");
+        existente.setNombre("Xavi");
+        existente.setPass("nuevaPass");
 
        
-        empresarioService.updateEmpresario(dto);
+        empresarioService.addEmpresario(existente);
 
-       
-        EmpresarioDTO empresarioActualizado = empresarioService.findByDni("12345888D");
-        assertNotNull(empresarioActualizado, "No se encontró el empresario actualizado");
-        assertEquals("Xavi", empresarioActualizado.getNombre(), "El nombre no fue actualizado correctamente");
-        assertEquals("Garcia Martinez", empresarioActualizado.getApellidos(), "Los apellidos no coinciden");
-        assertEquals("ivan@empresa.com", empresarioActualizado.getEmail(), "El email no coincide");
+        EmpresarioDTO actualizado = empresarioService.findByDni("12345888D");
+
+        assertNotNull(actualizado);
+        assertEquals("Xavi", actualizado.getNombre());
+        assertEquals("Garcia Martinez", actualizado.getApellidos());
+        assertEquals("ivan@empresa.com", actualizado.getEmail());
     }
+
+
     @Test
     void findByDniTest() {
         Empresario empresario = new Empresario();

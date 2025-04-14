@@ -49,7 +49,7 @@ public class SHControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
+    
     private ServicioHorarioDTO crearDtoPrueba() {
         ServicioHorarioDTO dto = new ServicioHorarioDTO();
         dto.setNombre("Test Servicio");
@@ -64,7 +64,7 @@ public class SHControllerTest {
         return dto;
     }
 
-
+    
     private Empresa crearEmpresaPrueba() {
         Empresa empresa = new Empresa();
         empresa.setIdEmpresa(1L);

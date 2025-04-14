@@ -92,11 +92,12 @@ public class Evento implements Serializable {
      * @param fechaEvento Fecha y hora del evento.
      */
     public Evento(String nombre, String descripcion, String ubicacion, LocalDateTime fechaEvento) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.ubicacion = ubicacion;
+        setNombre(nombre);       
+        setDescripcion(descripcion);
+        setUbicacion(ubicacion); 
         this.fechaEvento = fechaEvento;
     }
+
     @PrePersist
     public void prePersist() {
         if (this.fechaAlta == null) {
@@ -153,6 +154,9 @@ public class Evento implements Serializable {
      * @param nombre Nombre del evento.
      */
     public void setNombre(String nombre) {
+        if (nombre.length() > 100) {
+            throw new IllegalArgumentException("El nombre no puede tener más de 100 caracteres");
+        }
         this.nombre = nombre;
     }
 
@@ -189,6 +193,9 @@ public class Evento implements Serializable {
      * @param ubicacion Ubicación del evento.
      */
     public void setUbicacion(String ubicacion) {
+        if (ubicacion.length() > 255) {
+            throw new IllegalArgumentException("La ubicación no puede tener más de 255 caracteres");
+        }
         this.ubicacion = ubicacion;
     }
 

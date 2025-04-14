@@ -39,15 +39,39 @@ public class EventoController {
     }
 
     /**
-     * Elimina un evento por su ID.
-     * 
+     * Endpoint para eliminar un evento por su ID.
+     *
+     * <p>Este método verifica si el evento existe antes de intentar eliminarlo.
+     * Si el evento no existe, devuelve un estado HTTP 404 (Not Found). Si el evento
+     * existe pero la eliminación falla, devuelve un estado HTTP 500 (Internal Server Error).</p>
+     *
      * @param id ID del evento a eliminar.
+     * @return Respuesta HTTP:
+     *         - 204 No Content si el evento se elimina correctamente.
+     *         - 404 Not Found si el evento no existe.
+     *         - 500 Internal Server Error si ocurre un error interno.
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminarEvento(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarEvento(@PathVariable Long id) {
+        // Validar que el ID no sea nulo
         requireNonNull(id, "El ID no puede ser nulo");
-        eventoService.eliminarEvento(id);
+
+        // Validar si el evento existe
+        Evento evento = eventoService.obtenerEventoPorId(id);
+        if (evento == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .body(null); // Devolver 404 si el evento no existe
+        }
+
+        // Intentar eliminar el evento
+        boolean eliminado = eventoService.eliminarEvento(id);
+        if (eliminado) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                                 .body(null); // Devolver 204 si la eliminación fue exitosa
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(null); // Devolver 500 si ocurre un error interno
+        }
     }
 
     /**
@@ -111,4 +135,26 @@ public class EventoController {
             eventoService.buscarEventosPorUbicacion(ubicacion)
         );
     }
+    
+    /**
+     * Actualiza un evento existente por su ID.
+     *
+     * @param id     ID del evento a actualizar.
+     * @param evento Datos actualizados del evento.
+     * @return Evento actualizado con código 200 o 404 si no se encuentra.
+     */
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<Evento> actualizarEvento(@PathVariable Long id, @RequestBody Evento evento) {
+        requireNonNull(id, "El ID no puede ser nulo");
+        requireNonNull(evento, "El evento no puede ser nulo");
+
+        Evento actualizado = eventoService.actualizarEvento(id, evento);
+
+        if (actualizado == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(actualizado);
+    }
+    
 }
