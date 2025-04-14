@@ -45,6 +45,10 @@ public class EmpresarioDTO implements Serializable {
         this.empresas = empresas != null ? empresas : new ArrayList<>();
     }
 
+    public EmpresarioDTO() {
+
+    }
+
     /**
      * Obtiene el ID del empresario.
      *

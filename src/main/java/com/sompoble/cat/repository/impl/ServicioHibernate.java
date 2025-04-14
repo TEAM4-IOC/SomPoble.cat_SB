@@ -195,7 +195,6 @@ public class ServicioHibernate implements ServicioRepository {
             return Optional.empty();
         }
     }
-
     /**
      * Busca un servicio por su ID y verifica que pertenezca a una empresa con el identificador fiscal especificado.
      * 
@@ -224,6 +223,7 @@ public class ServicioHibernate implements ServicioRepository {
             return Optional.empty();
         }
     }
+
 
 }
 
