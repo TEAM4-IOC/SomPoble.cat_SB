@@ -9,6 +9,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
@@ -106,10 +107,13 @@ public class ServicioHibernate implements ServicioRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<Servicio> root = cq.from(Servicio.class);
-
-        Predicate idPredicate = cb.equal(root.get("id"), id);
-        cq.select(cb.count(root)).where(idPredicate);
-
+        
+        Path<Object> idPath = root.get("idServicio");
+        
+        Predicate predicate = cb.equal(idPath, id);
+        
+        cq.select(cb.count(root)).where(predicate);
+        
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;
     }

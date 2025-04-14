@@ -197,5 +197,6 @@ public class Empresa implements Serializable {
     }
 
     public void setIdEmpresa(Long idEmpresa) {
-}
+        this.idEmpresa = idEmpresa;
+    }
 }

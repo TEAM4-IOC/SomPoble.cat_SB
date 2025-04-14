@@ -24,6 +24,7 @@ class EmpresarioServiceImplTest {
 
     @Autowired
     private EmpresarioRepository empresarioRepository;
+    
 
     @Test
     void addEmpresarioTest() {
@@ -43,6 +44,7 @@ class EmpresarioServiceImplTest {
 
     @Test
     void updateEmpresarioTest() {
+        
         Empresario empresario = new Empresario();
         empresario.setDni("12345678A");
         empresario.setNombre("Carlos");
@@ -50,11 +52,25 @@ class EmpresarioServiceImplTest {
         empresario.setEmail("carlos@empresa.com");
         empresario.setTelefono("650123456");
         empresario.setPass("pass");
-        empresarioService.addEmpresario(empresario);
 
-        Empresario empresarioParaActualizar = empresarioService.findEmpresarioByDNI("12345678A");
-        empresarioParaActualizar.setNombre("Fernando");
+
+        empresarioService.addEmpresario(empresario);
+        Empresario existente = empresarioRepository.findEmpresarioByDNI("12345888D");
+        existente.setNombre("Xavi");
+        existente.setPass("nuevaPass");
+
+       
+        empresarioService.addEmpresario(existente);
+
+        EmpresarioDTO actualizado = empresarioService.findByDni("12345888D");
+
+        assertNotNull(actualizado);
+        assertEquals("Xavi", actualizado.getNombre());
+        assertEquals("Garcia Martinez", actualizado.getApellidos());
+        assertEquals("ivan@empresa.com", actualizado.getEmail());
     }
+
+
 
     @Test
     void findByDniTest() {

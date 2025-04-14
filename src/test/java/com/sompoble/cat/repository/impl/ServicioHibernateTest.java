@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ServicioHibernateTest {
 
-    /*@Mock
+    @Mock
     private EntityManager entityManager;
 
     @Mock
@@ -67,22 +67,32 @@ public class ServicioHibernateTest {
     public void setup() {
         empresa = new Empresa();
         empresa.setIdentificadorFiscal("A12345678");
-
-        servicio = new Servicio("Servicio Test", "Descripción del servicio test", "2 horas", "100.0", 10, empresa);
+        empresa.setIdEmpresa(1L);
+        servicio = new Servicio(
+            "Servicio Test",                  
+            "Descripción del servicio test",  
+            2,                                
+            100.0f,                          
+            10,                               
+            empresa                          
+        );
+        servicio.setIdServicio(1L);  
     }
-    /*
+    
     @Test
     public void testFindById() {
         when(entityManager.find(Servicio.class, 1L)).thenReturn(servicio);
+
         Servicio result = servicioHibernate.findById(1L);
+
         assertNotNull(result);
         assertEquals(1L, result.getIdServicio());
         assertEquals("Servicio Test", result.getNombre());
         verify(entityManager).find(Servicio.class, 1L);
     }
-    */
     
-    /*@Test
+    
+    @Test
     public void testUpdateServicio() {
         when(entityManager.merge(servicio)).thenReturn(servicio);
         servicioHibernate.updateServicio(servicio);
@@ -95,7 +105,7 @@ public class ServicioHibernateTest {
         verify(entityManager).persist(servicio);
     }
     
-    /*
+    
     @Test
     public void testFindAllByEmpresaId() {
         List<Servicio> expectedServicios = Arrays.asList(servicio);
@@ -116,21 +126,34 @@ public class ServicioHibernateTest {
     
     @Test
     public void testExistsById() {
+        // Simular el EntityManager y CriteriaBuilder
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
         when(criteriaBuilder.createQuery(Long.class)).thenReturn(countCriteriaQuery);
         when(countCriteriaQuery.from(Servicio.class)).thenReturn(root);
         when(root.get("idServicio")).thenReturn(idPath);
-        when(criteriaBuilder.equal(idPath, 1L)).thenReturn(mock(Predicate.class));
+
+        // Simular el Predicate
+        Predicate predicate = mock(Predicate.class);
+        when(criteriaBuilder.equal(idPath, 1L)).thenReturn(predicate);
+
+        // Simular el encadenamiento de métodos de CriteriaQuery
+        when(countCriteriaQuery.select(any())).thenReturn(countCriteriaQuery); // << importante
+        when(countCriteriaQuery.where(any(Predicate.class))).thenReturn(countCriteriaQuery); // << importante
+
+        // Simular la consulta final
         when(entityManager.createQuery(countCriteriaQuery)).thenReturn(countTypedQuery);
         when(countTypedQuery.getSingleResult()).thenReturn(1L);
-        boolean exists = servicioHibernate.existsById(1L);
-        assertTrue(exists);
-        verify(countCriteriaQuery).select(any());
-        verify(countCriteriaQuery).where(any(Predicate.class));
-    }
-    */
 
-    /*@Test
+        // Ejecutar el método
+        boolean exists = servicioHibernate.existsById(1L);
+
+        // Verificar
+        assertTrue(exists);
+    }
+
+    
+
+    @Test
     public void testDeleteById_ExistingServicio() {
         when(entityManager.find(Servicio.class, 1L)).thenReturn(servicio);
         servicioHibernate.deleteById(1L);
@@ -144,5 +167,5 @@ public class ServicioHibernateTest {
         servicioHibernate.deleteById(1L);
         verify(entityManager).find(Servicio.class, 1L);
         verify(entityManager, never()).remove(any(Servicio.class));
-    }*/
+    }
 }
