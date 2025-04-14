@@ -82,4 +82,6 @@ public interface ServicioRepository {
      * @return Un {@link Optional} con el servicio encontrado, o vacío si no existe.
      */
     Optional<Servicio> findByIdAndEmpresaId(Long servicioId, Long empresaId);
+    
+    Optional<Servicio> findByIdAndEmpresaIdentificadorFiscal(Long id, String identificadorFiscal);
 }
