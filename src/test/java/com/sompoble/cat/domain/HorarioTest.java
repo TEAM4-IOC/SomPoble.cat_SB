@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HorarioTest {
 
-    /*private Horario horario;
+    private Horario horario;
     private Empresa empresaMock;
 
     @BeforeEach
@@ -45,5 +45,5 @@ class HorarioTest {
         String expectedString = "Horario{" +
                 "idHorario=null, diasLaborables='Lunes,Martes', horarioInicio=09:00, horarioFin=18:00, empresa=" + empresaMock + "} ";
         assertTrue(horario.toString().contains("Lunes,Martes"));
-    }*/
+    }
 }
