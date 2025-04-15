@@ -10,15 +10,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Controlador REST para la gestión de empresarios.
+ */
 @RestController
 @RequestMapping("/api/empresarios")
 public class EmpresarioController {
-
+	/**
+     * Servicio que maneja la lógica de negocio para empresarios.
+     */
     @Autowired
     private EmpresarioService empresarioService;
 
-    // Obtener todos los empresarios
+    /**
+     * Obtiene todos los empresarios registrados.
+     *
+     * @return lista de {@link EmpresarioDTO} si existen, de lo contrario lanza excepción.
+     */
     @GetMapping
     public ResponseEntity<?> getAll() {
         List<EmpresarioDTO> empresarios = empresarioService.findAll();
@@ -27,8 +35,13 @@ public class EmpresarioController {
         }
         return ResponseEntity.ok(empresarios);
     }
-
-    // Consultar por DNI
+    /**
+     * Obtiene un empresario específico por su DNI.
+     *
+     * @param dni DNI del empresario.
+     * @return el {@link EmpresarioDTO} correspondiente.
+     * @throws ResourceNotFoundException si no se encuentra el empresario.
+     */
     @GetMapping("/{dni}")
     public ResponseEntity<?> getByDni(@PathVariable String dni) {
         try {
@@ -39,7 +52,13 @@ public class EmpresarioController {
         }
     }
 
-    // Crear un nuevo empresario
+    /**
+     * Crea un nuevo empresario si no existe previamente por DNI o email.
+     *
+     * @param empresario Objeto {@link Empresario} a crear.
+     * @return respuesta con estado 201 si se crea correctamente.
+     * @throws BadRequestException si el DNI o el email ya están registrados.
+     */
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Empresario empresario) {
         if (empresarioService.existsByDni(empresario.getDni())) {
@@ -52,7 +71,14 @@ public class EmpresarioController {
         return ResponseEntity.created(null).build(); 
     }
 
-    // Actualizar un empresario
+    /**
+     * Actualiza parcialmente un empresario existente por DNI.
+     *
+     * @param dni DNI del empresario a actualizar.
+     * @param updates Mapa con los campos a actualizar y sus nuevos valores.
+     * @return mensaje de éxito si se actualiza correctamente.
+     * @throws ResourceNotFoundException si no se encuentra el empresario.
+     */
     @PutMapping("/{dni}")
     public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) {
         try{
@@ -77,7 +103,13 @@ public class EmpresarioController {
         }
     }
 
-    // Eliminar un empresario por DNI
+    /**
+     * Elimina un empresario por su DNI.
+     *
+     * @param dni DNI del empresario a eliminar.
+     * @return mensaje de confirmación si se elimina correctamente.
+     * @throws ResourceNotFoundException si no se encuentra el empresario.
+     */
     @DeleteMapping("/{dni}")
     public ResponseEntity<?> delete(@PathVariable String dni) {
         if (!empresarioService.existsByDni(dni)) {

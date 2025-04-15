@@ -1,3 +1,6 @@
+/**
+ * Controlador encargado de gestionar las operaciones relacionadas con las empresas y empresarios.
+ */
 package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Empresa;
@@ -16,21 +19,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Controlador REST que expone endpoints para administrar empresas y empresarios.
+ */
 @RestController
 @RequestMapping("/api/empresas")
 public class EmpresaController {
-
+	/**
+     * Servicio que maneja las operaciones relacionadas con las empresas.
+     */
     @Autowired
     private EmpresaService empresaService;
-
+    /**
+     * Servicio que maneja las operaciones relacionadas con los empresarios.
+     */
     @Autowired
     private EmpresarioService empresarioService;
-
+    /**
+     * Repositorio Hibernate para acceder a los datos de los empresarios.
+     */
     @Autowired
     private EmpresarioHibernate empresarioHibernate;
 
-    // Obtener todas las empresas
+    /**
+     * Obtiene todas las empresas registradas en la base de datos.
+     *
+     * @return ResponseEntity con una lista de empresas si existen, o una excepción si no hay empresas.
+     * @throws ResourceNotFoundException si no se encuentran empresas en la base de datos.
+     */
     @GetMapping
     public ResponseEntity<?> getAll() {
         List<EmpresaDTO> empresas = empresaService.findAll();
@@ -48,7 +64,13 @@ public class EmpresaController {
         return ResponseEntity.ok(responseList);
     }
 
-    // Consultar por identificador fiscal
+    /**
+     * Obtiene una empresa por su identificador fiscal.
+     *
+     * @param identificadorFiscal Identificador único de la empresa.
+     * @return ResponseEntity con la empresa si se encuentra, o una excepción si no se encuentra.
+     * @throws ResourceNotFoundException si la empresa con el identificador fiscal especificado no existe.
+     */
     @GetMapping("/{identificadorFiscal}")
     public ResponseEntity<?> getByIdentificadorFiscal(@PathVariable String identificadorFiscal) {
         try {
@@ -65,7 +87,13 @@ public class EmpresaController {
         }
     }
 
-    // Crear una nueva empresa
+    /**
+     * Crea una nueva empresa asociada a un empresario.
+     *
+     * @param request Mapa que contiene los datos de la empresa y el DNI del empresario.
+     * @return ResponseEntity indicando que la empresa ha sido creada.
+     * @throws BadRequestException si el identificador fiscal ya existe o si el empresario no existe.
+     */
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Map<String, Object> request) {
         Map<String, Object> empresaData = (Map<String, Object>) request.get("empresa");
@@ -122,7 +150,14 @@ public class EmpresaController {
         return ResponseEntity.created(null).build();
     }
 
-    // Actualizar una empresa
+    /**
+     * Actualiza una empresa existente.
+     *
+     * @param identificadorFiscal Identificador único de la empresa a actualizar.
+     * @param updates Mapa con los nuevos valores para los campos de la empresa.
+     * @return ResponseEntity indicando que la empresa ha sido actualizada correctamente.
+     * @throws ResourceNotFoundException si la empresa con el identificador fiscal especificado no existe.
+     */
     @PutMapping("/{identificadorFiscal}")
     public ResponseEntity<?> update(@PathVariable String identificadorFiscal, @RequestBody Map<String, Object> updates) {
         try {
@@ -153,7 +188,13 @@ public class EmpresaController {
         }
     }
 
-    // Eliminar una empresa por identificador fiscal
+    /**
+     * Elimina una empresa existente por su identificador fiscal.
+     *
+     * @param identificadorFiscal Identificador único de la empresa a eliminar.
+     * @return ResponseEntity indicando que la empresa ha sido eliminada correctamente.
+     * @throws ResourceNotFoundException si la empresa con el identificador fiscal especificado no existe.
+     */
     @DeleteMapping("/{identificadorFiscal}")
     public ResponseEntity<?> delete(@PathVariable String identificadorFiscal) {
         if (!empresaService.existsByIdentificadorFiscal(identificadorFiscal)) {

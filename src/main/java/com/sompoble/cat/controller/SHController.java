@@ -24,13 +24,19 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/servicio-horario")
 public class SHController {
-
+	/**
+	 * Repositorio para acceder y gestionar los datos de los servicios.
+	 */
     @Autowired
     private ServicioRepository servicioRepository;
-    
+    /**
+     * Repositorio que permite la gestión de los horarios asociados a los servicios.
+     */
     @Autowired
     private HorarioRepository horarioRepository;
-    
+    /**
+     * Repositorio encargado de operaciones CRUD sobre las empresas o autónomos.
+     */
     @Autowired
     private EmpresaRepository empresaRepository;
 

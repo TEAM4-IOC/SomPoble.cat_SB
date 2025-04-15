@@ -55,19 +55,20 @@ class EmpresarioServiceImplTest {
 
 
         empresarioService.addEmpresario(empresario);
-        Empresario existente = empresarioRepository.findEmpresarioByDNI("12345888D");
+        
+        Empresario existente = empresarioRepository.findEmpresarioByDNI("12345678A");
         existente.setNombre("Xavi");
         existente.setPass("nuevaPass");
 
        
         empresarioService.addEmpresario(existente);
 
-        EmpresarioDTO actualizado = empresarioService.findByDni("12345888D");
+        EmpresarioDTO actualizado = empresarioService.findByDni("12345678A");
 
         assertNotNull(actualizado);
         assertEquals("Xavi", actualizado.getNombre());
-        assertEquals("Garcia Martinez", actualizado.getApellidos());
-        assertEquals("ivan@empresa.com", actualizado.getEmail());
+        assertEquals("Sanchez Martinez", actualizado.getApellidos());
+        assertEquals("carlos@empresa.com", actualizado.getEmail());
     }
 
 

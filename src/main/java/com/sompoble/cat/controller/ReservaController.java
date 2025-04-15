@@ -25,29 +25,39 @@ import java.util.Map;
 
 /**
  * Controlador REST para la entidad {@code Reserva}.
- * <p>
+ * 
  * Proporciona endpoints para la gestión de reservas, diferenciando entre
  * clientes y empresas.
- * </p>
+ * 
  *
  * @author SomPoble
  */
 @RestController
 @RequestMapping("/api/reservas")
 public class ReservaController {
-
+	/**
+	 * Servicio que gestiona las operaciones relacionadas con las reservas.
+	 */
     @Autowired
     private ReservaService reservaService;
-
+    /**
+     * Servicio que proporciona acceso y operaciones sobre los datos de los clientes.
+     */
     @Autowired
     private ClienteService clienteService;
-
+    /**
+     * Servicio encargado de gestionar los datos de empresas o autónomos.
+     */
     @Autowired
     private EmpresaService empresaService;
-
+    /**
+     * Servicio que maneja la lógica de negocio asociada a los servicios ofrecidos por las empresas.
+     */
     @Autowired
     private ServicioService servicioService;
-
+    /**
+     * Componente para convertir y gestionar reservas utilizando Hibernate directamente.
+     */
     @Autowired
     private ReservaHibernate reservaHibernate;
 
@@ -109,13 +119,18 @@ public class ReservaController {
     }
 
     /**
-     * Crea una nueva reserva. Se espera recibir un objeto {@link Reserva} en el
-     * cuerpo de la petición.
+     * Crea una nueva reserva.
+     * <p>
+     * Este endpoint permite crear una reserva, verificando previamente la validez
+     * de la empresa, cliente, servicio, disponibilidad horaria y el límite de reservas.
+     * </p>
      *
-     * @param request
-     * @return 200 OK si se crea la reserva.
+     * @param request un mapa con los datos de la reserva, incluyendo información del cliente,
+     * empresa, servicio, fecha, hora y estado.
+     * @return una respuesta con código 201 (Created) si la reserva se creó correctamente.
+     * @throws BadRequestException si falta algún dato obligatorio o no se cumplen las restricciones
+     * del servicio (como el límite de reservas o la disponibilidad horaria).
      */
-    // Crear una nueva empresa
     @PostMapping
     public ResponseEntity<?> createReserva(@RequestBody Map<String, Object> request) {
         Map<String, Object> reservaData = (Map<String, Object>) request.get("reserva");
@@ -196,12 +211,17 @@ public class ReservaController {
     }
 
     /**
-     * Actualiza una reserva existente. Se espera recibir un objeto
-     * {@link Reserva} en el cuerpo de la petición.
+     * Actualiza los datos de una reserva existente.
+     * <p>
+     * Este endpoint permite modificar parcialmente una reserva. Se valida que los datos modificados
+     * (como fecha, hora o servicio) cumplan con los horarios y disponibilidad del servicio.
+     * </p>
      *
-     * @param id el identificador de la reserva a actualizar.
-     * @param updates json con la informacion de la reserva a updatear.
-     * @return 200 OK si la reserva se actualiza, o 404 si no se encuentra.
+     * @param id el ID de la reserva que se desea actualizar.
+     * @param updates un mapa con los campos a modificar.
+     * @return una respuesta con código 200 (OK) si la reserva se actualizó correctamente.
+     * @throws ResourceNotFoundException si no se encuentra la reserva con el ID proporcionado.
+     * @throws BadRequestException si se incumplen las restricciones de horarios o límite de reservas.
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReserva(@PathVariable Long id, @RequestBody Map<String, Object> updates) {

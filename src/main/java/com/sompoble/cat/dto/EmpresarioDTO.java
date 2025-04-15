@@ -192,11 +192,19 @@ public class EmpresarioDTO implements Serializable {
     public void setNotificacionesIds(List<Long> notificacionesIds) {
         this.notificacionesIds = notificacionesIds;
     }
-
+    /**
+     * Devuelve la lista de empresas asociadas.
+     *
+     * @return Lista de objetos {@link EmpresaDTO} que representan las empresas.
+     */
     public List<EmpresaDTO> getEmpresas() {
         return empresas;
     }
-
+    /**
+     * Establece la lista de empresas asociadas.
+     *
+     * @param empresas Lista de objetos {@link EmpresaDTO} que se asignarán.
+     */
     public void setEmpresas(List<EmpresaDTO> empresas) {
         this.empresas = empresas;
     }
