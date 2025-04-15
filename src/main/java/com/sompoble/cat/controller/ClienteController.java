@@ -1,3 +1,6 @@
+/**
+ * Controlador encargado de gestionar las operaciones relacionadas con los clientes.
+ */
 package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Cliente;
@@ -10,15 +13,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Controlador REST que expone endpoints para administrar clientes.
+ */
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {
-
+	/**
+     * Servicio que maneja las operaciones relacionadas con los clientes.
+     */
     @Autowired
     private ClienteService clienteService;
-
-    // Obtener todos los clientes
+    /**
+     * Obtiene todos los clientes registrados en la base de datos.
+     *
+     * @return ResponseEntity con una lista de clientes si existen, o una excepción si no hay clientes.
+     * @throws ResourceNotFoundException si no se encuentran clientes en la base de datos.
+     */
     @GetMapping
     public ResponseEntity<?> getAll() {
         List<ClienteDTO> clientes = clienteService.findAll();
@@ -27,8 +38,13 @@ public class ClienteController {
         }
         return ResponseEntity.ok(clientes);
     }
-
-    // Consulta por DNI
+    /**
+     * Obtiene un cliente por su DNI.
+     *
+     * @param dni Identificador único del cliente.
+     * @return ResponseEntity con el cliente si se encuentra, o una excepción si no se encuentra.
+     * @throws ResourceNotFoundException si el cliente con el DNI especificado no existe.
+     */
     @GetMapping("/{dni}")
     public ResponseEntity<?> getByDni(@PathVariable String dni) {
         try {
@@ -38,8 +54,13 @@ public class ClienteController {
             throw new ResourceNotFoundException("Cliente con DNI " + dni + " no encontrado");
         }
     }
-
-    // Crear un cliente
+    /**
+     * Crea un nuevo cliente.
+     *
+     * @param cliente Objeto cliente que contiene los datos necesarios para crear el cliente.
+     * @return ResponseEntity indicando que el cliente ha sido creado.
+     * @throws BadRequestException si el DNI o el email ya existen en la base de datos.
+     */
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Cliente cliente) {
         if (clienteService.existsByDni(cliente.getDni())) {
@@ -51,8 +72,14 @@ public class ClienteController {
         clienteService.addCliente(cliente);
         return ResponseEntity.created(null).build();
     }
-
-    // Actualizar un cliente
+    /**
+     * Actualiza un cliente existente.
+     *
+     * @param dni Identificador único del cliente a actualizar.
+     * @param updates Mapa con los nuevos valores para los campos del cliente.
+     * @return ResponseEntity indicando que el cliente ha sido actualizado correctamente.
+     * @throws ResourceNotFoundException si el cliente con el DNI especificado no existe.
+     */
     @PutMapping("/{dni}")
     public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) { 
         try {
@@ -83,7 +110,13 @@ public class ClienteController {
             throw new ResourceNotFoundException("Cliente con DNI " + dni + " no encontrado");
         }
     }
-
+    /**
+     * Elimina un cliente existente por su DNI.
+     *
+     * @param dni Identificador único del cliente a eliminar.
+     * @return ResponseEntity indicando que el cliente ha sido eliminado correctamente.
+     * @throws ResourceNotFoundException si el cliente con el DNI especificado no existe.
+     */
     @DeleteMapping("/{dni}")
     public ResponseEntity<?> delete(@PathVariable String dni) {
         if (!clienteService.existsByDni(dni)) {

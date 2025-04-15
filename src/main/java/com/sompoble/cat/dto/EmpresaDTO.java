@@ -213,19 +213,35 @@ public class EmpresaDTO implements Serializable {
     public void setTipo(int tipo) {
         this.tipo = tipo;
     }
-
+    /**
+     * Obtiene la lista de identificadores de reservas asociadas.
+     *
+     * @return Una lista de IDs de reservas.
+     */
     public List<Long> getIdReservas() {
         return idReservas;
     }
-
+    /**
+     * Establece la lista de identificadores de reservas asociadas.
+     *
+     * @param idReservas Una lista de IDs de reservas a asignar.
+     */
     public void setIdReservas(List<Long> idReservas) {
         this.idReservas = idReservas;
     }
-
+    /**
+     * Obtiene la lista de identificadores de servicios asociados.
+     *
+     * @return Una lista de IDs de servicios.
+     */
     public List<Long> getIdServicios() {
         return idServicios;
     }
-
+    /**
+     * Establece la lista de identificadores de servicios asociados.
+     *
+     * @param idServicios Una lista de IDs de servicios a asignar.
+     */
     public void setIdServicios(List<Long> idServicios) {
         this.idServicios = idServicios;
     }
