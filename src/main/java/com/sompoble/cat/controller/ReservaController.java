@@ -25,23 +25,25 @@ import java.util.Map;
 
 /**
  * Controlador REST para la entidad {@code Reserva}.
- * 
+ *
  * Proporciona endpoints para la gestión de reservas, diferenciando entre
  * clientes y empresas.
- * 
+ *
  *
  * @author SomPoble
  */
 @RestController
 @RequestMapping("/api/reservas")
 public class ReservaController {
-	/**
-	 * Servicio que gestiona las operaciones relacionadas con las reservas.
-	 */
+
+    /**
+     * Servicio que gestiona las operaciones relacionadas con las reservas.
+     */
     @Autowired
     private ReservaService reservaService;
     /**
-     * Servicio que proporciona acceso y operaciones sobre los datos de los clientes.
+     * Servicio que proporciona acceso y operaciones sobre los datos de los
+     * clientes.
      */
     @Autowired
     private ClienteService clienteService;
@@ -51,12 +53,14 @@ public class ReservaController {
     @Autowired
     private EmpresaService empresaService;
     /**
-     * Servicio que maneja la lógica de negocio asociada a los servicios ofrecidos por las empresas.
+     * Servicio que maneja la lógica de negocio asociada a los servicios
+     * ofrecidos por las empresas.
      */
     @Autowired
     private ServicioService servicioService;
     /**
-     * Componente para convertir y gestionar reservas utilizando Hibernate directamente.
+     * Componente para convertir y gestionar reservas utilizando Hibernate
+     * directamente.
      */
     @Autowired
     private ReservaHibernate reservaHibernate;
@@ -121,15 +125,18 @@ public class ReservaController {
     /**
      * Crea una nueva reserva.
      * <p>
-     * Este endpoint permite crear una reserva, verificando previamente la validez
-     * de la empresa, cliente, servicio, disponibilidad horaria y el límite de reservas.
+     * Este endpoint permite crear una reserva, verificando previamente la
+     * validez de la empresa, cliente, servicio, disponibilidad horaria y el
+     * límite de reservas.
      * </p>
      *
-     * @param request un mapa con los datos de la reserva, incluyendo información del cliente,
-     * empresa, servicio, fecha, hora y estado.
-     * @return una respuesta con código 201 (Created) si la reserva se creó correctamente.
-     * @throws BadRequestException si falta algún dato obligatorio o no se cumplen las restricciones
-     * del servicio (como el límite de reservas o la disponibilidad horaria).
+     * @param request un mapa con los datos de la reserva, incluyendo
+     * información del cliente, empresa, servicio, fecha, hora y estado.
+     * @return una respuesta con código 201 (Created) si la reserva se creó
+     * correctamente.
+     * @throws BadRequestException si falta algún dato obligatorio o no se
+     * cumplen las restricciones del servicio (como el límite de reservas o la
+     * disponibilidad horaria).
      */
     @PostMapping
     public ResponseEntity<?> createReserva(@RequestBody Map<String, Object> request) {
@@ -213,15 +220,19 @@ public class ReservaController {
     /**
      * Actualiza los datos de una reserva existente.
      * <p>
-     * Este endpoint permite modificar parcialmente una reserva. Se valida que los datos modificados
-     * (como fecha, hora o servicio) cumplan con los horarios y disponibilidad del servicio.
+     * Este endpoint permite modificar parcialmente una reserva. Se valida que
+     * los datos modificados (como fecha, hora o servicio) cumplan con los
+     * horarios y disponibilidad del servicio.
      * </p>
      *
      * @param id el ID de la reserva que se desea actualizar.
      * @param updates un mapa con los campos a modificar.
-     * @return una respuesta con código 200 (OK) si la reserva se actualizó correctamente.
-     * @throws ResourceNotFoundException si no se encuentra la reserva con el ID proporcionado.
-     * @throws BadRequestException si se incumplen las restricciones de horarios o límite de reservas.
+     * @return una respuesta con código 200 (OK) si la reserva se actualizó
+     * correctamente.
+     * @throws ResourceNotFoundException si no se encuentra la reserva con el ID
+     * proporcionado.
+     * @throws BadRequestException si se incumplen las restricciones de horarios
+     * o límite de reservas.
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReserva(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
@@ -243,6 +254,7 @@ public class ReservaController {
 
             Long newServicioId = originalServicioId;
             String newIdentificadorFiscalEmpresa = originalIdentificadorFiscalEmpresa;
+            String newDniCliente = originalDniCliente;
 
             if (updates.containsKey("empresa")) {
                 Map<String, Object> empresaData = (Map<String, Object>) updates.get("empresa");
@@ -251,6 +263,7 @@ public class ReservaController {
                     if (!empresaService.existsByIdentificadorFiscal(identificadorFiscal)) {
                         throw new BadRequestException("No existe una empresa con identificador fiscal " + identificadorFiscal);
                     }
+                    newIdentificadorFiscalEmpresa = identificadorFiscal;
                 }
             }
 
@@ -261,6 +274,7 @@ public class ReservaController {
                     if (!clienteService.existsByDni(dniCliente)) {
                         throw new BadRequestException("No existe un cliente con DNI " + dniCliente);
                     }
+                    newDniCliente = dniCliente;
                 }
             }
 
@@ -270,6 +284,26 @@ public class ReservaController {
                 Map<String, Object> servicioData = (Map<String, Object>) updates.get("servicio");
                 if (servicioData != null && servicioData.containsKey("idServicio")) {
                     newServicioId = Long.valueOf(servicioData.get("idServicio").toString());
+                }
+            }
+
+            // Si el ID del servicio ha cambiado, verificamos que pertenezca a la empresa
+            if (!newServicioId.equals(originalServicioId)) {
+                // Verificar que el servicio existe
+                if (!servicioService.existePorId(newServicioId)) {
+                    throw new BadRequestException("No existe un servicio con el ID " + newServicioId);
+                }
+
+                // Obtener el servicio para verificar a qué empresa pertenece
+                Servicio servicio = servicioService.obtenerPorId(newServicioId);
+
+                // Determinar el identificador fiscal de la empresa (podría estar cambiando también)
+                String identificadorFiscalEmpresa = newIdentificadorFiscalEmpresa;
+
+                // Verificar que el servicio pertenezca a la empresa correcta
+                if (!servicio.getEmpresa().getIdentificadorFiscal().equals(identificadorFiscalEmpresa)) {
+                    throw new BadRequestException("El servicio con ID " + newServicioId
+                            + " no pertenece a la empresa con identificador fiscal " + identificadorFiscalEmpresa);
                 }
             }
 

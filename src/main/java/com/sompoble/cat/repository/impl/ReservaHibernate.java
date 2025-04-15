@@ -33,13 +33,13 @@ public class ReservaHibernate implements ReservaRepository {
 
     @Autowired
     private EntityManager entityManager;
-    
+
     @Autowired
     private ClienteService clienteService;
-    
+
     @Autowired
     private EmpresaService empresaService;
-    
+
     @Autowired
     private ServicioService servicioService;
 
@@ -189,7 +189,7 @@ public class ReservaHibernate implements ReservaRepository {
      * @return el DTO ReservaDTO.
      */
     private ReservaDTO convertToDTO(Reserva reserva) {
-        return new ReservaDTO(
+        ReservaDTO dto = new ReservaDTO(
                 reserva.getIdReserva(),
                 reserva.getFechaReserva(),
                 reserva.getHora(),
@@ -198,23 +198,27 @@ public class ReservaHibernate implements ReservaRepository {
                 reserva.getEmpresa().getIdentificadorFiscal(),
                 reserva.getServicio().getIdServicio()
         );
+
+        dto.setNombreServicio(reserva.getServicio().getNombre());
+
+        return dto;
     }
 
     public Reserva convertToEntity(ReservaDTO reservaDTO) {
         Reserva reserva = new Reserva();
-        
+
         reserva.setIdReserva(reservaDTO.getIdReserva());
         reserva.setFechaReserva(reservaDTO.getFechaReserva());
         reserva.setHora(reservaDTO.getHora());
         reserva.setEstado(reservaDTO.getEstado());
-        
+
         String dniCliente = reservaDTO.getDniCliente();
         String identificadorFiscal = reservaDTO.getIdentificadorFiscalEmpresa();
         Long idServicio = reservaDTO.getIdServicio();
-        
+
         Cliente cliente = clienteService.findByDniFull(dniCliente);
         reserva.setCliente(cliente);
-        
+
         Empresa empresa = empresaService.findByIdentificadorFiscalFull(identificadorFiscal);
         reserva.setEmpresa(empresa);
 
@@ -223,25 +227,26 @@ public class ReservaHibernate implements ReservaRepository {
 
         return reserva;
     }
-    
+
     /**
-    * Cuenta el número de reservas para un servicio específico en una fecha determinada.
-    *
-    * @param servicioId el identificador del servicio.
-    * @param fechaReserva la fecha de la reserva en formato String.
-    * @return el número de reservas existentes para ese servicio en esa fecha.
-    */
+     * Cuenta el número de reservas para un servicio específico en una fecha
+     * determinada.
+     *
+     * @param servicioId el identificador del servicio.
+     * @param fechaReserva la fecha de la reserva en formato String.
+     * @return el número de reservas existentes para ese servicio en esa fecha.
+     */
     @Override
     public int countByServicioIdAndFechaReserva(Long servicioId, String fechaReserva) {
-    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-    CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-    Root<Reserva> root = cq.from(Reserva.class);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Reserva> root = cq.from(Reserva.class);
 
-    Predicate servicioIdPredicate = cb.equal(root.get("servicio").get("idServicio"), servicioId);
-    Predicate fechaPredicate = cb.equal(root.get("fechaReserva"), fechaReserva);
+        Predicate servicioIdPredicate = cb.equal(root.get("servicio").get("idServicio"), servicioId);
+        Predicate fechaPredicate = cb.equal(root.get("fechaReserva"), fechaReserva);
 
-    cq.select(cb.count(root)).where(cb.and(servicioIdPredicate, fechaPredicate));
+        cq.select(cb.count(root)).where(cb.and(servicioIdPredicate, fechaPredicate));
 
-    return entityManager.createQuery(cq).getSingleResult().intValue();
+        return entityManager.createQuery(cq).getSingleResult().intValue();
     }
 }
