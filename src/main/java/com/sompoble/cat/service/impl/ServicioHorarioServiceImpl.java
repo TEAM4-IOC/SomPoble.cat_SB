@@ -15,21 +15,43 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación del servicio para gestionar la relación entre servicios y horarios.
+ * <p>
+ * Esta clase proporciona la implementación concreta de los métodos definidos en la interfaz
+ * ServicioHorarioService, facilitando la obtención de información combinada de servicios
+ * y sus horarios asociados.
+ * </p>
+ */
 @Service
 public class ServicioHorarioServiceImpl implements ServicioHorarioService {
 
+    /**
+     * Repositorio para acceder a los datos de servicios.
+     */
     @Autowired
     private ServicioRepository servicioRepository;
 
+    /**
+     * Repositorio para acceder a los datos de horarios.
+     */
     @Autowired
     private HorarioRepository horarioRepository;
     
-
+    /**
+     * Repositorio para acceder a los datos de empresas.
+     */
     @Autowired
     private EmpresaRepository empresaRepository;
 
-    // --- Implementación de métodos ---
-
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Este método busca servicios cuyo nombre contenga la cadena especificada y
+     * horarios que incluyan el día laborable indicado. Luego combina aquellos
+     * que pertenezcan a la misma empresa.
+     * </p>
+     */
     @Override
     public List<ServicioHorarioDTO> buscarPorNombreYServicio(
         String nombreServicio, String diaLaborable) {
@@ -50,11 +72,22 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
         return dtos;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServicioHorarioDTO crearDTO(Servicio servicio, Horario horario) {
         return new ServicioHorarioDTO(servicio, horario);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Este método recupera todos los servicios y horarios asociados a una empresa
+     * identificada por su identificador fiscal, y crea DTOs combinando cada servicio
+     * con cada horario de la misma empresa.
+     * </p>
+     */
     @Override
     public List<ServicioHorarioDTO> obtenerServiciosConHorariosPorEmpresa(String identificadorFiscal) {
         // 1. Buscar la empresa por identificador fiscal
@@ -87,6 +120,16 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
         return dtos;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Este método busca un servicio y un horario por sus IDs respectivos, verifica que
+     * ambos pertenezcan a la misma empresa, y crea un DTO con la información combinada.
+     * </p>
+     * 
+     * @throws RuntimeException si el servicio o el horario no existen, o si no pertenecen
+     *                           a la misma empresa
+     */
     @Override
     public ServicioHorarioDTO crearDTO(Long servicioId, Long horarioId) {
         // 1. Buscar el servicio por ID
@@ -111,6 +154,4 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
         // 4. Crear el DTO
         return new ServicioHorarioDTO(servicio, horario);
     }
-
-	
-	}
+}

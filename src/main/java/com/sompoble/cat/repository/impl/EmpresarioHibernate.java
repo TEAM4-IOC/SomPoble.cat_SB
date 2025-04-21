@@ -17,23 +17,44 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementación del repositorio para la entidad {@code Empresario}.
+ * <p>
+ * Proporciona métodos para gestionar empresarios en la base de datos utilizando
+ * Hibernate como proveedor JPA.
+ * </p>
+ * 
+ * @author SomPoble
+ */
 @Repository
 @Transactional
 public class EmpresarioHibernate implements EmpresarioRepository {
 
+    /**
+     * EntityManager para gestionar las operaciones de persistencia.
+     */
     @Autowired
     private EntityManager entityManager;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addEmpresario(Empresario empresario) {
         entityManager.persist(empresario);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateEmpresario(EmpresarioDTO empresario) {
         entityManager.merge(empresario);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EmpresarioDTO findByDNI(String dni) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -47,6 +68,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return result.isEmpty() ? null : convertToDTO(result.get(0));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Empresario findEmpresarioByDNI(String dni) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -59,6 +83,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return entityManager.createQuery(cq).getSingleResult();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EmpresarioDTO> findAll() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -69,6 +96,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return empresarios.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteById(Long id) {
         Empresario empresario = entityManager.find(Empresario.class, id);
@@ -77,6 +107,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteByDni(String dni) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -93,6 +126,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean existsByDni(String dni) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -106,6 +142,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return count > 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean existsById(Long id) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -119,6 +158,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return count > 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean existsByEmail(String email) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -132,6 +174,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return count > 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EmpresarioDTO findByEmail(String email) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -145,6 +190,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return result.isEmpty() ? null : convertToDTO(result.get(0));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Empresario findByEmailFull(String email){
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -158,6 +206,18 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         return result.isEmpty() ? null : result.get(0);
     }
 
+    /**
+     * Convierte un objeto {@link Empresario} a su correspondiente
+     * {@link EmpresarioDTO}.
+     * <p>
+     * Este método extrae la información relevante de la entidad Empresario
+     * y crea un objeto DTO que puede ser transferido a través de capas.
+     * También convierte las empresas asociadas al empresario a sus respectivos DTOs.
+     * </p>
+     *
+     * @param empresario el objeto {@link Empresario} a convertir.
+     * @return el objeto {@link EmpresarioDTO} correspondiente.
+     */
     private EmpresarioDTO convertToDTO(Empresario empresario) {
         List<Long> notificacionesIds = new ArrayList<>();
 
@@ -205,6 +265,17 @@ public class EmpresarioHibernate implements EmpresarioRepository {
         );
     }
 
+    /**
+     * Convierte un objeto {@link EmpresarioDTO} a una entidad {@link Empresario}.
+     * <p>
+     * Este método crea una nueva entidad Empresario y la completa con
+     * la información contenida en el DTO proporcionado, incluyendo la conversión
+     * de las empresas asociadas a sus respectivas entidades.
+     * </p>
+     *
+     * @param empresarioDTO El DTO que contiene la información del empresario.
+     * @return Una entidad Empresario con la información del DTO.
+     */
     public Empresario convertToEntity(EmpresarioDTO empresarioDTO) {
         Empresario empresario = new Empresario();
 
@@ -232,5 +303,4 @@ public class EmpresarioHibernate implements EmpresarioRepository {
 
         return empresario;
     }
-
 }

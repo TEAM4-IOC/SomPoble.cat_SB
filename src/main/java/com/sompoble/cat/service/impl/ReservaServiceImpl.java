@@ -20,6 +20,9 @@ import java.util.List;
 @Service
 public class ReservaServiceImpl implements ReservaService {
 
+    /**
+     * Repositorio para acceder a los datos de las reservas.
+     */
     @Autowired
     private ReservaRepository reservaRepository;
 
@@ -56,6 +59,12 @@ public class ReservaServiceImpl implements ReservaService {
         return reservaRepository.findById(id);
     }
     
+    /**
+     * Busca una reserva completa por su identificador único.
+     *
+     * @param id el identificador de la reserva.
+     * @return la entidad {@code Reserva} completa si existe, o null si no se encuentra.
+     */
     @Override
     public Reserva findByIdFull(Long id) {
         return reservaRepository.findByIdFull(id);

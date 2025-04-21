@@ -1,19 +1,14 @@
 package com.sompoble.cat.service;
-
 import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.domain.Reserva;
 import java.util.List;
-
 /**
  * Servicio para gestionar las reservas.
  * <p>
  * Proporciona métodos para realizar operaciones sobre las reservas.
  * </p>
- * 
- * @author SomPoble
  */
 public interface ReservaService {
-
     /**
      * Obtiene todas las reservas asociadas a un cliente mediante su DNI.
      *
@@ -21,7 +16,6 @@ public interface ReservaService {
      * @return una lista de DTOs de reservas realizadas por el cliente con el DNI especificado.
      */
     List<ReservaDTO> findByClienteDni(String dni);
-
     /**
      * Obtiene todas las reservas asociadas a una empresa o autónomo mediante su identificador fiscal.
      *
@@ -29,7 +23,6 @@ public interface ReservaService {
      * @return una lista de DTOs de reservas asociadas a la empresa o autónomo especificado.
      */
     List<ReservaDTO> findByEmpresaIdentificadorFiscal(String identificadorFiscal);
-
     /**
      * Busca una reserva por su identificador único.
      *
@@ -38,8 +31,13 @@ public interface ReservaService {
      */
     ReservaDTO findById(Long id);
     
+    /**
+     * Busca una reserva completa por su identificador único.
+     *
+     * @param id el identificador de la reserva.
+     * @return la entidad {@code Reserva} completa si existe, o null si no se encuentra.
+     */
     Reserva findByIdFull(Long id);
-
     /**
      * Guarda una nueva reserva.
      * Si la reserva ya existe, la actualiza.
@@ -47,7 +45,6 @@ public interface ReservaService {
      * @param reserva la reserva a guardar.
      */
     void addReserva(Reserva reserva);
-
     /**
      * Actualiza una reserva existente.
      *
@@ -68,7 +65,6 @@ public interface ReservaService {
      * @param dni el documento nacional de identidad del cliente.
      */
     void deleteByClienteDni(String dni);
-
     /**
      * Elimina todas las reservas asociadas a una empresa o autónomo mediante su identificador fiscal.
      *

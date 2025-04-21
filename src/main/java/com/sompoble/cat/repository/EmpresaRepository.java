@@ -10,8 +10,6 @@ import java.util.List;
  * <p>
  * Proporciona métodos para gestionar empresas en la base de datos.
  * </p>
- * 
- * @author SomPoble
  */
 @Repository
 public interface EmpresaRepository {
@@ -20,12 +18,21 @@ public interface EmpresaRepository {
      * Busca una empresa por su identificador fiscal.
      *
      * @param identificadorFiscal el identificador fiscal de la empresa.
-     * @return un objeto {@code EmpresaDTO} si la empresa existe, o null si no se encuentra.
+     * @return un objeto {@code EmpresaDTO} si la empresa existe, o null si no
+     * se encuentra.
      */
     EmpresaDTO findByIdentificadorFiscal(String identificadorFiscal);
 
+    /**
+     * Busca una empresa por su identificador fiscal y retorna toda la
+     * información de la empresa.
+     *
+     * @param identificadorFiscal el identificador fiscal de la empresa.
+     * @return un objeto {@code Empresa} completo si la empresa existe, o null
+     * si no se encuentra.
+     */
     Empresa findByIdentificadorFiscalFull(String identificadorFiscal);
-    
+
     /**
      * Actualiza la información de una empresa en la base de datos.
      *
@@ -43,7 +50,8 @@ public interface EmpresaRepository {
     /**
      * Obtiene todas las empresas registradas en la base de datos.
      *
-     * @return una lista de objetos {@code EmpresaDTO} con la información de las empresas.
+     * @return una lista de objetos {@code EmpresaDTO} con la información de las
+     * empresas.
      */
     List<EmpresaDTO> findAll();
 
@@ -63,7 +71,8 @@ public interface EmpresaRepository {
     void deleteById(Long id);
 
     /**
-     * Verifica si una empresa existe en la base de datos por su identificador fiscal.
+     * Verifica si una empresa existe en la base de datos por su identificador
+     * fiscal.
      *
      * @param identificadorFiscal el identificador fiscal de la empresa.
      * @return true si la empresa existe, false en caso contrario.
@@ -73,7 +82,8 @@ public interface EmpresaRepository {
     /**
      * Elimina una empresa de la base de datos mediante su identificador fiscal.
      *
-     * @param identificadorFiscal el identificador fiscal de la empresa a eliminar.
+     * @param identificadorFiscal el identificador fiscal de la empresa a
+     * eliminar.
      */
     void deleteByIdentificadorFiscal(String identificadorFiscal);
 }

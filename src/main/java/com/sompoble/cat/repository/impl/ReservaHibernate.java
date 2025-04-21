@@ -31,15 +31,27 @@ import java.util.stream.Collectors;
 @Transactional
 public class ReservaHibernate implements ReservaRepository {
 
+    /**
+     * EntityManager para gestionar las operaciones de persistencia.
+     */
     @Autowired
     private EntityManager entityManager;
 
+    /**
+     * Servicio para gestionar clientes.
+     */
     @Autowired
     private ClienteService clienteService;
 
+    /**
+     * Servicio para gestionar empresas.
+     */
     @Autowired
     private EmpresaService empresaService;
 
+    /**
+     * Servicio para gestionar servicios.
+     */
     @Autowired
     private ServicioService servicioService;
 
@@ -101,6 +113,12 @@ public class ReservaHibernate implements ReservaRepository {
         return reserva != null ? convertToDTO(reserva) : null;
     }
 
+    /**
+     * Busca una reserva completa por su identificador único.
+     *
+     * @param id el identificador de la reserva.
+     * @return la entidad {@code Reserva} completa si existe, o null si no se encuentra.
+     */
     @Override
     public Reserva findByIdFull(Long id) {
         Reserva reserva = entityManager.find(Reserva.class, id);
@@ -204,6 +222,17 @@ public class ReservaHibernate implements ReservaRepository {
         return dto;
     }
 
+    /**
+     * Convierte un objeto {@link ReservaDTO} a una entidad {@link Reserva}.
+     * <p>
+     * Este método crea una nueva entidad Reserva y la completa con
+     * la información contenida en el DTO proporcionado, incluyendo las relaciones
+     * con Cliente, Empresa y Servicio.
+     * </p>
+     *
+     * @param reservaDTO El DTO que contiene la información de la reserva.
+     * @return Una entidad Reserva con la información del DTO.
+     */
     public Reserva convertToEntity(ReservaDTO reservaDTO) {
         Reserva reserva = new Reserva();
 

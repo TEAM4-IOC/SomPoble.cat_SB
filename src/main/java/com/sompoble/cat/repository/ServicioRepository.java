@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio para gestionar operaciones de acceso a datos de la entidad {@link Servicio}.
+ * Repositorio para gestionar operaciones de acceso a datos de la entidad
+ * {@link Servicio}.
  */
 public interface ServicioRepository {
 
@@ -40,10 +41,12 @@ public interface ServicioRepository {
     List<Servicio> findAllByEmpresaId(Long empresaId);
 
     /**
-     * Obtiene todos los servicios asociados a una empresa específica a partir de su identificador fiscal.
+     * Obtiene todos los servicios asociados a una empresa específica a partir
+     * de su identificador fiscal.
      *
      * @param identificadorFiscal Identificador fiscal de la empresa.
-     * @return Lista de servicios pertenecientes a la empresa con el identificador fiscal dado.
+     * @return Lista de servicios pertenecientes a la empresa con el
+     * identificador fiscal dado.
      */
     List<Servicio> findAllByEmpresaIdentificador(String identificadorFiscal);
 
@@ -51,7 +54,8 @@ public interface ServicioRepository {
      * Verifica si existe un servicio con el identificador especificado.
      *
      * @param id Identificador del servicio.
-     * @return {@code true} si el servicio existe, {@code false} en caso contrario.
+     * @return {@code true} si el servicio existe, {@code false} en caso
+     * contrario.
      */
     boolean existsById(Long id);
 
@@ -61,27 +65,50 @@ public interface ServicioRepository {
      * @param id Identificador del servicio a eliminar.
      */
     void deleteById(Long id);
-    
+
+    /**
+     * Busca servicios cuyo nombre contenga la cadena especificada, sin
+     * distinguir entre mayúsculas y minúsculas.
+     *
+     * @param nombre Texto a buscar en el nombre del servicio.
+     * @return Lista de servicios que coinciden con el criterio de búsqueda.
+     */
     List<Servicio> findByNombreContainingIgnoreCase(String nombre);
 
     /**
-     * Obtiene todos los servicios de una empresa específica, incluyendo los horarios asociados mediante un LEFT JOIN.
-     * Este método realiza una consulta para recuperar todos los servicios de una empresa, junto con sus horarios,
-     * sin necesidad de que exista un horario asignado a cada servicio.
+     * Obtiene todos los servicios de una empresa específica, incluyendo los
+     * horarios asociados mediante un LEFT JOIN. Este método realiza una
+     * consulta para recuperar todos los servicios de una empresa, junto con sus
+     * horarios, sin necesidad de que exista un horario asignado a cada
+     * servicio.
      *
-     * @param empresaId El identificador de la empresa cuyos servicios se quieren obtener.
-     * @return Una lista de servicios asociados a la empresa indicada. Si no se encuentran servicios, se devuelve una lista vacía.
+     * @param empresaId El identificador de la empresa cuyos servicios se
+     * quieren obtener.
+     * @return Una lista de servicios asociados a la empresa indicada. Si no se
+     * encuentran servicios, se devuelve una lista vacía.
      */
     List<Servicio> findAllHorariosByEmpresaId(Long empresaId);
 
     /**
-     * Busca un servicio por su ID y verifica que pertenezca a una empresa específica.
-     * 
+     * Busca un servicio por su ID y verifica que pertenezca a una empresa
+     * específica.
+     *
      * @param servicioId ID único del servicio.
      * @param empresaId ID de la empresa propietaria del servicio.
-     * @return Un {@link Optional} con el servicio encontrado, o vacío si no existe.
+     * @return Un {@link Optional} con el servicio encontrado, o vacío si no
+     * existe.
      */
     Optional<Servicio> findByIdAndEmpresaId(Long servicioId, Long empresaId);
-    
+
+    /**
+     * Busca un servicio por su ID y verifica que pertenezca a una empresa con
+     * el identificador fiscal especificado.
+     *
+     * @param id ID único del servicio.
+     * @param identificadorFiscal Identificador fiscal de la empresa propietaria
+     * del servicio.
+     * @return Un {@link Optional} con el servicio encontrado, o vacío si no
+     * existe.
+     */
     Optional<Servicio> findByIdAndEmpresaIdentificadorFiscal(Long id, String identificadorFiscal);
 }

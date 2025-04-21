@@ -123,6 +123,7 @@ public class EventoHibernate implements EventoRepository {
      * @param end       Fecha de fin del rango.
      * @return Lista de eventos que cumplen con las condiciones.
      */
+    @Override
     public List<Evento> findByUbicacionAndFechaEventoBetween(String ubicacion, LocalDateTime start, LocalDateTime end) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Evento> cq = cb.createQuery(Evento.class);
@@ -139,6 +140,7 @@ public class EventoHibernate implements EventoRepository {
      * @param keyword Palabra clave a buscar en el nombre del evento.
      * @return Lista de eventos que contienen la palabra clave.
      */
+    @Override
     public List<Evento> findByNombreContainingIgnoreCase(String keyword) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Evento> cq = cb.createQuery(Evento.class);
@@ -153,6 +155,7 @@ public class EventoHibernate implements EventoRepository {
      * 
      * @return El evento más cercano a la fecha actual.
      */
+    @Override
     public Optional<Evento> findClosestEvent() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Evento> cq = cb.createQuery(Evento.class);
@@ -167,6 +170,7 @@ public class EventoHibernate implements EventoRepository {
      * 
      * @return El número total de eventos.
      */
+    @Override
     public Long count() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
