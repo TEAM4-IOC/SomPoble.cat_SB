@@ -175,7 +175,7 @@ public class SHController {
      * 
      * @param idServicio     ID único del servicio a eliminar.
      * @param identificadorFiscal Identificador fiscal de la empresa propietaria del servicio.
-     * @return {@link ResponseEntity#NO_CONTENT()} (status 204) si la operación se realiza con éxito.
+     * @return (status 204) si la operación se realiza con éxito.
      * @throws RuntimeException Si:
      *   - La empresa no existe (identificador fiscal inválido).
      *   - El servicio no existe o no pertenece a la empresa.
