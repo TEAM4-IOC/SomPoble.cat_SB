@@ -21,11 +21,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementación de {@link ServicioRepository} utilizando Hibernate con Criteria API.
+ * <p>
+ * Esta clase proporciona la implementación concreta de las operaciones de acceso a datos
+ * definidas en la interfaz ServicioRepository, utilizando JPA/Hibernate y Criteria API
+ * para interactuar con la base de datos.
+ * </p>
  */
 @Repository
 @Transactional
 public class ServicioHibernate implements ServicioRepository {
 
+    /**
+     * EntityManager para gestionar las operaciones de persistencia.
+     */
     @Autowired
     private EntityManager entityManager;
 
@@ -131,7 +139,12 @@ public class ServicioHibernate implements ServicioRepository {
         }
     }
 
-
+    /**
+     * Busca servicios cuyo nombre contenga la cadena especificada, sin distinguir entre mayúsculas y minúsculas.
+     *
+     * @param nombre Texto a buscar en el nombre del servicio.
+     * @return Lista de servicios que coinciden con el criterio de búsqueda.
+     */
     @Override
     public List<Servicio> findByNombreContainingIgnoreCase(String nombre) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -147,6 +160,7 @@ public class ServicioHibernate implements ServicioRepository {
         cq.where(predicate);
         return entityManager.createQuery(cq).getResultList();
     }
+    
     /**
      * Obtiene todos los servicios de una empresa específica, incluyendo los horarios asociados mediante un LEFT JOIN.
      * Este método realiza una consulta para recuperar todos los servicios de una empresa, junto con sus horarios,
@@ -171,6 +185,7 @@ public class ServicioHibernate implements ServicioRepository {
        
         return entityManager.createQuery(cq).getResultList();
     }
+    
     /**
      * Busca un servicio por su ID y verifica que pertenezca a una empresa específica.
      * 
@@ -199,6 +214,7 @@ public class ServicioHibernate implements ServicioRepository {
             return Optional.empty();
         }
     }
+    
     /**
      * Busca un servicio por su ID y verifica que pertenezca a una empresa con el identificador fiscal especificado.
      * 
@@ -227,8 +243,4 @@ public class ServicioHibernate implements ServicioRepository {
             return Optional.empty();
         }
     }
-
-
 }
-
-

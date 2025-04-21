@@ -10,10 +10,7 @@ import java.util.List;
  * <p>
  * Proporciona métodos para gestionar reservas en la base de datos.
  * </p>
- * 
- * @author SomPoble
  */
-
 @Repository
 public interface ReservaRepository {
 
@@ -21,12 +18,14 @@ public interface ReservaRepository {
      * Obtiene todas las reservas asociadas a un cliente mediante su DNI.
      *
      * @param dni el documento nacional de identidad del cliente.
-     * @return una lista de reservas realizadas por el cliente con el DNI especificado.
+     * @return una lista de reservas realizadas por el cliente con el DNI
+     * especificado.
      */
     List<ReservaDTO> findByClienteDni(String dni);
 
     /**
-     * Obtiene todas las reservas asociadas a una empresa mediante su identificador fiscal.
+     * Obtiene todas las reservas asociadas a una empresa mediante su
+     * identificador fiscal.
      *
      * @param identificadorFiscal el identificador fiscal de la empresa.
      * @return una lista de reservas asociadas a la empresa especificada.
@@ -37,15 +36,24 @@ public interface ReservaRepository {
      * Busca una reserva por su identificador único.
      *
      * @param id el identificador de la reserva.
-     * @return un {@code Optional} que contiene la reserva si existe, o vacío si no se encuentra.
+     * @return un {@code Optional} que contiene la reserva si existe, o vacío si
+     * no se encuentra.
      */
     ReservaDTO findById(Long id);
-    
+
+    /**
+     * Busca una reserva completa por su identificador único, devolviendo la
+     * entidad completa.
+     *
+     * @param id el identificador de la reserva.
+     * @return la entidad {@code Reserva} completa si existe, o null si no se
+     * encuentra.
+     */
     Reserva findByIdFull(Long id);
 
     /**
-     * Guarda una nueva reserva en la base de datos.
-     * Si la reserva ya existe, la actualiza.
+     * Guarda una nueva reserva en la base de datos. Si la reserva ya existe, la
+     * actualiza.
      *
      * @param reserva la reserva a guardar.
      */
@@ -57,14 +65,14 @@ public interface ReservaRepository {
      * @param reserva Objeto {@link Reserva} con la información actualizada.
      */
     void updateReserva(Reserva reserva);
-    
+
     /**
      * Elimina una reserva de la base de datos mediante su identificador.
      *
      * @param id el identificador de la reserva a eliminar.
      */
     void deleteById(Long id);
-    
+
     /**
      * Elimina todas las reservas asociadas a un cliente mediante su DNI.
      *
@@ -73,18 +81,21 @@ public interface ReservaRepository {
     void deleteByClienteDni(String dni);
 
     /**
-     * Elimina todas las reservas asociadas a una empresa o autónomo mediante su identificador fiscal.
+     * Elimina todas las reservas asociadas a una empresa o autónomo mediante su
+     * identificador fiscal.
      *
-     * @param identificadorFiscal el identificador fiscal de la empresa o autónomo.
+     * @param identificadorFiscal el identificador fiscal de la empresa o
+     * autónomo.
      */
     void deleteByEmpresaIdentificadorFiscal(String identificadorFiscal);
-    
+
     /**
-    * Cuenta el número de reservas para un servicio específico en una fecha determinada.
-    *
-    * @param servicioId el identificador del servicio.
-    * @param fechaReserva la fecha de la reserva en formato String.
-    * @return el número de reservas existentes para ese servicio en esa fecha.
-    */
+     * Cuenta el número de reservas para un servicio específico en una fecha
+     * determinada.
+     *
+     * @param servicioId el identificador del servicio.
+     * @param fechaReserva la fecha de la reserva en formato String.
+     * @return el número de reservas existentes para ese servicio en esa fecha.
+     */
     int countByServicioIdAndFechaReserva(Long servicioId, String fechaReserva);
 }

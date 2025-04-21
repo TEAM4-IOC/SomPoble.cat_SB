@@ -10,8 +10,6 @@ import java.util.List;
  * <p>
  * Proporciona métodos para gestionar clientes en la base de datos.
  * </p>
- * 
- * @author SomPoble
  */
 @Repository
 public interface ClienteRepository {
@@ -20,10 +18,18 @@ public interface ClienteRepository {
      * Busca un cliente por su DNI.
      *
      * @param dni el Documento Nacional de Identidad del cliente.
-     * @return un objeto {@code ClienteDTO} si el cliente existe, o null si no se encuentra.
+     * @return un objeto {@code ClienteDTO} si el cliente existe, o null si no
+     * se encuentra.
      */
     ClienteDTO findByDNI(String dni);
-    
+
+    /**
+     * Busca un cliente por su DNI y retorna toda la información del cliente.
+     *
+     * @param dni el Documento Nacional de Identidad del cliente.
+     * @return un objeto {@code Cliente} completo si el cliente existe, o null
+     * si no se encuentra.
+     */
     Cliente findByDNIFull(String dni);
 
     /**
@@ -43,7 +49,8 @@ public interface ClienteRepository {
     /**
      * Obtiene todos los clientes registrados en la base de datos.
      *
-     * @return una lista de objetos {@code ClienteDTO} con la información de los clientes.
+     * @return una lista de objetos {@code ClienteDTO} con la información de los
+     * clientes.
      */
     List<ClienteDTO> findAll();
 
@@ -78,7 +85,8 @@ public interface ClienteRepository {
     void deleteByDni(String dni);
 
     /**
-     * Verifica si un cliente existe en la base de datos por su correo electrónico.
+     * Verifica si un cliente existe en la base de datos por su correo
+     * electrónico.
      *
      * @param email el correo electrónico del cliente.
      * @return true si el cliente existe, false en caso contrario.
@@ -89,7 +97,8 @@ public interface ClienteRepository {
      * Busca un cliente por su correo electrónico.
      *
      * @param email el correo electrónico del cliente.
-     * @return un objeto {@code ClienteDTO} si el cliente existe, o null si no se encuentra.
+     * @return un objeto {@code ClienteDTO} si el cliente existe, o null si no
+     * se encuentra.
      */
     ClienteDTO findByEmail(String email);
 }

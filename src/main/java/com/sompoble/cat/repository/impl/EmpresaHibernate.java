@@ -29,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EmpresaHibernate implements EmpresaRepository {
 
+    /**
+     * EntityManager para gestionar las operaciones de persistencia.
+     */
     @Autowired
     private EntityManager entityManager;
 
@@ -79,6 +82,13 @@ public class EmpresaHibernate implements EmpresaRepository {
         }
     }
 
+    /**
+     * Busca una empresa completa por su identificador fiscal.
+     *
+     * @param identificadorFiscal el identificador fiscal de la empresa.
+     * @return un objeto {@code Empresa} completo si la empresa existe, o null
+     * si no se encuentra.
+     */
     @Override
     public Empresa findByIdentificadorFiscalFull(String identificadorFiscal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -240,6 +250,16 @@ public class EmpresaHibernate implements EmpresaRepository {
         return empresaDTO;
     }
 
+    /**
+     * Convierte un objeto {@link EmpresaDTO} a una entidad {@link Empresa}.
+     * <p>
+     * Este método crea una nueva entidad Empresa y la completa con la
+     * información contenida en el DTO proporcionado.
+     * </p>
+     *
+     * @param empresaDTO El DTO que contiene la información de la empresa.
+     * @return Una entidad Empresa con la información del DTO.
+     */
     public Empresa convertToEntity(EmpresaDTO empresaDTO) {
         Empresa empresa = new Empresa();
 

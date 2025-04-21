@@ -10,8 +10,6 @@ import java.util.List;
  * <p>
  * Proporciona métodos para gestionar empresarios en la base de datos.
  * </p>
- * 
- * @author SomPoble
  */
 @Repository
 public interface EmpresarioRepository {
@@ -20,22 +18,25 @@ public interface EmpresarioRepository {
      * Busca un empresario por su DNI.
      *
      * @param dni el Documento Nacional de Identidad del empresario.
-     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null si no se encuentra.
+     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null
+     * si no se encuentra.
      */
     EmpresarioDTO findByDNI(String dni);
-    
+
     /**
      * Busca un empresario completo por su DNI.
      *
      * @param dni el Documento Nacional de Identidad del empresario.
-     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null si no se encuentra.
+     * @return un objeto {@code Empresario} completo si el empresario existe, o
+     * null si no se encuentra.
      */
     Empresario findEmpresarioByDNI(String dni);
 
     /**
      * Actualiza la información de un empresario en la base de datos.
      *
-     * @param empresario el objeto {@link Empresario} con la información actualizada.
+     * @param empresario el objeto {@link Empresario} con la información
+     * actualizada.
      */
     void updateEmpresario(EmpresarioDTO empresario);
 
@@ -49,7 +50,8 @@ public interface EmpresarioRepository {
     /**
      * Obtiene todos los empresarios registrados en la base de datos.
      *
-     * @return una lista de objetos {@code EmpresarioDTO} con la información de los empresarios.
+     * @return una lista de objetos {@code EmpresarioDTO} con la información de
+     * los empresarios.
      */
     List<EmpresarioDTO> findAll();
 
@@ -84,20 +86,29 @@ public interface EmpresarioRepository {
     void deleteByDni(String dni);
 
     /**
-     * Verifica si un empresario existe en la base de datos por su correo electrónico.
+     * Verifica si un empresario existe en la base de datos por su correo
+     * electrónico.
      *
      * @param email el correo electrónico del empresario.
      * @return true si el empresario existe, false en caso contrario.
      */
     boolean existsByEmail(String email);
 
+    /**
+     * Busca un empresario completo por su correo electrónico.
+     *
+     * @param email el correo electrónico del empresario.
+     * @return un objeto {@code Empresario} completo si el empresario existe, o
+     * null si no se encuentra.
+     */
     Empresario findByEmailFull(String email);
 
     /**
      * Busca un empresario por su correo electrónico.
      *
      * @param email el correo electrónico del empresario.
-     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null si no se encuentra.
+     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null
+     * si no se encuentra.
      */
     EmpresarioDTO findByEmail(String email);
 

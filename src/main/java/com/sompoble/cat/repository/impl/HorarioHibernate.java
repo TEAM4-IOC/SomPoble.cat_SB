@@ -25,6 +25,10 @@ import java.util.Optional;
 @Repository
 @Transactional
 public class HorarioHibernate implements HorarioRepository {
+    
+    /**
+     * EntityManager para gestionar las operaciones de persistencia.
+     */
 	@PersistenceContext
     private EntityManager entityManager;
 
@@ -33,7 +37,6 @@ public class HorarioHibernate implements HorarioRepository {
      * @param idEmpresa Identificador de la empresa.
      * @return Lista de horarios de la empresa.
      */
-    
     @Override
     public List<Horario> findByEmpresa_IdEmpresa(Long idEmpresa) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -43,6 +46,7 @@ public class HorarioHibernate implements HorarioRepository {
         cq.where(empresaIdPredicate);
         return entityManager.createQuery(cq).getResultList();
     }
+    
     /**
      * Busca horarios que contengan un día laboral determinado, ignorando mayúsculas y minúsculas.
      * @param dia Día a buscar.
@@ -67,8 +71,6 @@ public class HorarioHibernate implements HorarioRepository {
      * @param fin Hora de fin del rango.
      * @return Lista de horarios dentro del rango.
      */
-    
-
     @Override
     public List<Horario> findByHorarioInicioBetween(LocalTime inicio, LocalTime fin) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -80,12 +82,11 @@ public class HorarioHibernate implements HorarioRepository {
     }
 
     /**
-     * Encuentra horarios cuyo inicio esté entre un rango de horas.
+     * Encuentra horarios cuya hora de fin esté entre un rango de horas.
      * @param inicio Hora de inicio del rango.
      * @param fin Hora de fin del rango.
      * @return Lista de horarios dentro del rango.
      */
-    
     @Override
     public List<Horario> findByHorarioFinBetween(LocalTime inicio, LocalTime fin) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -102,7 +103,6 @@ public class HorarioHibernate implements HorarioRepository {
      * @param dia Día de la semana.
      * @return Lista de horarios.
      */
-    
     @Override
     public List<Horario> findByEmpresa_IdEmpresaAndDiasLaborablesContaining(
         Long idEmpresa, String dia) {
@@ -118,9 +118,12 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.createQuery(cq).getResultList();
     }
     
-    
-    
-
+    /**
+     * Busca horarios que comienzan antes de una hora específica.
+     * 
+     * @param hora Hora límite.
+     * @return Lista de horarios que comienzan antes de la hora especificada.
+     */
     @Override
     public List<Horario> findByHorarioInicioBefore(LocalTime hora) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -131,6 +134,12 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.createQuery(cq).getResultList();
     }
 
+    /**
+     * Busca horarios que terminan después de una hora específica.
+     * 
+     * @param hora Hora límite.
+     * @return Lista de horarios que terminan después de la hora especificada.
+     */
     @Override
     public List<Horario> findByHorarioFinAfter(LocalTime hora) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -141,6 +150,11 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.createQuery(cq).getResultList();
     }
 
+    /**
+     * Obtiene todos los horarios ordenados por hora de inicio ascendente.
+     * 
+     * @return Lista de horarios ordenados por hora de inicio.
+     */
     @Override
     public List<Horario> findByOrderByHorarioInicioAsc() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -150,6 +164,14 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.createQuery(cq).getResultList();
     }
 
+    /**
+     * Busca horarios de una empresa específica cuya hora de inicio esté en un rango.
+     * 
+     * @param idEmpresa ID de la empresa.
+     * @param inicio Hora de inicio del rango.
+     * @param fin Hora de fin del rango.
+     * @return Lista de horarios que cumplen con las condiciones.
+     */
     @Override
     public List<Horario> findByEmpresa_IdEmpresaAndHorarioInicioBetween(
         Long idEmpresa, LocalTime inicio, LocalTime fin) {
@@ -162,6 +184,14 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.createQuery(cq).getResultList();
     }
 
+    /**
+     * Busca horarios de una empresa específica cuya hora de fin esté en un rango.
+     * 
+     * @param idEmpresa ID de la empresa.
+     * @param inicio Hora de inicio del rango.
+     * @param fin Hora de fin del rango.
+     * @return Lista de horarios que cumplen con las condiciones.
+     */
     @Override
     public List<Horario> findByEmpresa_IdEmpresaAndHorarioFinBetween(
         Long idEmpresa, LocalTime inicio, LocalTime fin) {
@@ -174,8 +204,12 @@ public class HorarioHibernate implements HorarioRepository {
         return entityManager.createQuery(cq).getResultList();
     }
 
- 
-
+    /**
+     * Busca horarios que incluyan un día específico.
+     * 
+     * @param dia Día de la semana a buscar.
+     * @return Lista de horarios que incluyen el día especificado.
+     */
     @Override
     public List<Horario> findByDiaExacto(String dia) {
         return entityManager.createQuery(
@@ -185,6 +219,14 @@ public class HorarioHibernate implements HorarioRepository {
             .getResultList();
     }
 
+    /**
+     * Busca horarios de una empresa con horario entre horarioInicio y horarioFin.
+     * 
+     * @param idEmpresa ID de la empresa.
+     * @param inicio Hora de inicio del rango.
+     * @param fin Hora de fin del rango.
+     * @return Lista de horarios que cumplen con las condiciones.
+     */
     @Override
     public List<Horario> findByEmpresaAndHorarioBetween(
         Long idEmpresa, LocalTime inicio, LocalTime fin) {
@@ -199,6 +241,13 @@ public class HorarioHibernate implements HorarioRepository {
             .getResultList();
     }
 
+    /**
+     * Busca horarios que empiecen antes de una hora y terminen después de otra.
+     * 
+     * @param inicio Hora de inicio para la comparación.
+     * @param fin Hora de fin para la comparación.
+     * @return Lista de horarios que se solapan con el rango proporcionado.
+     */
     @Override
     public List<Horario> findByHorarioOverlap(
         LocalTime inicio, LocalTime fin) {
@@ -211,6 +260,15 @@ public class HorarioHibernate implements HorarioRepository {
             .getResultList();
     }
 
+    /**
+     * Busca un horario específico por empresa, día y rango de horas exacto.
+     * 
+     * @param idEmpresa ID de la empresa.
+     * @param dia Día específico.
+     * @param inicio Hora de inicio exacta.
+     * @param fin Hora de fin exacta.
+     * @return El horario que cumple con todas las condiciones.
+     */
     @Override
     public Horario findByEmpresaDiaYHorarioExacto(
         Long idEmpresa, String dia, LocalTime inicio, LocalTime fin) {
@@ -227,6 +285,11 @@ public class HorarioHibernate implements HorarioRepository {
             .getSingleResult();
     }
 
+    /**
+     * Busca horarios que no estén asociados a una empresa.
+     * 
+     * @return Lista de horarios sin empresa asociada.
+     */
     @Override
     public List<Horario> findOrphanHorarios() {
         return entityManager.createQuery(
@@ -234,6 +297,12 @@ public class HorarioHibernate implements HorarioRepository {
             .getResultList();
     }
 
+    /**
+     * Cuenta el número de horarios asociados a una empresa específica.
+     * 
+     * @param idEmpresa ID de la empresa.
+     * @return Número de horarios de la empresa.
+     */
     @Override
     public Long countByEmpresaId(Long idEmpresa) {
         return entityManager.createQuery(
@@ -242,6 +311,13 @@ public class HorarioHibernate implements HorarioRepository {
             .getSingleResult();
     }
 
+    /**
+     * Busca horarios que contengan múltiples días específicos.
+     * 
+     * @param dia1 Primer día a incluir.
+     * @param dia2 Segundo día a incluir.
+     * @return Lista de horarios que incluyen ambos días.
+     */
     @Override
     public List<Horario> findByDiasMultiples(
         String dia1, String dia2) {
@@ -254,6 +330,15 @@ public class HorarioHibernate implements HorarioRepository {
             .getResultList();
     }
 
+    /**
+     * Busca horarios en intervalos de fechas específicos.
+     * 
+     * @param inicio1 Límite inferior del rango para la hora de inicio.
+     * @param fin1 Límite superior del rango para la hora de inicio.
+     * @param inicio2 Límite inferior del rango para la hora de fin.
+     * @param fin2 Límite superior del rango para la hora de fin.
+     * @return Lista de horarios que cumplen con las condiciones de rango.
+     */
     @Override
     public List<Horario> findByHorarioRanges(
         LocalTime inicio1, LocalTime fin1, 
@@ -269,6 +354,13 @@ public class HorarioHibernate implements HorarioRepository {
             .getResultList();
     }
 
+    /**
+     * Busca horarios con fecha de alta en un rango específico.
+     * 
+     * @param fechaInicio Fecha inicial del rango.
+     * @param fechaFin Fecha final del rango.
+     * @return Lista de horarios creados dentro del rango de fechas.
+     */
     @Override
     public List<Horario> findByFechaAltaBetween(
         LocalDateTime fechaInicio, LocalDateTime fechaFin) {
@@ -280,6 +372,12 @@ public class HorarioHibernate implements HorarioRepository {
             .getResultList();
     }
 
+    /**
+     * Busca horarios con fecha de modificación posterior a una fecha específica.
+     * 
+     * @param fecha Fecha límite.
+     * @return Lista de horarios modificados después de la fecha especificada.
+     */
     @Override
     public List<Horario> findByFechaModificacionAfter(
         LocalDateTime fecha) {
@@ -289,6 +387,7 @@ public class HorarioHibernate implements HorarioRepository {
             .setParameter("fecha", fecha)
             .getResultList();
     }
+    
     /**
      * Elimina un horario por su ID.
      * @param id Identificador del horario a eliminar.
@@ -307,7 +406,6 @@ public class HorarioHibernate implements HorarioRepository {
      * Obtiene todos los horarios ordenados por horario de inicio ascendente.
      * @return Lista de horarios.
      */
-
     @Override
     public List<Horario> findAll() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -316,6 +414,7 @@ public class HorarioHibernate implements HorarioRepository {
         cq.orderBy(cb.asc(root.get("horarioInicio")));
         return entityManager.createQuery(cq).getResultList();
     }
+    
     /**
      * Guarda un nuevo horario o actualiza uno existente.
      * @param horario Entidad Horario a persistir.
@@ -331,8 +430,12 @@ public class HorarioHibernate implements HorarioRepository {
         return horario;
     }
     
-    
-
+    /**
+     * Busca un horario por su ID.
+     * 
+     * @param id Identificador único del horario.
+     * @return El horario encontrado o null si no existe.
+     */
     @Override
     public Horario findById(Long id) {
         return entityManager.find(Horario.class, id);
@@ -363,9 +466,15 @@ public class HorarioHibernate implements HorarioRepository {
             return Optional.empty();
         }
     }
+    
+    /**
+     * Busca horarios por el identificador fiscal de la empresa asociada al servicio.
+     * 
+     * @param identificadorFiscal Identificador fiscal de la empresa.
+     * @return Lista de horarios asociados a la empresa con el identificador fiscal especificado.
+     */
 	@Override
-	 // Método para obtener horarios por identificadorFiscal de la empresa
-   public List<Horario> findByServicio_Empresa_IdentificadorFiscal(String identificadorFiscal) {
+    public List<Horario> findByServicio_Empresa_IdentificadorFiscal(String identificadorFiscal) {
        String query = "SELECT h FROM Horario h " +
                       "JOIN h.servicio s " +
                       "JOIN s.empresa e " +
@@ -374,6 +483,7 @@ public class HorarioHibernate implements HorarioRepository {
        typedQuery.setParameter("identificadorFiscal", identificadorFiscal);
        return typedQuery.getResultList();
    }
+    
 	/**
 	 * Busca un horario basado en el identificador de la empresa y el identificador del servicio.
 	 * 
@@ -416,6 +526,7 @@ public class HorarioHibernate implements HorarioRepository {
 	        return Optional.empty(); // Retornamos Optional vacío si algo falla
 	    }
 	}
+    
 	/**
 	 * Encuentra el primer horario asociado a un servicio por su identificador
 	 * único.
@@ -440,7 +551,4 @@ public class HorarioHibernate implements HorarioRepository {
 		List<Horario> resultList = query.getResultList();
 		return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.get(0));
 	}
-
-
-
 }
