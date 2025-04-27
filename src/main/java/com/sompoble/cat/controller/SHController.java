@@ -1,13 +1,16 @@
 package com.sompoble.cat.controller;
-
-import com.sompoble.cat.domain.Horario;
-import com.sompoble.cat.domain.Servicio;
-import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.domain.*;
+import com.sompoble.cat.dto.EmailDTO;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.dto.ServicioHorarioDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
+import com.sompoble.cat.repository.EmpresarioRepository;
 import com.sompoble.cat.repository.HorarioRepository;
+import com.sompoble.cat.repository.NotificacionRepository;
 import com.sompoble.cat.repository.ServicioRepository;
+import com.sompoble.cat.service.EmailService;
+import com.sompoble.cat.service.NotificationService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,32 +42,86 @@ public class SHController {
      */
     @Autowired
     private EmpresaRepository empresaRepository;
-
     /**
-     * Crea un nuevo servicio y su horario asociado utilizando el identificador fiscal de la empresa.
-     * 
-     * @param dto Objeto DTO con los datos del servicio y horario.
-     * @return ResponseEntity con el DTO del servicio y horario creados.
+     * Servicio Email
+     */
+    @Autowired
+    private EmailService emailService;
+    /**
+     * Repositorio encargado de operaciones CRUD sobre las notificaciones.
+     */
+    @Autowired
+    private NotificacionRepository notificacionRepository;
+    /**
+     * Repositorio encargado de operaciones CRUD sobre lempresarios.
+     * */
+    @Autowired
+    private EmpresarioRepository empresarioRepository;
+    
+    
+    /**
+     * Crea un nuevo servicio junto con su horario asociado para una empresa existente.
+     * <p>
+     * Además, al crear el servicio:
+     * <ul>
+     *   <li>Envía un correo electrónico a la empresa informando de la creación de la reserva.</li>
+     *   <li>Registra una notificación en la base de datos.</li>
+     * </ul>
+     *
+     * @param dto El objeto {@link ServicioHorarioDTO} que contiene la información del servicio y horario a crear.
+     * @return Un {@link ResponseEntity} que contiene el DTO del servicio y horario creados, junto con la ubicación del nuevo recurso.
+     * @throws RuntimeException si no se encuentra la empresa asociada al identificador fiscal proporcionado.
      */
     @PostMapping("/crear")
     public ResponseEntity<ServicioHorarioDTO> crearServicioConHorario(@RequestBody ServicioHorarioDTO dto) {
+        // Buscar la empresa por su identificador fiscal
         Empresa empresa = empresaRepository.findByIdentificadorFiscalFull(dto.getIdentificadorFiscal());
         if (empresa == null) {
             throw new RuntimeException("Empresa no encontrada con Identificador Fiscal: " + dto.getIdentificadorFiscal());
         }
-        
+
+        // Crear y guardar el Servicio
         Servicio servicio = new Servicio(
                 dto.getNombre(), dto.getDescripcion(), dto.getDuracion(),
                 dto.getPrecio(), dto.getLimiteReservas(), empresa
         );
         servicioRepository.addServicio(servicio);
-        
+
+        // Crear y guardar el Horario
         Horario horario = new Horario(
                 dto.getDiasLaborables(), dto.getHorarioInicio(), dto.getHorarioFin(), empresa
         );
         horario.setServicio(servicio);
         horarioRepository.save(horario);
-        
+
+        // Enviar correo y registrar notificación
+        try {
+            EmailDTO emailDTO = new EmailDTO();
+            emailDTO.setDestinatario(empresa.getEmail()); 
+            emailDTO.setAsunto("Confirmación de Reserva");
+            emailDTO.setMensaje("Su reserva se ha guardado satisfactoriamente.");
+
+            // Enviar el email
+            emailService.sendMail(emailDTO);
+
+            // Buscar el empresario asociado a la empresa (por correo electrónico)
+            Empresario empresario = empresarioRepository.findByEmailFull(empresa.getEmail());
+            if (empresario == null) {
+                throw new RuntimeException("No se encontró ningún empresario asociado a la empresa");
+            }
+
+            // Guardar la notificación en la base de datos
+            Notificacion notificacion = new Notificacion();
+            notificacion.setTipo(Notificacion.TipoNotificacion.INFORMACION);
+            notificacion.setMensaje("Reserva realizada con éxito");
+            notificacion.setEmpresario(empresario); // Asignar el empresario recuperado
+            notificacion.validarDestinatario(); // Validar que haya un destinatario
+            notificacionRepository.save(notificacion);
+        } catch (Exception e) {
+            System.out.println("Error al enviar correo o guardar notificación: " + e.getMessage());
+        }
+
+        // Crear y devolver el DTO de respuesta
         ServicioHorarioDTO responseDTO = new ServicioHorarioDTO(servicio, horario);
         return ResponseEntity.created(URI.create("/api/servicio-horario/" + servicio.getIdServicio())).body(responseDTO);
     }

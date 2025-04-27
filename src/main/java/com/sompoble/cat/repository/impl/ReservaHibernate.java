@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -278,4 +279,35 @@ public class ReservaHibernate implements ReservaRepository {
 
         return entityManager.createQuery(cq).getSingleResult().intValue();
     }
+    /**
+     * Obtiene todas las reservas próximas a ocurrir dentro de un rango de tiempo específico.
+     * <p>
+     * Este método busca reservas cuya fecha y hora de inicio estén entre la fecha actual
+     * y las próximas 24 horas. Se utiliza para identificar reservas que requieren recordatorios automáticos.
+     * </p>
+     *
+     * @return una lista de objetos {@link Reserva} que representan las reservas próximas.
+     *         Si no hay reservas próximas, la lista estará vacía.
+     */
+        @Override
+        public List<Reserva> findUpcomingReservations() {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime tomorrow = now.plusDays(1);
+
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Reserva> cq = cb.createQuery(Reserva.class);
+            Root<Reserva> root = cq.from(Reserva.class);
+
+            // Predicado sobre fechaAlta
+            Predicate recent = cb.between(
+                root.get("fechaAlta"),
+                cb.literal(now),
+                cb.literal(tomorrow)
+            );
+
+            cq.where(recent);
+            return entityManager.createQuery(cq).getResultList();
+        }
+    
+    
 }

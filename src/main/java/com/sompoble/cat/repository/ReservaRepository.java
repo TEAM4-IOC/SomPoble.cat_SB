@@ -2,6 +2,8 @@ package com.sompoble.cat.repository;
 
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.dto.ReservaDTO;
+
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -98,4 +100,10 @@ public interface ReservaRepository {
      * @return el número de reservas existentes para ese servicio en esa fecha.
      */
     int countByServicioIdAndFechaReserva(Long servicioId, String fechaReserva);
+    
+    /**
+     * Obtiene las reservas dadas de alta en las últimas 24 horas.
+     */
+    @Query("SELECT r FROM Reserva r WHERE r.fechaAlta BETWEEN CURRENT_TIMESTAMP AND CURRENT_TIMESTAMP + 1")
+    List<Reserva> findUpcomingReservations();
 }
