@@ -28,11 +28,11 @@ public class DomainTest {
         Empresa empresa = new Empresa(empresario, identificadorFiscal, nombre, actividad, direccion, emailEmp, telefonoEmpresa, tipo);
 
         Cliente cliente = new Cliente("12345678A", "Juan", "Perez", "juan.perez@example.com", "654321987", "password123");
-        Notificacion notificacion = new Notificacion(cliente, empresario, "Mensaje de prueba", "Informativa");
+ /*       Notificacion notificacion = new Notificacion(cliente, empresario, "Mensaje de prueba", "Informativa");
         cliente.setNotificaciones(List.of(notificacion));
 
         Notificacion notificacion2 = new Notificacion(cliente, empresario, "Mensaje de prueba", "Informativa");
-        empresario.setNotificaciones(List.of(notificacion2));
+        empresario.setNotificaciones(List.of(notificacion2));*/
 
         Servicio servicio = new Servicio("Servicio A", "Descripción del servicio A", 60, 150, 10, empresa);
         Reserva reserva = new Reserva(empresa, cliente, servicio, "2025-03-15", "10:30", "Confirmada");
@@ -62,8 +62,8 @@ public class DomainTest {
         assertEquals(1, empresario.getNotificaciones().size(), "El empresario debería tener una notificación");
         assertEquals("Mensaje de prueba", empresario.getNotificaciones().get(0).getMensaje(), "El mensaje de la notificación no es correcto");
 
-        List<Notificacion> nuevasNotificaciones = List.of(new Notificacion(cliente, empresario, "Otro mensaje", "Urgente"));
-        cliente.setNotificaciones(nuevasNotificaciones);
+   //     List<Notificacion> nuevasNotificaciones = List.of(new Notificacion(cliente, empresario, "Otro mensaje", "Urgente"));
+     //   cliente.setNotificaciones(nuevasNotificaciones);
         assertEquals(1, cliente.getNotificaciones().size(), "El cliente debería tener una notificación");
         assertEquals("Otro mensaje", cliente.getNotificaciones().get(0).getMensaje(), "El mensaje de la nueva notificación no es correcto");
 

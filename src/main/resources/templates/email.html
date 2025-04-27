@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+       <meta charset="UTF-8">
+    <title th:text="${subject}">SomPoble Notificación</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f4f4f4; font-family: Arial, sans-serif;">>
+ <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
+     
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="cid:logoImage" alt="SomPoble Logo" style="width: 150px;">
+        </div>
+
+        <h1 style="color: #007bff; text-align: center;"th:text="${subject}">¡Hola!</h1>
+        <h2 style="color: #007bff; text-align: center;"th:text="${message}">La reserva se ha generado con éxito</h2>
+        <!-- Contenido dinámico del mensaje -->
+        <p th:text="${mensaje}" style="font-size: 16px; color: #333333; text-align: justify;"></p>
+
+        <!-- Firma -->
+        <p style="margin-top: 40px; text-align: right; font-style: italic; color: #666;">
+            — El equipo de SomPoble.cat
+        </p>
+    </div>
+</body>
+</html>
