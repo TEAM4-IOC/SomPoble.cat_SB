@@ -77,12 +77,8 @@ public class ReservaController {
         if (cliente == null) {
             throw new ResourceNotFoundException("Cliente con DNI " + dni + " no encontrado.");
         }
-
+                
         List<ReservaDTO> reservas = reservaService.findByClienteDni(dni);
-        if (reservas == null || reservas.isEmpty()) {
-            throw new ResourceNotFoundException("No se encontraron reservas para el cliente con DNI " + dni + ".");
-        }
-
         return ResponseEntity.ok(reservas);
     }
 
@@ -99,11 +95,8 @@ public class ReservaController {
         if (empresa == null) {
             throw new ResourceNotFoundException("Empresa con identificador fiscal " + identificadorFiscal + " no encontrado.");
         }
-
+                
         List<ReservaDTO> reservas = reservaService.findByEmpresaIdentificadorFiscal(identificadorFiscal);
-        if (reservas == null || reservas.isEmpty()) {
-            throw new ResourceNotFoundException("No se encontraron reservas para la empresa con identificador fiscal " + identificadorFiscal + ".");
-        }
         return ResponseEntity.ok(reservas);
     }
 
