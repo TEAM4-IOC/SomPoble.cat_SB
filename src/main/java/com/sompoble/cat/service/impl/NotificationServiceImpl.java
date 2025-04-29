@@ -124,4 +124,10 @@ public class NotificationServiceImpl implements NotificationService {
     public List<Notificacion> findNotificationsByIdentificador(String identificador) {
         return notificationRepository.findByIdentificador(identificador);
     }
+
+	@Override
+	public List<Notificacion> findByClienteDni(String dni) {
+		
+		return notificationRepository.findByClienteDni(dni);
+	}
 }

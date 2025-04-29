@@ -1,13 +1,21 @@
 package com.sompoble.cat.repository.impl;
 
 import com.sompoble.cat.domain.Notificacion;
+import com.sompoble.cat.domain.Reserva;
+import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.repository.NotificacionRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementación del repositorio {@link NotificacionRepository} utilizando {@link EntityManager}.
@@ -90,4 +98,20 @@ public class NotificacionHibernate implements NotificacionRepository {
         .setParameter("identificador", identificador)
         .getResultList();
     }
+	@Override
+	public List<Notificacion> findByClienteDni(String dni) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Notificacion> cq= cb.createQuery(Notificacion.class);
+        Root<Notificacion> root = cq.from(Notificacion.class);
+		
+        Predicate dniPredicate = cb.equal(root.get("cliente").get("dni"), dni);
+        cq.where(dniPredicate);
+        
+        List<Notificacion> notificacion = entityManager.createQuery(cq).getResultList();
+        
+        
+           return entityManager.createQuery(cq).getResultList();
+	}
+	
+
 }
