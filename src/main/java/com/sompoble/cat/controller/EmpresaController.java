@@ -3,6 +3,7 @@
  */
 package com.sompoble.cat.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.EmpresaDTO;
@@ -12,6 +13,7 @@ import com.sompoble.cat.service.EmpresaService;
 import com.sompoble.cat.exception.BadRequestException;
 import com.sompoble.cat.exception.ResourceNotFoundException;
 import com.sompoble.cat.service.EmpresarioService;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +21,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+
 /**
- * Controlador REST que expone endpoints para administrar empresas y empresarios.
+ * Controlador REST que expone endpoints para administrar empresas y
+ * empresarios.
  */
 @RestController
 @RequestMapping("/api/empresas")
 public class EmpresaController {
-	/**
+
+    /**
      * Servicio que maneja las operaciones relacionadas con las empresas.
      */
     @Autowired
@@ -44,8 +51,10 @@ public class EmpresaController {
     /**
      * Obtiene todas las empresas registradas en la base de datos.
      *
-     * @return ResponseEntity con una lista de empresas si existen, o una excepción si no hay empresas.
-     * @throws ResourceNotFoundException si no se encuentran empresas en la base de datos.
+     * @return ResponseEntity con una lista de empresas si existen, o una
+     * excepción si no hay empresas.
+     * @throws ResourceNotFoundException si no se encuentran empresas en la base
+     * de datos.
      */
     @GetMapping
     public ResponseEntity<?> getAll() {
@@ -68,8 +77,10 @@ public class EmpresaController {
      * Obtiene una empresa por su identificador fiscal.
      *
      * @param identificadorFiscal Identificador único de la empresa.
-     * @return ResponseEntity con la empresa si se encuentra, o una excepción si no se encuentra.
-     * @throws ResourceNotFoundException si la empresa con el identificador fiscal especificado no existe.
+     * @return ResponseEntity con la empresa si se encuentra, o una excepción si
+     * no se encuentra.
+     * @throws ResourceNotFoundException si la empresa con el identificador
+     * fiscal especificado no existe.
      */
     @GetMapping("/{identificadorFiscal}")
     public ResponseEntity<?> getByIdentificadorFiscal(@PathVariable String identificadorFiscal) {
@@ -90,9 +101,11 @@ public class EmpresaController {
     /**
      * Crea una nueva empresa asociada a un empresario.
      *
-     * @param request Mapa que contiene los datos de la empresa y el DNI del empresario.
+     * @param request Mapa que contiene los datos de la empresa y el DNI del
+     * empresario.
      * @return ResponseEntity indicando que la empresa ha sido creada.
-     * @throws BadRequestException si el identificador fiscal ya existe o si el empresario no existe.
+     * @throws BadRequestException si el identificador fiscal ya existe o si el
+     * empresario no existe.
      */
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Map<String, Object> request) {
@@ -151,12 +164,100 @@ public class EmpresaController {
     }
 
     /**
+     * Crea una nueva empresa asociada a un empresario, con posibilidad de
+     * incluir imagen. Este método es idéntico al create original pero acepta
+     * una imagen adicional.
+     *
+     * @param empresaJson JSON con los datos de la empresa
+     * @param dniJson JSON con el DNI del empresario
+     * @param imagen Imagen de la empresa (opcional)
+     * @return ResponseEntity indicando que la empresa ha sido creada
+     * @throws BadRequestException si el identificador fiscal ya existe o si el
+     * empresario no existe
+     */
+    @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createWithImage(
+            @RequestPart("empresa") String empresaJson,
+            @RequestPart("dni") String dniJson,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
+        try {
+            // Convertir los JSON strings a Maps usando ObjectMapper
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> empresaData = mapper.readValue(empresaJson, Map.class);
+            Map<String, Object> dniMap = mapper.readValue(dniJson, Map.class);
+            String dni = (String) dniMap.get("dni");
+
+            // Validar identificador fiscal
+            String identificadorFiscal = (String) empresaData.get("identificadorFiscal");
+            if (empresaService.existsByIdentificadorFiscal(identificadorFiscal)) {
+                throw new BadRequestException("Empresa con identificador fiscal " + identificadorFiscal + " ya existe");
+            }
+
+            // Validar empresario
+            EmpresarioDTO empresarioDTO = null;
+            boolean exists = false;
+            if (dni != null) {
+                exists = empresarioService.existsByDni(dni);
+            } else {
+                throw new BadRequestException("No se ha informado el DNI del empresario");
+            }
+
+            Empresario empresario = null;
+            if (!exists) {
+                throw new BadRequestException("No existe un empresario con DNI " + dni);
+            } else {
+                empresario = empresarioService.findEmpresarioByDNI(dni);
+                empresarioDTO = empresarioService.findByDni(dni);
+            }
+
+            if (empresarioDTO.getEmpresas() != null && !empresarioDTO.getEmpresas().isEmpty()) {
+                throw new BadRequestException("El empresario con DNI " + dni + " ya tiene una empresa/autónomo asignada");
+            }
+
+            // Crear la empresa con los datos recibidos
+            Empresa empresa = new Empresa();
+            empresa.setEmpresario(empresario);
+            empresa.setIdentificadorFiscal(identificadorFiscal);
+            empresa.setDireccion((String) empresaData.get("direccion"));
+            empresa.setEmail((String) empresaData.get("email"));
+            empresa.setTelefono((String) empresaData.get("telefono"));
+
+            if (empresaData.containsKey("actividad") && empresaData.get("actividad") != null && !((String) empresaData.get("actividad")).isEmpty()) {
+                empresa.setActividad((String) empresaData.get("actividad"));
+                //Autonomo
+                empresa.setTipo(2);
+            } else {
+                empresa.setNombre((String) empresaData.get("nombre"));
+                //Empresa
+                empresa.setTipo(1);
+            }
+
+            // Guardamos la empresa
+            empresaService.addEmpresa(empresa);
+
+            // Si hay imagen, la procesamos
+            if (imagen != null && !imagen.isEmpty()) {
+                empresaService.uploadEmpresaImage(empresa.getIdentificadorFiscal(), imagen);
+            }
+
+            return ResponseEntity.created(null).body(empresa);
+
+        } catch (IOException e) {
+            throw new BadRequestException("Error al procesar los datos de la empresa: " + e.getMessage());
+        }
+    }
+
+    /**
      * Actualiza una empresa existente.
      *
-     * @param identificadorFiscal Identificador único de la empresa a actualizar.
+     * @param identificadorFiscal Identificador único de la empresa a
+     * actualizar.
      * @param updates Mapa con los nuevos valores para los campos de la empresa.
-     * @return ResponseEntity indicando que la empresa ha sido actualizada correctamente.
-     * @throws ResourceNotFoundException si la empresa con el identificador fiscal especificado no existe.
+     * @return ResponseEntity indicando que la empresa ha sido actualizada
+     * correctamente.
+     * @throws ResourceNotFoundException si la empresa con el identificador
+     * fiscal especificado no existe.
      */
     @PutMapping("/{identificadorFiscal}")
     public ResponseEntity<?> update(@PathVariable String identificadorFiscal, @RequestBody Map<String, Object> updates) {
@@ -192,8 +293,10 @@ public class EmpresaController {
      * Elimina una empresa existente por su identificador fiscal.
      *
      * @param identificadorFiscal Identificador único de la empresa a eliminar.
-     * @return ResponseEntity indicando que la empresa ha sido eliminada correctamente.
-     * @throws ResourceNotFoundException si la empresa con el identificador fiscal especificado no existe.
+     * @return ResponseEntity indicando que la empresa ha sido eliminada
+     * correctamente.
+     * @throws ResourceNotFoundException si la empresa con el identificador
+     * fiscal especificado no existe.
      */
     @DeleteMapping("/{identificadorFiscal}")
     public ResponseEntity<?> delete(@PathVariable String identificadorFiscal) {

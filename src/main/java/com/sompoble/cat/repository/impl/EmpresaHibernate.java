@@ -231,7 +231,6 @@ public class EmpresaHibernate implements EmpresaRepository {
             System.out.println("No se encontraron servicios para la empresa: " + empresa.getIdEmpresa());
         }
 
-        // Crear y devolver el DTO
         EmpresaDTO empresaDTO = new EmpresaDTO(
                 empresa.getIdEmpresa(),
                 empresa.getEmpresario() != null ? empresa.getEmpresario().getDni() : null,
@@ -246,7 +245,9 @@ public class EmpresaHibernate implements EmpresaRepository {
                 serviciosIds
         );
 
-        System.out.println("EmpresaDTO generado: " + empresaDTO);
+        empresaDTO.setImagenUrl(empresa.getImagenUrl());
+        empresaDTO.setImagenPublicId(empresa.getImagenPublicId());
+
         return empresaDTO;
     }
 
@@ -270,6 +271,9 @@ public class EmpresaHibernate implements EmpresaRepository {
         empresa.setEmail(empresaDTO.getEmail());
         empresa.setTelefono(empresaDTO.getTelefono());
         empresa.setTipo(empresaDTO.getTipo());
+
+        empresa.setImagenUrl(empresaDTO.getImagenUrl());
+        empresa.setImagenPublicId(empresaDTO.getImagenPublicId());
 
         return empresa;
     }

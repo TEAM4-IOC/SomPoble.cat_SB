@@ -20,6 +20,8 @@ public class EmpresaDTO implements Serializable {
     private int tipo;
     private List<Long> idReservas;
     private List<Long> idServicios;
+    private String imagenUrl;
+    private String imagenPublicId;
 
     /**
      * Constructor con parámetros.
@@ -213,6 +215,7 @@ public class EmpresaDTO implements Serializable {
     public void setTipo(int tipo) {
         this.tipo = tipo;
     }
+
     /**
      * Obtiene la lista de identificadores de reservas asociadas.
      *
@@ -221,6 +224,7 @@ public class EmpresaDTO implements Serializable {
     public List<Long> getIdReservas() {
         return idReservas;
     }
+
     /**
      * Establece la lista de identificadores de reservas asociadas.
      *
@@ -229,6 +233,7 @@ public class EmpresaDTO implements Serializable {
     public void setIdReservas(List<Long> idReservas) {
         this.idReservas = idReservas;
     }
+
     /**
      * Obtiene la lista de identificadores de servicios asociados.
      *
@@ -237,6 +242,7 @@ public class EmpresaDTO implements Serializable {
     public List<Long> getIdServicios() {
         return idServicios;
     }
+
     /**
      * Establece la lista de identificadores de servicios asociados.
      *
@@ -244,5 +250,41 @@ public class EmpresaDTO implements Serializable {
      */
     public void setIdServicios(List<Long> idServicios) {
         this.idServicios = idServicios;
+    }
+
+    /**
+     * Obtiene la URL de la imagen de la empresa.
+     *
+     * @return URL de la imagen
+     */
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    /**
+     * Establece la URL de la imagen de la empresa.
+     *
+     * @param imagenUrl URL de la imagen
+     */
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
+
+    /**
+     * Obtiene el ID público de la imagen en Cloudinary.
+     *
+     * @return ID público de la imagen
+     */
+    public String getImagenPublicId() {
+        return imagenPublicId;
+    }
+
+    /**
+     * Establece el ID público de la imagen en Cloudinary.
+     *
+     * @param imagenPublicId ID público de la imagen
+     */
+    public void setImagenPublicId(String imagenPublicId) {
+        this.imagenPublicId = imagenPublicId;
     }
 }
