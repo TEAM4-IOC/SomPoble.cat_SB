@@ -24,7 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Entity
 @Inheritance (strategy=InheritanceType.TABLE_PER_CLASS)
 public class Persona implements Serializable {
-	 /**
+    /**
      * Identificador único de la persona.
      */
     @Id
