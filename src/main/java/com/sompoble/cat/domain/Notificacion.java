@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 /**
  * Entidad que representa una notificación en el sistema.
  * <p>
@@ -30,6 +32,7 @@ public class Notificacion implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_NOTIFICACION")
+    @JsonBackReference
     private Long idNotificacion;
 
     /**
@@ -37,6 +40,7 @@ public class Notificacion implements Serializable {
      */
     @ManyToOne
     @JoinColumn(name = "ID_CLIENTE")
+    @JsonBackReference
     private Cliente cliente;
 
     /**
@@ -44,6 +48,7 @@ public class Notificacion implements Serializable {
      */
     @ManyToOne
     @JoinColumn(name = "ID_EMPRESARIO")
+    @JsonBackReference
     private Empresario empresario;
 
     /**

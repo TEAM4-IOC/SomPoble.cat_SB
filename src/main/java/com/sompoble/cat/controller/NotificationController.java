@@ -1,7 +1,13 @@
 package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Notificacion;
+import com.sompoble.cat.dto.ClienteDTO;
+import com.sompoble.cat.dto.ReservaDTO;
+import com.sompoble.cat.exception.ResourceNotFoundException;
+import com.sompoble.cat.service.ClienteService;
 import com.sompoble.cat.service.NotificationService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +25,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {
+	
+	  /**
+     * Servicio que proporciona acceso y operaciones sobre los datos de los
+     * clientes.
+     */
+    @Autowired
+    private ClienteService clienteService;
+	
 
     private final NotificationService notificationService;
 
@@ -33,6 +47,30 @@ public class NotificationController {
 
     //------------------------------------------------------------------------//
     // PARA LISTAR DESDE EL FRONT:
+    
+    @GetMapping("/clientes/{dni}")
+    public ResponseEntity<List<Notificacion>> obtenerNotificacionesByClientes(@PathVariable String dni){
+    	ClienteDTO cliente = clienteService.findByDni(dni);
+        if (cliente == null) {
+            throw new ResourceNotFoundException("Cliente con DNI " + dni + " no encontrado.");
+        }
+    
+        List<Notificacion> notificacion = notificationService.findByClienteDni(dni);
+        return ResponseEntity.ok(notificacion);
+    }
+    
+   
+    
+
+    //------------------------------------------------------------------------//
+    // PARA ADMINISTRACION INTERNA:
+    
+    /**
+     * Guarda una nueva notificación en el sistema.
+     * 
+     * @param notification La notificación a guardar.
+     * @return Mensaje confirmando que la notificación fue guardada correctamente.
+     */
     
     /**
      * Obtiene las notificaciones filtradas por identificador (DNI para clientes
@@ -52,16 +90,8 @@ public class NotificationController {
 
         return ResponseEntity.ok(notificaciones);
     }
-
-    //------------------------------------------------------------------------//
-    // PARA ADMINISTRACION INTERNA:
+    //------------------------------------------------------------------------------------------//
     
-    /**
-     * Guarda una nueva notificación en el sistema.
-     * 
-     * @param notification La notificación a guardar.
-     * @return Mensaje confirmando que la notificación fue guardada correctamente.
-     */
     @PostMapping("/save")
     public String saveNotification(@RequestBody Notificacion notification) {
         notificationService.saveNotification(notification);

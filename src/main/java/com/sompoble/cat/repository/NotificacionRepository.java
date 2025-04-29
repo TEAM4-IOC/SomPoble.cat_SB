@@ -53,4 +53,6 @@ public interface NotificacionRepository {
      */
 	List<Notificacion> findByIdentificador(String identificador);
 
+	List<Notificacion> findByClienteDni(String dni);
+
 }

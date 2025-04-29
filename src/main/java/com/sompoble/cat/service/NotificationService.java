@@ -1,6 +1,8 @@
 package com.sompoble.cat.service;
 
 import com.sompoble.cat.domain.Notificacion;
+import com.sompoble.cat.dto.ClienteDTO;
+
 import java.util.List;
 
 /**
@@ -61,5 +63,9 @@ public interface NotificationService {
     String getConfigSendTime();
     
     List<Notificacion> findNotificationsByIdentificador(String identificador);
+
+	List<Notificacion> findByClienteDni(String dni);
+
+	
     
 }
