@@ -98,6 +98,17 @@ public class NotificacionHibernate implements NotificacionRepository {
         .setParameter("identificador", identificador)
         .getResultList();
     }
+    /**
+     * Busca y devuelve una lista de notificaciones asociadas a un cliente específico
+     * identificado por su DNI.
+     *
+     * Este método utiliza la API Criteria de JPA para construir una consulta dinámica
+     * que filtre las notificaciones en función del DNI del cliente.
+     *
+     * @param dni El DNI del cliente cuyas notificaciones se desean obtener.
+     * @return Una lista de notificaciones asociadas al cliente con el DNI proporcionado.
+     */
+    
 	@Override
 	public List<Notificacion> findByClienteDni(String dni) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
