@@ -32,7 +32,6 @@ public class Notificacion implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_NOTIFICACION")
-    @JsonBackReference
     private Long idNotificacion;
 
     /**
@@ -40,7 +39,7 @@ public class Notificacion implements Serializable {
      */
     @ManyToOne
     @JoinColumn(name = "ID_CLIENTE")
-    @JsonBackReference
+    @JsonBackReference("notificacion-cliente")
     private Cliente cliente;
 
     /**
@@ -48,7 +47,7 @@ public class Notificacion implements Serializable {
      */
     @ManyToOne
     @JoinColumn(name = "ID_EMPRESARIO")
-    @JsonBackReference
+    @JsonBackReference("notificacion-empresario")
     private Empresario empresario;
 
     /**

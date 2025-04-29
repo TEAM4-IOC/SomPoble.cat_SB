@@ -1,5 +1,6 @@
 package com.sompoble.cat.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -29,6 +30,7 @@ public class Cliente extends Persona {
      * </p>
      */
     @OneToMany(mappedBy = "cliente")
+    @JsonManagedReference("notificacion-cliente")
     private List<Notificacion> notificaciones;
     /**
      * Constructor vacío requerido por JPA.
