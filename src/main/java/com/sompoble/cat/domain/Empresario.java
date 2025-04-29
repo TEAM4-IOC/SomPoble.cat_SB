@@ -25,6 +25,7 @@ public class Empresario extends Persona {
      * Relación uno a muchos con la entidad {@link Notificacion}.
      */
     @OneToMany(mappedBy = "empresario")
+    @JsonManagedReference("notificacion-empresario")
     private List<Notificacion> notificaciones;
     /**
      * Constructor por defecto.
