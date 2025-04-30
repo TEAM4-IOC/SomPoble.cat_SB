@@ -108,27 +108,21 @@ public class EmpresaServiceImpl implements EmpresaService {
      */
     @Override
     public Empresa uploadEmpresaImage(String identificadorFiscal, MultipartFile imagen) {
-        // Verificar si la empresa existe
         Empresa empresa = empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal);
 
-        // Verificar que la imagen no sea nula
         if (imagen == null || imagen.isEmpty()) {
             throw new IllegalArgumentException("La imagen no puede estar vacía");
         }
 
-        // Si la empresa ya tiene una imagen, la eliminamos de Cloudinary
         if (empresa.getImagenPublicId() != null && !empresa.getImagenPublicId().isEmpty()) {
             cloudinaryService.deleteImage(empresa.getImagenPublicId());
         }
 
-        // Subimos la nueva imagen
         Map<String, String> uploadResult = cloudinaryService.uploadImage(imagen, "empresas");
 
-        // Actualizamos la empresa con la información de la nueva imagen
         empresa.setImagenUrl(uploadResult.get("secureUrl"));
         empresa.setImagenPublicId(uploadResult.get("publicId"));
 
-        // Actualizamos la empresa
         empresaRepository.updateEmpresa(empresa);
 
         return empresa;
