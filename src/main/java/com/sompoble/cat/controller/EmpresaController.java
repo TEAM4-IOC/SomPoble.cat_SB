@@ -98,7 +98,9 @@ public class EmpresaController {
         }
     }
 
-    /**
+    //IMPORTANTE: se comenta este metodo ya que se hace uso del que permite realizar la subida de imagenes. No se borra
+    //ya que se desea mantener por si en un futuro es necesario recuperarlo
+    /*
      * Crea una nueva empresa asociada a un empresario.
      *
      * @param request Mapa que contiene los datos de la empresa y el DNI del
@@ -107,7 +109,7 @@ public class EmpresaController {
      * @throws BadRequestException si el identificador fiscal ya existe o si el
      * empresario no existe.
      */
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity<?> create(@RequestBody Map<String, Object> request) {
         Map<String, Object> empresaData = (Map<String, Object>) request.get("empresa");
 
@@ -161,7 +163,7 @@ public class EmpresaController {
 
         empresaService.addEmpresa(empresa);
         return ResponseEntity.created(null).build();
-    }
+    }*/
 
     /**
      * Crea una nueva empresa asociada a un empresario, con posibilidad de
@@ -175,26 +177,23 @@ public class EmpresaController {
      * @throws BadRequestException si el identificador fiscal ya existe o si el
      * empresario no existe
      */
-    @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createWithImage(
             @RequestPart("empresa") String empresaJson,
             @RequestPart("dni") String dniJson,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
 
         try {
-            // Convertir los JSON strings a Maps usando ObjectMapper
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> empresaData = mapper.readValue(empresaJson, Map.class);
             Map<String, Object> dniMap = mapper.readValue(dniJson, Map.class);
             String dni = (String) dniMap.get("dni");
 
-            // Validar identificador fiscal
             String identificadorFiscal = (String) empresaData.get("identificadorFiscal");
             if (empresaService.existsByIdentificadorFiscal(identificadorFiscal)) {
                 throw new BadRequestException("Empresa con identificador fiscal " + identificadorFiscal + " ya existe");
             }
 
-            // Validar empresario
             EmpresarioDTO empresarioDTO = null;
             boolean exists = false;
             if (dni != null) {
@@ -215,7 +214,6 @@ public class EmpresaController {
                 throw new BadRequestException("El empresario con DNI " + dni + " ya tiene una empresa/autónomo asignada");
             }
 
-            // Crear la empresa con los datos recibidos
             Empresa empresa = new Empresa();
             empresa.setEmpresario(empresario);
             empresa.setIdentificadorFiscal(identificadorFiscal);
@@ -225,30 +223,28 @@ public class EmpresaController {
 
             if (empresaData.containsKey("actividad") && empresaData.get("actividad") != null && !((String) empresaData.get("actividad")).isEmpty()) {
                 empresa.setActividad((String) empresaData.get("actividad"));
-                //Autonomo
                 empresa.setTipo(2);
             } else {
                 empresa.setNombre((String) empresaData.get("nombre"));
-                //Empresa
                 empresa.setTipo(1);
             }
 
-            // Guardamos la empresa
             empresaService.addEmpresa(empresa);
 
-            // Si hay imagen, la procesamos
             if (imagen != null && !imagen.isEmpty()) {
                 empresaService.uploadEmpresaImage(empresa.getIdentificadorFiscal(), imagen);
             }
 
-            return ResponseEntity.created(null).body(empresa);
+            return ResponseEntity.created(null).build();
 
         } catch (IOException e) {
             throw new BadRequestException("Error al procesar los datos de la empresa: " + e.getMessage());
         }
     }
-
-    /**
+    
+    //IMPORTANTE: se comenta este metodo ya que se hace uso del que permite realizar la subida de imagenes. No se borra
+    //ya que se desea mantener por si en un futuro es necesario recuperarlo
+    /*
      * Actualiza una empresa existente.
      *
      * @param identificadorFiscal Identificador único de la empresa a
@@ -259,7 +255,7 @@ public class EmpresaController {
      * @throws ResourceNotFoundException si la empresa con el identificador
      * fiscal especificado no existe.
      */
-    @PutMapping("/{identificadorFiscal}")
+    /*@PutMapping("/{identificadorFiscal}")
     public ResponseEntity<?> update(@PathVariable String identificadorFiscal, @RequestBody Map<String, Object> updates) {
         try {
             Empresa existingEmpresa = empresaService.findByIdentificadorFiscalFull(identificadorFiscal);
@@ -286,6 +282,60 @@ public class EmpresaController {
             return ResponseEntity.ok("Empresa o autónomo con identificador fiscal " + identificadorFiscal + " actualizada correctamente");
         } catch (Exception e) {
             throw new ResourceNotFoundException("No se encontró una empresa o autónomo con el identificador fiscal " + identificadorFiscal);
+        }
+    }*/
+
+    /**
+     * Actualiza una empresa existente, incluyendo su imagen si se proporciona.
+     *
+     * @param identificadorFiscal Identificador único de la empresa a
+     * actualizar.
+     * @param empresaJson Datos de la empresa en formato JSON.
+     * @param imagen Archivo de imagen (opcional).
+     * @return ResponseEntity indicando que la empresa ha sido actualizada
+     * correctamente.
+     * @throws ResourceNotFoundException si la empresa con el identificador
+     * fiscal especificado no existe.
+     */
+    @PutMapping(value = "/{identificadorFiscal}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> update(
+            @PathVariable String identificadorFiscal,
+            @RequestPart("empresa") String empresaJson,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+        try {
+            Empresa existingEmpresa = empresaService.findByIdentificadorFiscalFull(identificadorFiscal);
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> updates = mapper.readValue(empresaJson, Map.class);
+
+            updates.forEach((key, value) -> {
+                if (value != null) {
+                    switch (key) {
+                        case "identificadorFiscal" ->
+                            existingEmpresa.setIdentificadorFiscal(value.toString());
+                        case "nombre" ->
+                            existingEmpresa.setNombre(value.toString());
+                        case "actividad" ->
+                            existingEmpresa.setActividad(value.toString());
+                        case "direccion" ->
+                            existingEmpresa.setDireccion(value.toString());
+                        case "email" ->
+                            existingEmpresa.setEmail(value.toString());
+                        case "telefono" ->
+                            existingEmpresa.setTelefono(value.toString());
+                    }
+                }
+            });
+
+            empresaService.updateEmpresa(existingEmpresa);
+
+            if (imagen != null && !imagen.isEmpty()) {
+                empresaService.uploadEmpresaImage(existingEmpresa.getIdentificadorFiscal(), imagen);
+            }
+
+            return ResponseEntity.ok("Empresa o autónomo con identificador fiscal " + identificadorFiscal + " actualizada correctamente");
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("No se encontró una empresa o autónomo con el identificador fiscal " + identificadorFiscal + ": " + e.getMessage());
         }
     }
 
