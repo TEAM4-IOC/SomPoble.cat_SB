@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,12 +81,14 @@ public class SHController {
     @GetMapping("/obtener")
     public ResponseEntity<List<ServicioHorarioDTO>> obtenerServicioConHorario(@RequestParam String identificadorFiscal) {
        
-        Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal))
-                .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
-
+        Empresa empresa = empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal);
+        if (empresa == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+                
         List<Horario> horarios = horarioRepository.findByServicio_Empresa_IdentificadorFiscal(identificadorFiscal);
         if (horarios.isEmpty()) {
-            throw new RuntimeException("No hay horarios registrados para esta empresa");
+            return ResponseEntity.ok(Collections.emptyList());
         }
 
         List<Servicio> servicios = new ArrayList<>();
@@ -95,16 +98,17 @@ public class SHController {
                 servicios.add(servicio);
             }
         }
+                
         if (servicios.isEmpty()) {
-            throw new RuntimeException("No hay servicios relacionados con los horarios para esta empresa");
+            return ResponseEntity.ok(Collections.emptyList());
         }
-  
+                
         List<ServicioHorarioDTO> respuesta = servicios.stream().map(servicio -> {
            
             Horario horario = horarios.stream()
                     .filter(h -> h.getServicio().equals(servicio)) 
                     .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Horario no encontrado para el servicio con ID: " + servicio.getIdServicio()));
+                    .orElse(null);
 
             return new ServicioHorarioDTO(servicio, horario);
         }).toList();
