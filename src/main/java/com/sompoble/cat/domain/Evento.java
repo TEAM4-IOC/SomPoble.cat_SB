@@ -15,8 +15,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 /**
- * Entidad que representa un evento en el sistema.
- * Almacena información como nombre, descripción, ubicación y fechas.
+ * Entidad que representa un evento en el sistema. Almacena información como
+ * nombre, descripción, ubicación y fechas.
  */
 @Entity
 @Table(name = "EVENTO")
@@ -63,6 +63,20 @@ public class Evento implements Serializable {
     private LocalDateTime fechaEvento;
 
     /**
+     * URL de la imagen de la empresa almacenada en Cloudinary.
+     */
+    @Column(name = "IMAGEN_URL", nullable = true, length = 255)
+    @Size(max = 255, message = "La URL de la imagen no puede exceder los 255 caracteres")
+    private String imagenUrl;
+
+    /**
+     * ID público de la imagen en Cloudinary (necesario para eliminación).
+     */
+    @Column(name = "IMAGEN_PUBLIC_ID", nullable = true, length = 255)
+    @Size(max = 255, message = "El ID público de la imagen no puede exceder los 255 caracteres")
+    private String imagenPublicId;
+
+    /**
      * Fecha de creación del evento (autogenerada).
      */
     @Column(name = "FECHA_ALTA", updatable = false, nullable = false)
@@ -81,20 +95,21 @@ public class Evento implements Serializable {
     /**
      * Constructor vacío requerido por JPA.
      */
-    public Evento() {}
+    public Evento() {
+    }
 
     /**
      * Constructor con parámetros para inicializar un evento.
-     * 
-     * @param nombre      Nombre del evento.
+     *
+     * @param nombre Nombre del evento.
      * @param descripcion Descripción del evento.
-     * @param ubicacion   Ubicación del evento.
+     * @param ubicacion Ubicación del evento.
      * @param fechaEvento Fecha y hora del evento.
      */
     public Evento(String nombre, String descripcion, String ubicacion, LocalDateTime fechaEvento) {
-        setNombre(nombre);       
+        setNombre(nombre);
         setDescripcion(descripcion);
-        setUbicacion(ubicacion); 
+        setUbicacion(ubicacion);
         this.fechaEvento = fechaEvento;
     }
 
@@ -107,23 +122,22 @@ public class Evento implements Serializable {
             this.fechaModificacion = LocalDateTime.now();
         }
     }
-  
 
     public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+        return serialVersionUID;
+    }
 
-	public void setFechaAlta(LocalDateTime fechaAlta) {
-		this.fechaAlta = fechaAlta;
-	}
+    public void setFechaAlta(LocalDateTime fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
 
-	public void setFechaModificacion(LocalDateTime fechaModificacion) {
-		this.fechaModificacion = fechaModificacion;
-	}
+    public void setFechaModificacion(LocalDateTime fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
 
-	/**
+    /**
      * Obtiene el ID único del evento.
-     * 
+     *
      * @return ID del evento.
      */
     public Long getIdEvento() {
@@ -132,7 +146,7 @@ public class Evento implements Serializable {
 
     /**
      * Establece el ID único del evento.
-     * 
+     *
      * @param idEvento ID del evento.
      */
     public void setIdEvento(Long idEvento) {
@@ -141,7 +155,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene el nombre del evento.
-     * 
+     *
      * @return Nombre del evento.
      */
     public String getNombre() {
@@ -150,7 +164,7 @@ public class Evento implements Serializable {
 
     /**
      * Establece el nombre del evento.
-     * 
+     *
      * @param nombre Nombre del evento.
      */
     public void setNombre(String nombre) {
@@ -162,7 +176,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene la descripción del evento.
-     * 
+     *
      * @return Descripción del evento.
      */
     public String getDescripcion() {
@@ -171,7 +185,7 @@ public class Evento implements Serializable {
 
     /**
      * Establece la descripción del evento.
-     * 
+     *
      * @param descripcion Descripción del evento.
      */
     public void setDescripcion(String descripcion) {
@@ -180,7 +194,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene la ubicación del evento.
-     * 
+     *
      * @return Ubicación del evento.
      */
     public String getUbicacion() {
@@ -189,7 +203,7 @@ public class Evento implements Serializable {
 
     /**
      * Establece la ubicación del evento.
-     * 
+     *
      * @param ubicacion Ubicación del evento.
      */
     public void setUbicacion(String ubicacion) {
@@ -201,7 +215,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene la fecha y hora programada para el evento.
-     * 
+     *
      * @return Fecha y hora del evento.
      */
     public LocalDateTime getFechaEvento() {
@@ -210,7 +224,7 @@ public class Evento implements Serializable {
 
     /**
      * Establece la fecha y hora del evento.
-     * 
+     *
      * @param fechaEvento Fecha y hora del evento.
      */
     public void setFechaEvento(LocalDateTime fechaEvento) {
@@ -218,8 +232,42 @@ public class Evento implements Serializable {
     }
 
     /**
+     * Obtiene la URL de la imagen de la empresa.
+     * @return URL de la imagen.
+     */
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+    
+    /**
+     * Establece la URL de la imagen de la empresa.
+     * @param imagenUrl URL de la imagen a establecer.
+     */
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
+    
+    /**
+     * Obtiene el ID público de la imagen en Cloudinary.
+     *
+     * @return ID público de la imagen.
+     */
+    public String getImagenPublicId() {
+        return imagenPublicId;
+    }
+
+    /**
+     * Establece el ID público de la imagen en Cloudinary.
+     *
+     * @param imagenPublicId ID público a establecer.
+     */
+    public void setImagenPublicId(String imagenPublicId) {
+        this.imagenPublicId = imagenPublicId;
+    }
+
+    /**
      * Obtiene la fecha de creación del evento.
-     * 
+     *
      * @return Fecha de creación (autogenerada).
      */
     public LocalDateTime getFechaAlta() {
@@ -228,7 +276,7 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene la fecha de última modificación del evento.
-     * 
+     *
      * @return Fecha de última modificación (autogenerada).
      */
     public LocalDateTime getFechaModificacion() {
