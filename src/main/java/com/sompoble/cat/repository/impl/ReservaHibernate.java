@@ -2,6 +2,8 @@ package com.sompoble.cat.repository.impl;
 
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.dto.PanelMetricasDTO.MetricasMensualesDTO;
+import com.sompoble.cat.dto.PanelMetricasDTO.ServicioResumenDTO;
 import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.domain.Servicio;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -308,6 +312,114 @@ public class ReservaHibernate implements ReservaRepository {
             cq.where(recent);
             return entityManager.createQuery(cq).getResultList();
         }
-    
-    
-}
+        //-------------------------------------------------------------------------------------------//
+        //--------------------PARTE DE MÉTRICAS------------------------------------------------------//
+   /**
+         * Cuenta el número total de reservas realizadas para una empresa en un período determinado.
+         *
+         * @param empresaId ID de la empresa.
+         * @param inicio Fecha de inicio del rango.
+         * @param fin Fecha de fin del rango.
+         * @return Número total de reservas.
+         */
+        public Long contarReservasPorEmpresaYFechas(Long empresaId, LocalDate inicio, LocalDate fin) {
+            return entityManager.createQuery("""
+                    SELECT COUNT(r) FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fecha BETWEEN :inicio AND :fin
+                """, Long.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio)
+                .setParameter("fin", fin)
+                .getSingleResult();
+        }
+        /**
+         * Suma los ingresos generados por las reservas de una empresa en un período determinado.
+         *
+         * @param empresaId ID de la empresa.
+         * @param inicio Fecha de inicio del rango.
+         * @param fin Fecha de fin del rango.
+         * @return Total de ingresos como BigDecimal.
+         */
+        public BigDecimal sumarIngresosPorEmpresaYFechas(Long empresaId, LocalDate inicio, LocalDate fin) {
+            return entityManager.createQuery("""
+                    SELECT SUM(r.servicio.precio) FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fecha BETWEEN :inicio AND :fin
+                """, BigDecimal.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio)
+                .setParameter("fin", fin)
+                .getSingleResult();
+        }
+        /**
+         * Cuenta la cantidad de clientes únicos que han realizado reservas en una empresa
+         * durante un período determinado.
+         *
+         * @param empresaId ID de la empresa.
+         * @param inicio Fecha de inicio del rango.
+         * @param fin Fecha de fin del rango.
+         * @return Número de clientes únicos.
+         */
+        public Integer contarClientesUnicos(Long empresaId, LocalDate inicio, LocalDate fin) {
+            return entityManager.createQuery("""
+                    SELECT COUNT(DISTINCT r.cliente.idCliente) FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fecha BETWEEN :inicio AND :fin
+                """, Long.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio)
+                .setParameter("fin", fin)
+                .getSingleResult()
+                .intValue();
+        }
+        /**
+         * Obtiene un resumen de métricas por servicio para una empresa en un período determinado.
+         * Incluye el nombre del servicio, cantidad de reservas y total de ingresos por servicio.
+         *
+         * @param empresaId ID de la empresa.
+         * @param inicio Fecha de inicio del rango.
+         * @param fin Fecha de fin del rango.
+         * @return Lista de objetos {@code ServicioResumenDTO} con las métricas agrupadas por servicio.
+         */
+        public List<ServicioResumenDTO> obtenerMetricasPorServicio(Long empresaId, LocalDate inicio, LocalDate fin) {
+            return entityManager.createQuery("""
+                    SELECT new com.sompoble.cat.dto.PanelMetricasDTO$ServicioResumenDTO(
+                        r.servicio.nombre, COUNT(r), SUM(r.servicio.precio))
+                    FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fecha BETWEEN :inicio AND :fin
+                    GROUP BY r.servicio.nombre
+                """, ServicioResumenDTO.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio)
+                .setParameter("fin", fin)
+                .getResultList();
+        }
+        /**
+         * Obtiene métricas mensuales agregadas para una empresa entre dos fechas dadas.
+         * Las métricas incluyen reservas e ingresos por mes.
+         *
+         * @param empresaId ID de la empresa.
+         * @param inicio Fecha de inicio del rango.
+         * @param fin Fecha de fin del rango.
+         * @return Lista de objetos {@code MetricasMensualesDTO} con las métricas mensuales.
+         */
+        public List<MetricasMensualesDTO> obtenerMetricasMensuales(Long empresaId, LocalDate inicio, LocalDate fin) {
+            return entityManager.createQuery("""
+                    SELECT new com.sompoble.cat.dto.PanelMetricasDTO$MetricasMensualesDTO(
+                        FUNCTION('to_char', r.fecha, 'Month'),
+                        COUNT(r),
+                        SUM(r.servicio.precio))
+                    FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fecha BETWEEN :inicio AND :fin
+                    GROUP BY FUNCTION('to_char', r.fecha, 'Month')
+                    ORDER BY FUNCTION('to_char', r.fecha, 'Month')
+                """, MetricasMensualesDTO.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio)
+                .setParameter("fin", fin)
+                .getResultList();
+        }
+    }
