@@ -24,6 +24,15 @@ public class EmpresaDTO implements Serializable {
     private String imagenPublicId;
 
     /**
+     * Constructor sin parámetros requerido para la
+     * serialización/deserialización. Este constructor es necesario para
+     * frameworks como Jackson que utilizan reflection para instanciar objetos
+     * durante los procesos de mapeo JSON.
+     */
+    public EmpresaDTO() {
+    }
+
+    /**
      * Constructor con parámetros.
      *
      * @param idEmpresa ID de la empresa
