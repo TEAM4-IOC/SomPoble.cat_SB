@@ -11,20 +11,20 @@ import java.util.List;
 /**
  * Implementación de la interfaz {@link ClienteService}.
  * <p>
- * Esta clase proporciona la implementación concreta de los métodos
- * definidos en la interfaz ClienteService, gestionando las operaciones
- * relacionadas con los clientes a través del repositorio correspondiente.
+ * Esta clase proporciona la implementación concreta de los métodos definidos en
+ * la interfaz ClienteService, gestionando las operaciones relacionadas con los
+ * clientes a través del repositorio correspondiente.
  * </p>
  */
 @Service
 public class ClienteServiceImpl implements ClienteService {
-    
+
     /**
      * Repositorio para acceder a los datos de los clientes.
      */
     @Autowired
     private ClienteRepository clienteRepository;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -32,7 +32,7 @@ public class ClienteServiceImpl implements ClienteService {
     public Cliente findByDniFull(String dni) {
         return clienteRepository.findByDNIFull(dni);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -40,7 +40,7 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteDTO findByDni(String dni) {
         return clienteRepository.findByDNI(dni);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -48,7 +48,7 @@ public class ClienteServiceImpl implements ClienteService {
     public void updateCliente(Cliente cliente) {
         clienteRepository.updateCliente(cliente);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -56,7 +56,7 @@ public class ClienteServiceImpl implements ClienteService {
     public void addCliente(Cliente cliente) {
         clienteRepository.addCliente(cliente);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -64,7 +64,7 @@ public class ClienteServiceImpl implements ClienteService {
     public List<ClienteDTO> findAll() {
         return clienteRepository.findAll();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -72,7 +72,7 @@ public class ClienteServiceImpl implements ClienteService {
     public boolean existsById(Long id) {
         return clienteRepository.existsById(id);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -80,7 +80,7 @@ public class ClienteServiceImpl implements ClienteService {
     public void deleteById(Long id) {
         clienteRepository.deleteById(id);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -88,7 +88,7 @@ public class ClienteServiceImpl implements ClienteService {
     public boolean existsByDni(String dni) {
         return clienteRepository.existsByDni(dni);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -96,7 +96,7 @@ public class ClienteServiceImpl implements ClienteService {
     public void deleteByDni(String dni) {
         clienteRepository.deleteByDni(dni);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -104,7 +104,7 @@ public class ClienteServiceImpl implements ClienteService {
     public boolean existsByEmail(String email) {
         return clienteRepository.existsByEmail(email);
     }
-    
+
     /**
      * {@inheritDoc}
      */

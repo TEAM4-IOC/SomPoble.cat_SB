@@ -16,24 +16,24 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-
 /**
  * Implementación de la interfaz HorarioRepository utilizando Hibernate y JPA.
- * Esta clase gestiona las operaciones de acceso a datos para la entidad Horario.
+ * Esta clase gestiona las operaciones de acceso a datos para la entidad
+ * Horario.
  */
-
 @Repository
 @Transactional
 public class HorarioHibernate implements HorarioRepository {
-    
+
     /**
      * EntityManager para gestionar las operaciones de persistencia.
      */
-	@PersistenceContext
+    @PersistenceContext
     private EntityManager entityManager;
 
     /**
      * Busca los horarios asociados a una empresa por su ID.
+     *
      * @param idEmpresa Identificador de la empresa.
      * @return Lista de horarios de la empresa.
      */
@@ -46,9 +46,11 @@ public class HorarioHibernate implements HorarioRepository {
         cq.where(empresaIdPredicate);
         return entityManager.createQuery(cq).getResultList();
     }
-    
+
     /**
-     * Busca horarios que contengan un día laboral determinado, ignorando mayúsculas y minúsculas.
+     * Busca horarios que contengan un día laboral determinado, ignorando
+     * mayúsculas y minúsculas.
+     *
      * @param dia Día a buscar.
      * @return Lista de horarios que contienen el día.
      */
@@ -58,15 +60,16 @@ public class HorarioHibernate implements HorarioRepository {
         CriteriaQuery<Horario> cq = cb.createQuery(Horario.class);
         Root<Horario> root = cq.from(Horario.class);
         Predicate diaPredicate = cb.like(
-            cb.lower(root.get("diasLaborables")),
-            "%" + dia.toLowerCase() + "%"
+                cb.lower(root.get("diasLaborables")),
+                "%" + dia.toLowerCase() + "%"
         );
         cq.where(diaPredicate);
         return entityManager.createQuery(cq).getResultList();
     }
-    
+
     /**
      * Encuentra horarios cuyo inicio esté entre un rango de horas.
+     *
      * @param inicio Hora de inicio del rango.
      * @param fin Hora de fin del rango.
      * @return Lista de horarios dentro del rango.
@@ -83,6 +86,7 @@ public class HorarioHibernate implements HorarioRepository {
 
     /**
      * Encuentra horarios cuya hora de fin esté entre un rango de horas.
+     *
      * @param inicio Hora de inicio del rango.
      * @param fin Hora de fin del rango.
      * @return Lista de horarios dentro del rango.
@@ -99,28 +103,29 @@ public class HorarioHibernate implements HorarioRepository {
 
     /**
      * Encuentra horarios de una empresa en un día determinado.
+     *
      * @param idEmpresa ID de la empresa.
      * @param dia Día de la semana.
      * @return Lista de horarios.
      */
     @Override
     public List<Horario> findByEmpresa_IdEmpresaAndDiasLaborablesContaining(
-        Long idEmpresa, String dia) {
+            Long idEmpresa, String dia) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Horario> cq = cb.createQuery(Horario.class);
         Root<Horario> root = cq.from(Horario.class);
         Predicate empresaIdPredicate = cb.equal(root.get("empresa").get("idEmpresa"), idEmpresa);
         Predicate diaPredicate = cb.like(
-            cb.lower(root.get("diasLaborables")),
-            "%" + dia.toLowerCase() + "%"
+                cb.lower(root.get("diasLaborables")),
+                "%" + dia.toLowerCase() + "%"
         );
         cq.where(cb.and(empresaIdPredicate, diaPredicate));
         return entityManager.createQuery(cq).getResultList();
     }
-    
+
     /**
      * Busca horarios que comienzan antes de una hora específica.
-     * 
+     *
      * @param hora Hora límite.
      * @return Lista de horarios que comienzan antes de la hora especificada.
      */
@@ -136,7 +141,7 @@ public class HorarioHibernate implements HorarioRepository {
 
     /**
      * Busca horarios que terminan después de una hora específica.
-     * 
+     *
      * @param hora Hora límite.
      * @return Lista de horarios que terminan después de la hora especificada.
      */
@@ -152,7 +157,7 @@ public class HorarioHibernate implements HorarioRepository {
 
     /**
      * Obtiene todos los horarios ordenados por hora de inicio ascendente.
-     * 
+     *
      * @return Lista de horarios ordenados por hora de inicio.
      */
     @Override
@@ -165,8 +170,9 @@ public class HorarioHibernate implements HorarioRepository {
     }
 
     /**
-     * Busca horarios de una empresa específica cuya hora de inicio esté en un rango.
-     * 
+     * Busca horarios de una empresa específica cuya hora de inicio esté en un
+     * rango.
+     *
      * @param idEmpresa ID de la empresa.
      * @param inicio Hora de inicio del rango.
      * @param fin Hora de fin del rango.
@@ -174,7 +180,7 @@ public class HorarioHibernate implements HorarioRepository {
      */
     @Override
     public List<Horario> findByEmpresa_IdEmpresaAndHorarioInicioBetween(
-        Long idEmpresa, LocalTime inicio, LocalTime fin) {
+            Long idEmpresa, LocalTime inicio, LocalTime fin) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Horario> cq = cb.createQuery(Horario.class);
         Root<Horario> root = cq.from(Horario.class);
@@ -185,8 +191,9 @@ public class HorarioHibernate implements HorarioRepository {
     }
 
     /**
-     * Busca horarios de una empresa específica cuya hora de fin esté en un rango.
-     * 
+     * Busca horarios de una empresa específica cuya hora de fin esté en un
+     * rango.
+     *
      * @param idEmpresa ID de la empresa.
      * @param inicio Hora de inicio del rango.
      * @param fin Hora de fin del rango.
@@ -194,7 +201,7 @@ public class HorarioHibernate implements HorarioRepository {
      */
     @Override
     public List<Horario> findByEmpresa_IdEmpresaAndHorarioFinBetween(
-        Long idEmpresa, LocalTime inicio, LocalTime fin) {
+            Long idEmpresa, LocalTime inicio, LocalTime fin) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Horario> cq = cb.createQuery(Horario.class);
         Root<Horario> root = cq.from(Horario.class);
@@ -206,22 +213,23 @@ public class HorarioHibernate implements HorarioRepository {
 
     /**
      * Busca horarios que incluyan un día específico.
-     * 
+     *
      * @param dia Día de la semana a buscar.
      * @return Lista de horarios que incluyen el día especificado.
      */
     @Override
     public List<Horario> findByDiaExacto(String dia) {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h " +
-            "WHERE h.diasLaborables LIKE CONCAT('%', :dia, '%')", Horario.class)
-            .setParameter("dia", dia)
-            .getResultList();
+                "SELECT h FROM Horario h "
+                + "WHERE h.diasLaborables LIKE CONCAT('%', :dia, '%')", Horario.class)
+                .setParameter("dia", dia)
+                .getResultList();
     }
 
     /**
-     * Busca horarios de una empresa con horario entre horarioInicio y horarioFin.
-     * 
+     * Busca horarios de una empresa con horario entre horarioInicio y
+     * horarioFin.
+     *
      * @param idEmpresa ID de la empresa.
      * @param inicio Hora de inicio del rango.
      * @param fin Hora de fin del rango.
@@ -229,40 +237,40 @@ public class HorarioHibernate implements HorarioRepository {
      */
     @Override
     public List<Horario> findByEmpresaAndHorarioBetween(
-        Long idEmpresa, LocalTime inicio, LocalTime fin) {
+            Long idEmpresa, LocalTime inicio, LocalTime fin) {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h " +
-            "WHERE h.empresa.idEmpresa = :idEmpresa " +
-            "AND h.horarioInicio >= :inicio " +
-            "AND h.horarioFin <= :fin", Horario.class)
-            .setParameter("idEmpresa", idEmpresa)
-            .setParameter("inicio", inicio)
-            .setParameter("fin", fin)
-            .getResultList();
+                "SELECT h FROM Horario h "
+                + "WHERE h.empresa.idEmpresa = :idEmpresa "
+                + "AND h.horarioInicio >= :inicio "
+                + "AND h.horarioFin <= :fin", Horario.class)
+                .setParameter("idEmpresa", idEmpresa)
+                .setParameter("inicio", inicio)
+                .setParameter("fin", fin)
+                .getResultList();
     }
 
     /**
      * Busca horarios que empiecen antes de una hora y terminen después de otra.
-     * 
+     *
      * @param inicio Hora de inicio para la comparación.
      * @param fin Hora de fin para la comparación.
      * @return Lista de horarios que se solapan con el rango proporcionado.
      */
     @Override
     public List<Horario> findByHorarioOverlap(
-        LocalTime inicio, LocalTime fin) {
+            LocalTime inicio, LocalTime fin) {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h " +
-            "WHERE h.horarioInicio < :inicio " +
-            "AND h.horarioFin > :fin", Horario.class)
-            .setParameter("inicio", inicio)
-            .setParameter("fin", fin)
-            .getResultList();
+                "SELECT h FROM Horario h "
+                + "WHERE h.horarioInicio < :inicio "
+                + "AND h.horarioFin > :fin", Horario.class)
+                .setParameter("inicio", inicio)
+                .setParameter("fin", fin)
+                .getResultList();
     }
 
     /**
      * Busca un horario específico por empresa, día y rango de horas exacto.
-     * 
+     *
      * @param idEmpresa ID de la empresa.
      * @param dia Día específico.
      * @param inicio Hora de inicio exacta.
@@ -271,68 +279,68 @@ public class HorarioHibernate implements HorarioRepository {
      */
     @Override
     public Horario findByEmpresaDiaYHorarioExacto(
-        Long idEmpresa, String dia, LocalTime inicio, LocalTime fin) {
+            Long idEmpresa, String dia, LocalTime inicio, LocalTime fin) {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h " +
-            "WHERE h.empresa.idEmpresa = :idEmpresa " +
-            "AND h.diasLaborables LIKE CONCAT('%', :dia, '%') " +
-            "AND h.horarioInicio = :inicio " +
-            "AND h.horarioFin = :fin", Horario.class)
-            .setParameter("idEmpresa", idEmpresa)
-            .setParameter("dia", dia)
-            .setParameter("inicio", inicio)
-            .setParameter("fin", fin)
-            .getSingleResult();
+                "SELECT h FROM Horario h "
+                + "WHERE h.empresa.idEmpresa = :idEmpresa "
+                + "AND h.diasLaborables LIKE CONCAT('%', :dia, '%') "
+                + "AND h.horarioInicio = :inicio "
+                + "AND h.horarioFin = :fin", Horario.class)
+                .setParameter("idEmpresa", idEmpresa)
+                .setParameter("dia", dia)
+                .setParameter("inicio", inicio)
+                .setParameter("fin", fin)
+                .getSingleResult();
     }
 
     /**
      * Busca horarios que no estén asociados a una empresa.
-     * 
+     *
      * @return Lista de horarios sin empresa asociada.
      */
     @Override
     public List<Horario> findOrphanHorarios() {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h WHERE h.empresa IS NULL", Horario.class)
-            .getResultList();
+                "SELECT h FROM Horario h WHERE h.empresa IS NULL", Horario.class)
+                .getResultList();
     }
 
     /**
      * Cuenta el número de horarios asociados a una empresa específica.
-     * 
+     *
      * @param idEmpresa ID de la empresa.
      * @return Número de horarios de la empresa.
      */
     @Override
     public Long countByEmpresaId(Long idEmpresa) {
         return entityManager.createQuery(
-            "SELECT COUNT(h) FROM Horario h WHERE h.empresa.idEmpresa = :idEmpresa", Long.class)
-            .setParameter("idEmpresa", idEmpresa)
-            .getSingleResult();
+                "SELECT COUNT(h) FROM Horario h WHERE h.empresa.idEmpresa = :idEmpresa", Long.class)
+                .setParameter("idEmpresa", idEmpresa)
+                .getSingleResult();
     }
 
     /**
      * Busca horarios que contengan múltiples días específicos.
-     * 
+     *
      * @param dia1 Primer día a incluir.
      * @param dia2 Segundo día a incluir.
      * @return Lista de horarios que incluyen ambos días.
      */
     @Override
     public List<Horario> findByDiasMultiples(
-        String dia1, String dia2) {
+            String dia1, String dia2) {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h " +
-            "WHERE h.diasLaborables LIKE CONCAT('%', :dia1, '%') " +
-            "AND h.diasLaborables LIKE CONCAT('%', :dia2, '%')", Horario.class)
-            .setParameter("dia1", dia1)
-            .setParameter("dia2", dia2)
-            .getResultList();
+                "SELECT h FROM Horario h "
+                + "WHERE h.diasLaborables LIKE CONCAT('%', :dia1, '%') "
+                + "AND h.diasLaborables LIKE CONCAT('%', :dia2, '%')", Horario.class)
+                .setParameter("dia1", dia1)
+                .setParameter("dia2", dia2)
+                .getResultList();
     }
 
     /**
      * Busca horarios en intervalos de fechas específicos.
-     * 
+     *
      * @param inicio1 Límite inferior del rango para la hora de inicio.
      * @param fin1 Límite superior del rango para la hora de inicio.
      * @param inicio2 Límite inferior del rango para la hora de fin.
@@ -341,55 +349,57 @@ public class HorarioHibernate implements HorarioRepository {
      */
     @Override
     public List<Horario> findByHorarioRanges(
-        LocalTime inicio1, LocalTime fin1, 
-        LocalTime inicio2, LocalTime fin2) {
+            LocalTime inicio1, LocalTime fin1,
+            LocalTime inicio2, LocalTime fin2) {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h " +
-            "WHERE h.horarioInicio BETWEEN :inicio1 AND :fin1 " +
-            "AND h.horarioFin BETWEEN :inicio2 AND :fin2", Horario.class)
-            .setParameter("inicio1", inicio1)
-            .setParameter("fin1", fin1)
-            .setParameter("inicio2", inicio2)
-            .setParameter("fin2", fin2)
-            .getResultList();
+                "SELECT h FROM Horario h "
+                + "WHERE h.horarioInicio BETWEEN :inicio1 AND :fin1 "
+                + "AND h.horarioFin BETWEEN :inicio2 AND :fin2", Horario.class)
+                .setParameter("inicio1", inicio1)
+                .setParameter("fin1", fin1)
+                .setParameter("inicio2", inicio2)
+                .setParameter("fin2", fin2)
+                .getResultList();
     }
 
     /**
      * Busca horarios con fecha de alta en un rango específico.
-     * 
+     *
      * @param fechaInicio Fecha inicial del rango.
      * @param fechaFin Fecha final del rango.
      * @return Lista de horarios creados dentro del rango de fechas.
      */
     @Override
     public List<Horario> findByFechaAltaBetween(
-        LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+            LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h " +
-            "WHERE h.fechaAlta BETWEEN :fechaInicio AND :fechaFin", Horario.class)
-            .setParameter("fechaInicio", fechaInicio)
-            .setParameter("fechaFin", fechaFin)
-            .getResultList();
+                "SELECT h FROM Horario h "
+                + "WHERE h.fechaAlta BETWEEN :fechaInicio AND :fechaFin", Horario.class)
+                .setParameter("fechaInicio", fechaInicio)
+                .setParameter("fechaFin", fechaFin)
+                .getResultList();
     }
 
     /**
-     * Busca horarios con fecha de modificación posterior a una fecha específica.
-     * 
+     * Busca horarios con fecha de modificación posterior a una fecha
+     * específica.
+     *
      * @param fecha Fecha límite.
      * @return Lista de horarios modificados después de la fecha especificada.
      */
     @Override
     public List<Horario> findByFechaModificacionAfter(
-        LocalDateTime fecha) {
+            LocalDateTime fecha) {
         return entityManager.createQuery(
-            "SELECT h FROM Horario h " +
-            "WHERE h.fechaModificacion >= :fecha", Horario.class)
-            .setParameter("fecha", fecha)
-            .getResultList();
+                "SELECT h FROM Horario h "
+                + "WHERE h.fechaModificacion >= :fecha", Horario.class)
+                .setParameter("fecha", fecha)
+                .getResultList();
     }
-    
+
     /**
      * Elimina un horario por su ID.
+     *
      * @param id Identificador del horario a eliminar.
      * @throws EntityNotFoundException si el horario no existe.
      */
@@ -404,6 +414,7 @@ public class HorarioHibernate implements HorarioRepository {
 
     /**
      * Obtiene todos los horarios ordenados por horario de inicio ascendente.
+     *
      * @return Lista de horarios.
      */
     @Override
@@ -414,9 +425,10 @@ public class HorarioHibernate implements HorarioRepository {
         cq.orderBy(cb.asc(root.get("horarioInicio")));
         return entityManager.createQuery(cq).getResultList();
     }
-    
+
     /**
      * Guarda un nuevo horario o actualiza uno existente.
+     *
      * @param horario Entidad Horario a persistir.
      * @return El horario guardado o actualizado.
      */
@@ -429,10 +441,10 @@ public class HorarioHibernate implements HorarioRepository {
         }
         return horario;
     }
-    
+
     /**
      * Busca un horario por su ID.
-     * 
+     *
      * @param id Identificador único del horario.
      * @return El horario encontrado o null si no existe.
      */
@@ -445,16 +457,19 @@ public class HorarioHibernate implements HorarioRepository {
      * Busca un horario asociado a un servicio por su identificador único.
      *
      * <p>
-     * Este método ejecuta una consulta JPQL para recuperar un horario que esté vinculado al servicio especificado mediante su ID.
-     * Si no se encuentra ningún horario asociado, devuelve un {@link Optional#empty()}.
+     * Este método ejecuta una consulta JPQL para recuperar un horario que esté
+     * vinculado al servicio especificado mediante su ID. Si no se encuentra
+     * ningún horario asociado, devuelve un {@link Optional#empty()}.
      * </p>
      *
-     * @param idServicio El identificador único del servicio al que está asociado el horario.
-     * @return Un {@link Optional} que contiene el horario encontrado si existe, o vacío en caso contrario.
+     * @param idServicio El identificador único del servicio al que está
+     * asociado el horario.
+     * @return Un {@link Optional} que contiene el horario encontrado si existe,
+     * o vacío en caso contrario.
      */
     @Override
     public Optional<Horario> findByServicio_IdServicio(Long idServicio) {
-       
+
         String jpql = "SELECT h FROM Horario h WHERE h.servicio.idServicio = :idServicio";
         TypedQuery<Horario> query = entityManager.createQuery(jpql, Horario.class);
         query.setParameter("idServicio", idServicio);
@@ -466,89 +481,94 @@ public class HorarioHibernate implements HorarioRepository {
             return Optional.empty();
         }
     }
-    
+
     /**
-     * Busca horarios por el identificador fiscal de la empresa asociada al servicio.
-     * 
+     * Busca horarios por el identificador fiscal de la empresa asociada al
+     * servicio.
+     *
      * @param identificadorFiscal Identificador fiscal de la empresa.
-     * @return Lista de horarios asociados a la empresa con el identificador fiscal especificado.
+     * @return Lista de horarios asociados a la empresa con el identificador
+     * fiscal especificado.
      */
-	@Override
+    @Override
     public List<Horario> findByServicio_Empresa_IdentificadorFiscal(String identificadorFiscal) {
-       String query = "SELECT h FROM Horario h " +
-                      "JOIN h.servicio s " +
-                      "JOIN s.empresa e " +
-                      "WHERE e.identificadorFiscal = :identificadorFiscal";
-       TypedQuery<Horario> typedQuery = entityManager.createQuery(query, Horario.class);
-       typedQuery.setParameter("identificadorFiscal", identificadorFiscal);
-       return typedQuery.getResultList();
-   }
-    
-	/**
-	 * Busca un horario basado en el identificador de la empresa y el identificador del servicio.
-	 * 
-	 * @param idEmpresa El identificador de la empresa a buscar en la tabla de horarios.
-	 * @param idServicio El identificador del servicio asociado al horario.
-	 * @return Un {@link Optional} que contiene el horario encontrado, o {@link Optional#empty()} si no se encuentra.
-	 */
-	@Override
-	public Optional<Horario> findByEmpresaIdAndServicioId(Long idEmpresa, Long idServicio) {
-	    try {
-	        // Imprimir valores que llegan al método
-	        System.out.println(" Buscando horario con:");
-	        System.out.println("    idEmpresa: " + idEmpresa);
-	        System.out.println("    idServicio: " + idServicio);
+        String query = "SELECT h FROM Horario h "
+                + "JOIN h.servicio s "
+                + "JOIN s.empresa e "
+                + "WHERE e.identificadorFiscal = :identificadorFiscal";
+        TypedQuery<Horario> typedQuery = entityManager.createQuery(query, Horario.class);
+        typedQuery.setParameter("identificadorFiscal", identificadorFiscal);
+        return typedQuery.getResultList();
+    }
 
-	        // Utilizamos el EntityManager para hacer la consulta
-	        String hql = "FROM Horario h WHERE h.empresa.idEmpresa = :idEmpresa AND h.servicio.idServicio = :idServicio";
-	        Query query = entityManager.createQuery(hql);
-	        query.setParameter("idEmpresa", idEmpresa);
-	        query.setParameter("idServicio", idServicio);
+    /**
+     * Busca un horario basado en el identificador de la empresa y el
+     * identificador del servicio.
+     *
+     * @param idEmpresa El identificador de la empresa a buscar en la tabla de
+     * horarios.
+     * @param idServicio El identificador del servicio asociado al horario.
+     * @return Un {@link Optional} que contiene el horario encontrado, o
+     * {@link Optional#empty()} si no se encuentra.
+     */
+    @Override
+    public Optional<Horario> findByEmpresaIdAndServicioId(Long idEmpresa, Long idServicio) {
+        try {
+            // Imprimir valores que llegan al método
+            System.out.println(" Buscando horario con:");
+            System.out.println("    idEmpresa: " + idEmpresa);
+            System.out.println("    idServicio: " + idServicio);
 
-	        // Ejecutamos la consulta y obtenemos la lista de resultados
-	        List<Horario> resultList = query.getResultList();
+            // Utilizamos el EntityManager para hacer la consulta
+            String hql = "FROM Horario h WHERE h.empresa.idEmpresa = :idEmpresa AND h.servicio.idServicio = :idServicio";
+            Query query = entityManager.createQuery(hql);
+            query.setParameter("idEmpresa", idEmpresa);
+            query.setParameter("idServicio", idServicio);
 
-	        // Imprimir los resultados obtenidos
-	        System.out.println("   Resultados encontrados: " + resultList.size());
+            // Ejecutamos la consulta y obtenemos la lista de resultados
+            List<Horario> resultList = query.getResultList();
 
-	        // Si la lista no está vacía, devolvemos el primer elemento como Optional
-	        if (!resultList.isEmpty()) {
-	            System.out.println("   Horario encontrado: " + resultList.get(0));
-	            return Optional.ofNullable(resultList.get(0));
-	        }
+            // Imprimir los resultados obtenidos
+            System.out.println("   Resultados encontrados: " + resultList.size());
 
-	        // Si no se encuentra ningún resultado, devolvemos Optional vacío
-	        System.out.println("   No se encontró ningún horario.");
-	        return Optional.empty();
-	    } catch (Exception e) {
-	        // Si ocurre algún error, lo capturamos y lo logueamos
-	        e.printStackTrace();
-	        return Optional.empty(); // Retornamos Optional vacío si algo falla
-	    }
-	}
-    
-	/**
-	 * Encuentra el primer horario asociado a un servicio por su identificador
-	 * único.
-	 * 
-	 * <p>
-	 * Este método ejecuta una consulta JPQL para recuperar el primer horario
-	 * vinculado al servicio especificado mediante su ID. Si existen múltiples
-	 * horarios asociados al servicio, se devolverá el primero encontrado (orden
-	 * arbitrario). Si no hay resultados, devuelve un {@link Optional#empty()}.
-	 * </p>
-	 * 
-	 * @param servicioId El identificador único del servicio a buscar.
-	 * @return Un {@link Optional} que contiene el horario encontrado, o vacío si no
-	 *         existe.
-	 */
-	@Override
-	public Optional<Horario> findFirstByServicioId(Long servicioId) {
-		String jpql = "SELECT h FROM Horario h WHERE h.servicio.idServicio = :idServicio";
-		TypedQuery<Horario> query = entityManager.createQuery(jpql, Horario.class);
-		query.setParameter("idServicio", servicioId);
-		query.setMaxResults(1);
-		List<Horario> resultList = query.getResultList();
-		return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.get(0));
-	}
+            // Si la lista no está vacía, devolvemos el primer elemento como Optional
+            if (!resultList.isEmpty()) {
+                System.out.println("   Horario encontrado: " + resultList.get(0));
+                return Optional.ofNullable(resultList.get(0));
+            }
+
+            // Si no se encuentra ningún resultado, devolvemos Optional vacío
+            System.out.println("   No se encontró ningún horario.");
+            return Optional.empty();
+        } catch (Exception e) {
+            // Si ocurre algún error, lo capturamos y lo logueamos
+            e.printStackTrace();
+            return Optional.empty(); // Retornamos Optional vacío si algo falla
+        }
+    }
+
+    /**
+     * Encuentra el primer horario asociado a un servicio por su identificador
+     * único.
+     *
+     * <p>
+     * Este método ejecuta una consulta JPQL para recuperar el primer horario
+     * vinculado al servicio especificado mediante su ID. Si existen múltiples
+     * horarios asociados al servicio, se devolverá el primero encontrado (orden
+     * arbitrario). Si no hay resultados, devuelve un {@link Optional#empty()}.
+     * </p>
+     *
+     * @param servicioId El identificador único del servicio a buscar.
+     * @return Un {@link Optional} que contiene el horario encontrado, o vacío
+     * si no existe.
+     */
+    @Override
+    public Optional<Horario> findFirstByServicioId(Long servicioId) {
+        String jpql = "SELECT h FROM Horario h WHERE h.servicio.idServicio = :idServicio";
+        TypedQuery<Horario> query = entityManager.createQuery(jpql, Horario.class);
+        query.setParameter("idServicio", servicioId);
+        query.setMaxResults(1);
+        List<Horario> resultList = query.getResultList();
+        return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.get(0));
+    }
 }

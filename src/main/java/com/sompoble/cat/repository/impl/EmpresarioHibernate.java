@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Proporciona métodos para gestionar empresarios en la base de datos utilizando
  * Hibernate como proveedor JPA.
  * </p>
- * 
+ *
  * @author SomPoble
  */
 @Repository
@@ -194,7 +194,7 @@ public class EmpresarioHibernate implements EmpresarioRepository {
      * {@inheritDoc}
      */
     @Override
-    public Empresario findByEmailFull(String email){
+    public Empresario findByEmailFull(String email) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Empresario> cq = cb.createQuery(Empresario.class);
         Root<Empresario> root = cq.from(Empresario.class);
@@ -210,9 +210,9 @@ public class EmpresarioHibernate implements EmpresarioRepository {
      * Convierte un objeto {@link Empresario} a su correspondiente
      * {@link EmpresarioDTO}.
      * <p>
-     * Este método extrae la información relevante de la entidad Empresario
-     * y crea un objeto DTO que puede ser transferido a través de capas.
-     * También convierte las empresas asociadas al empresario a sus respectivos DTOs.
+     * Este método extrae la información relevante de la entidad Empresario y
+     * crea un objeto DTO que puede ser transferido a través de capas. También
+     * convierte las empresas asociadas al empresario a sus respectivos DTOs.
      * </p>
      *
      * @param empresario el objeto {@link Empresario} a convertir.
@@ -266,10 +266,11 @@ public class EmpresarioHibernate implements EmpresarioRepository {
     }
 
     /**
-     * Convierte un objeto {@link EmpresarioDTO} a una entidad {@link Empresario}.
+     * Convierte un objeto {@link EmpresarioDTO} a una entidad
+     * {@link Empresario}.
      * <p>
-     * Este método crea una nueva entidad Empresario y la completa con
-     * la información contenida en el DTO proporcionado, incluyendo la conversión
+     * Este método crea una nueva entidad Empresario y la completa con la
+     * información contenida en el DTO proporcionado, incluyendo la conversión
      * de las empresas asociadas a sus respectivas entidades.
      * </p>
      *

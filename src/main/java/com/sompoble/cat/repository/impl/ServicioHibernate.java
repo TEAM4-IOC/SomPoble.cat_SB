@@ -20,11 +20,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Implementación de {@link ServicioRepository} utilizando Hibernate con Criteria API.
+ * Implementación de {@link ServicioRepository} utilizando Hibernate con
+ * Criteria API.
  * <p>
- * Esta clase proporciona la implementación concreta de las operaciones de acceso a datos
- * definidas en la interfaz ServicioRepository, utilizando JPA/Hibernate y Criteria API
- * para interactuar con la base de datos.
+ * Esta clase proporciona la implementación concreta de las operaciones de
+ * acceso a datos definidas en la interfaz ServicioRepository, utilizando
+ * JPA/Hibernate y Criteria API para interactuar con la base de datos.
  * </p>
  */
 @Repository
@@ -87,10 +88,12 @@ public class ServicioHibernate implements ServicioRepository {
     }
 
     /**
-     * Obtiene todos los servicios asociados a una empresa específica por su identificador fiscal.
+     * Obtiene todos los servicios asociados a una empresa específica por su
+     * identificador fiscal.
      *
      * @param identificadorFiscal Identificador fiscal de la empresa.
-     * @return Lista de servicios pertenecientes a la empresa con el identificador fiscal dado.
+     * @return Lista de servicios pertenecientes a la empresa con el
+     * identificador fiscal dado.
      */
     @Override
     public List<Servicio> findAllByEmpresaIdentificador(String identificadorFiscal) {
@@ -108,20 +111,21 @@ public class ServicioHibernate implements ServicioRepository {
      * Verifica si existe un servicio con el identificador especificado.
      *
      * @param id Identificador del servicio.
-     * @return {@code true} si el servicio existe, {@code false} en caso contrario.
+     * @return {@code true} si el servicio existe, {@code false} en caso
+     * contrario.
      */
     @Override
     public boolean existsById(Long id) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<Servicio> root = cq.from(Servicio.class);
-        
+
         Path<Object> idPath = root.get("idServicio");
-        
+
         Predicate predicate = cb.equal(idPath, id);
-        
+
         cq.select(cb.count(root)).where(predicate);
-        
+
         Long count = entityManager.createQuery(cq).getSingleResult();
         return count > 0;
     }
@@ -140,7 +144,8 @@ public class ServicioHibernate implements ServicioRepository {
     }
 
     /**
-     * Busca servicios cuyo nombre contenga la cadena especificada, sin distinguir entre mayúsculas y minúsculas.
+     * Busca servicios cuyo nombre contenga la cadena especificada, sin
+     * distinguir entre mayúsculas y minúsculas.
      *
      * @param nombre Texto a buscar en el nombre del servicio.
      * @return Lista de servicios que coinciden con el criterio de búsqueda.
@@ -153,21 +158,25 @@ public class ServicioHibernate implements ServicioRepository {
 
         // Busca coincidencias parciales (ignorando mayúsculas/minúsculas)
         Predicate predicate = cb.like(
-            cb.lower(root.get("nombre")), // Convierte el campo a minúsculas
-            "%" + nombre.toLowerCase() + "%" // Convierte el valor a minúsculas y añade comodines
+                cb.lower(root.get("nombre")), // Convierte el campo a minúsculas
+                "%" + nombre.toLowerCase() + "%" // Convierte el valor a minúsculas y añade comodines
         );
 
         cq.where(predicate);
         return entityManager.createQuery(cq).getResultList();
     }
-    
+
     /**
-     * Obtiene todos los servicios de una empresa específica, incluyendo los horarios asociados mediante un LEFT JOIN.
-     * Este método realiza una consulta para recuperar todos los servicios de una empresa, junto con sus horarios,
-     * sin necesidad de que exista un horario asignado a cada servicio.
+     * Obtiene todos los servicios de una empresa específica, incluyendo los
+     * horarios asociados mediante un LEFT JOIN. Este método realiza una
+     * consulta para recuperar todos los servicios de una empresa, junto con sus
+     * horarios, sin necesidad de que exista un horario asignado a cada
+     * servicio.
      *
-     * @param empresaId El identificador de la empresa cuyos servicios se quieren obtener.
-     * @return Una lista de servicios asociados a la empresa indicada. Si no se encuentran servicios, se devuelve una lista vacía.
+     * @param empresaId El identificador de la empresa cuyos servicios se
+     * quieren obtener.
+     * @return Una lista de servicios asociados a la empresa indicada. Si no se
+     * encuentran servicios, se devuelve una lista vacía.
      */
     @Override
     public List<Servicio> findAllHorariosByEmpresaId(Long empresaId) {
@@ -175,23 +184,22 @@ public class ServicioHibernate implements ServicioRepository {
         CriteriaQuery<Servicio> cq = cb.createQuery(Servicio.class);
         Root<Servicio> root = cq.from(Servicio.class);
 
-        
         Join<Servicio, Horario> horarioJoin = root.join("horarios", JoinType.LEFT);
 
-        
         Predicate empresaPredicate = cb.equal(root.get("empresa").get("id"), empresaId);
         cq.where(empresaPredicate);
 
-       
         return entityManager.createQuery(cq).getResultList();
     }
-    
+
     /**
-     * Busca un servicio por su ID y verifica que pertenezca a una empresa específica.
-     * 
+     * Busca un servicio por su ID y verifica que pertenezca a una empresa
+     * específica.
+     *
      * @param servicioId ID único del servicio.
      * @param empresaId ID de la empresa propietaria del servicio.
-     * @return Un {@link Optional} con el servicio encontrado, o vacío si no existe.
+     * @return Un {@link Optional} con el servicio encontrado, o vacío si no
+     * existe.
      */
     @Override
     public Optional<Servicio> findByIdAndEmpresaId(Long servicioId, Long empresaId) {
@@ -214,13 +222,15 @@ public class ServicioHibernate implements ServicioRepository {
             return Optional.empty();
         }
     }
-    
+
     /**
-     * Busca un servicio por su ID y verifica que pertenezca a una empresa con el identificador fiscal especificado.
-     * 
+     * Busca un servicio por su ID y verifica que pertenezca a una empresa con
+     * el identificador fiscal especificado.
+     *
      * @param id ID del servicio a buscar
      * @param identificadorFiscal Identificador fiscal de la empresa
-     * @return Optional con el servicio encontrado o vacío si no cumple las condiciones
+     * @return Optional con el servicio encontrado o vacío si no cumple las
+     * condiciones
      */
     @Override
     public Optional<Servicio> findByIdAndEmpresaIdentificadorFiscal(Long id, String identificadorFiscal) {

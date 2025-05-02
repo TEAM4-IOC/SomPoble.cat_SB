@@ -13,8 +13,8 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Controlador REST para gestionar eventos.
- * Exponen endpoints para CRUD y consultas personalizadas.
+ * Controlador REST para gestionar eventos. Exponen endpoints para CRUD y
+ * consultas personalizadas.
  */
 @RestController
 @RequestMapping("/api/eventos")
@@ -23,11 +23,9 @@ public class EventoController {
     @Autowired
     private EventoService eventoService;
 
-  
-
     /**
      * Crea un nuevo evento.
-     * 
+     *
      * @param evento Objeto {@link Evento} a crear.
      * @return Evento guardado con código 201 (CREATED).
      */
@@ -41,15 +39,16 @@ public class EventoController {
     /**
      * Endpoint para eliminar un evento por su ID.
      *
-     * <p>Este método verifica si el evento existe antes de intentar eliminarlo.
-     * Si el evento no existe, devuelve un estado HTTP 404 (Not Found). Si el evento
-     * existe pero la eliminación falla, devuelve un estado HTTP 500 (Internal Server Error).</p>
+     * <p>
+     * Este método verifica si el evento existe antes de intentar eliminarlo. Si
+     * el evento no existe, devuelve un estado HTTP 404 (Not Found). Si el
+     * evento existe pero la eliminación falla, devuelve un estado HTTP 500
+     * (Internal Server Error).</p>
      *
      * @param id ID del evento a eliminar.
-     * @return Respuesta HTTP:
-     *         - 204 No Content si el evento se elimina correctamente.
-     *         - 404 Not Found si el evento no existe.
-     *         - 500 Internal Server Error si ocurre un error interno.
+     * @return Respuesta HTTP: - 204 No Content si el evento se elimina
+     * correctamente. - 404 Not Found si el evento no existe. - 500 Internal
+     * Server Error si ocurre un error interno.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEvento(@PathVariable Long id) {
@@ -60,23 +59,23 @@ public class EventoController {
         Evento evento = eventoService.obtenerEventoPorId(id);
         if (evento == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                 .body(null); // Devolver 404 si el evento no existe
+                    .body(null); // Devolver 404 si el evento no existe
         }
 
         // Intentar eliminar el evento
         boolean eliminado = eventoService.eliminarEvento(id);
         if (eliminado) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                                 .body(null); // Devolver 204 si la eliminación fue exitosa
+                    .body(null); // Devolver 204 si la eliminación fue exitosa
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body(null); // Devolver 500 si ocurre un error interno
+                    .body(null); // Devolver 500 si ocurre un error interno
         }
     }
 
     /**
      * Obtiene un evento por su ID.
-     * 
+     *
      * @param id ID del evento.
      * @return Evento encontrado o error 404 si no existe.
      */
@@ -84,13 +83,13 @@ public class EventoController {
     public ResponseEntity<Evento> obtenerEvento(@PathVariable Long id) {
         Evento evento = eventoService.obtenerEventoPorId(id);
         return ResponseEntity
-            .status(evento != null ? HttpStatus.OK : HttpStatus.NOT_FOUND)
-            .body(evento);
+                .status(evento != null ? HttpStatus.OK : HttpStatus.NOT_FOUND)
+                .body(evento);
     }
 
     /**
      * Lista todos los eventos almacenados.
-     * 
+     *
      * @return Lista de eventos con código 200.
      */
     @GetMapping
@@ -101,45 +100,45 @@ public class EventoController {
 
     /**
      * Busca eventos dentro de un rango de fechas.
-     * 
+     *
      * @param start Fecha de inicio del rango.
-     * @param end   Fecha de fin del rango.
+     * @param end Fecha de fin del rango.
      * @return Lista de eventos en el rango con código 200.
      */
     @GetMapping("/fecha")
     public ResponseEntity<List<Evento>> buscarPorFecha(
             @RequestParam LocalDateTime start,
             @RequestParam LocalDateTime end) {
-        
+
         requireNonNull(start, "La fecha de inicio no puede ser nula");
         requireNonNull(end, "La fecha de fin no puede ser nula");
-        
+
         return ResponseEntity.ok(
-            eventoService.buscarEventosPorFecha(start, end)
+                eventoService.buscarEventosPorFecha(start, end)
         );
     }
 
     /**
      * Busca eventos por ubicación.
-     * 
+     *
      * @param ubicacion Ubicación del evento.
      * @return Lista de eventos en la ubicación con código 200.
      */
     @GetMapping("/ubicacion/{ubicacion}")
     public ResponseEntity<List<Evento>> buscarPorUbicacion(
             @PathVariable String ubicacion) {
-        
+
         requireNonNull(ubicacion, "La ubicación no puede ser nula");
-        
+
         return ResponseEntity.ok(
-            eventoService.buscarEventosPorUbicacion(ubicacion)
+                eventoService.buscarEventosPorUbicacion(ubicacion)
         );
     }
-    
+
     /**
      * Actualiza un evento existente por su ID.
      *
-     * @param id     ID del evento a actualizar.
+     * @param id ID del evento a actualizar.
      * @param evento Datos actualizados del evento.
      * @return Evento actualizado con código 200 o 404 si no se encuentra.
      */
@@ -156,5 +155,4 @@ public class EventoController {
 
         return ResponseEntity.ok(actualizado);
     }
-    
 }

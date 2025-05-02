@@ -4,7 +4,6 @@
  */
 package com.sompoble.cat.controller;
 
-import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.dto.ClienteDTO;
 import com.sompoble.cat.dto.EmpresarioDTO;
 import com.sompoble.cat.exception.BadRequestException;
@@ -18,13 +17,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
 /**
- * Controlador encargado de gestionar las rutas relacionadas con el inicio de sesión.
+ * Controlador encargado de gestionar las rutas relacionadas con el inicio de
+ * sesión.
  */
 @RestController
 @RequestMapping("/api/login")
 public class AuthController {
-	/**
+
+    /**
      * Servicio para interactuar con los datos de los clientes.
      */
     @Autowired
@@ -39,12 +41,14 @@ public class AuthController {
      */
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     /**
      * Método que maneja las peticiones POST para iniciar sesión.
      *
      * @param loginRequest Mapa que contiene los campos "email" y "pass".
      * @return ResponseEntity con la respuesta del servidor.
-     * @throws BadRequestException si faltan datos esenciales como email o contraseña.
+     * @throws BadRequestException si faltan datos esenciales como email o
+     * contraseña.
      * @throws UnauthorizedException si las credenciales son incorrectas.
      */
     @PostMapping
@@ -80,14 +84,13 @@ public class AuthController {
             throw new UnauthorizedException("Credenciales incorrectas");
         }
     }
+
     /**
      * Crea una respuesta exitosa para el inicio de sesión.
      *
      * @param response Mapa que contendrá los datos de la respuesta.
-     * @param tipoUsuario Código que indica el tipo de usuario:
-     *                    - 1: Cliente
-     *                    - 2: Empresario
-     *                    - 3: Ambos (caso especial, no se menciona en el código)
+     * @param tipoUsuario Código que indica el tipo de usuario: - 1: Cliente -
+     * 2: Empresario - 3: Ambos (caso especial, no se menciona en el código)
      * @param usuario Objeto DTO que representa al usuario autenticado.
      * @return ResponseEntity con un mensaje de éxito y los datos del usuario.
      */

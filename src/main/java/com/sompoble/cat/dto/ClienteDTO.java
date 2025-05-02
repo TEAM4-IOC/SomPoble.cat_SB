@@ -1,6 +1,5 @@
 package com.sompoble.cat.dto;
 
-import com.sompoble.cat.domain.Cliente;
 import java.io.Serializable;
 import java.util.List;
 

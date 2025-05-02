@@ -75,15 +75,16 @@ public class Notificacion implements Serializable {
     /**
      * Constructor vacío requerido por JPA.
      */
-    public Notificacion() {}
+    public Notificacion() {
+    }
 
     /**
      * Constructor con validación de destinatario.
      *
-     * @param cliente    Cliente destinatario (puede ser nulo)
+     * @param cliente Cliente destinatario (puede ser nulo)
      * @param empresario Empresario destinatario (puede ser nulo)
-     * @param mensaje    Contenido de la notificación
-     * @param tipo       Tipo de notificación
+     * @param mensaje Contenido de la notificación
+     * @param tipo Tipo de notificación
      * @throws IllegalArgumentException Si ambos destinatarios son nulos
      */
     public Notificacion(Cliente cliente, Empresario empresario, String mensaje, TipoNotificacion tipo) {
@@ -96,43 +97,93 @@ public class Notificacion implements Serializable {
         this.tipo = tipo;
     }
 
-
+    /**
+     * Obtiene el identificador único de la notificación.
+     *
+     * @return El ID de la notificación
+     */
     public Long getIdNotificacion() {
         return idNotificacion;
     }
 
+    /**
+     * Obtiene el cliente asociado a la notificación.
+     *
+     * @return El cliente destinatario o null si no está dirigida a un cliente
+     */
     public Cliente getCliente() {
         return cliente;
     }
 
+    /**
+     * Establece el cliente destinatario de la notificación.
+     *
+     * @param cliente El cliente a asociar con la notificación
+     */
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
+    /**
+     * Obtiene el empresario asociado a la notificación.
+     *
+     * @return El empresario destinatario o null si no está dirigida a un
+     * empresario
+     */
     public Empresario getEmpresario() {
         return empresario;
     }
 
+    /**
+     * Establece el empresario destinatario de la notificación.
+     *
+     * @param empresario El empresario a asociar con la notificación
+     */
     public void setEmpresario(Empresario empresario) {
         this.empresario = empresario;
     }
 
+    /**
+     * Obtiene el mensaje de la notificación.
+     *
+     * @return El contenido textual de la notificación
+     */
     public String getMensaje() {
         return mensaje;
     }
 
+    /**
+     * Establece el mensaje de la notificación.
+     *
+     * @param mensaje El nuevo contenido textual a establecer
+     */
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
     }
 
+    /**
+     * Obtiene el tipo de la notificación.
+     *
+     * @return El tipo de notificación (INFORMACION, ADVERTENCIA, ERROR)
+     */
     public TipoNotificacion getTipo() {
         return tipo;
     }
 
+    /**
+     * Establece el tipo de la notificación.
+     *
+     * @param tipo El nuevo tipo de notificación a establecer
+     */
     public void setTipo(TipoNotificacion tipo) {
         this.tipo = tipo;
     }
 
+    /**
+     * Obtiene la fecha y hora de creación de la notificación.
+     *
+     * @return La fecha y hora en que se registró la notificación
+     */
     public LocalDateTime getFechaAlta() {
         return fechaAlta;
     }

@@ -2,14 +2,12 @@ package com.sompoble.cat.repository;
 
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.dto.PanelMetricasDTO.MetricasMensualesDTO;
-import com.sompoble.cat.dto.PanelMetricasDTO.ServicioResumenDTO;
 import com.sompoble.cat.dto.ReservaDTO;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 

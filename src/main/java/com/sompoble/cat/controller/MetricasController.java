@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 /**
- * Controlador REST que expone las métricas para el panel de control empresarial.
+ * Controlador REST que expone las métricas para el panel de control
+ * empresarial.
  */
 @RestController
 @RequestMapping("/api/metricas")
@@ -19,7 +20,8 @@ public class MetricasController {
     private MetricasService metricasService;
 
     /**
-     * Obtiene las métricas generales, por servicio y mensuales de una empresa en un rango de fechas.
+     * Obtiene las métricas generales, por servicio y mensuales de una empresa
+     * en un rango de fechas.
      *
      * @param empresaIdFiscal Identificador fiscal de la empresa.
      * @param fechaInicio Fecha de inicio del rango (formato yyyy-MM-dd).

@@ -109,7 +109,7 @@ public class EmpresaController {
      * @throws BadRequestException si el identificador fiscal ya existe o si el
      * empresario no existe.
      */
-    /*@PostMapping
+ /*@PostMapping
     public ResponseEntity<?> create(@RequestBody Map<String, Object> request) {
         Map<String, Object> empresaData = (Map<String, Object>) request.get("empresa");
 
@@ -164,7 +164,6 @@ public class EmpresaController {
         empresaService.addEmpresa(empresa);
         return ResponseEntity.created(null).build();
     }*/
-
     /**
      * Crea una nueva empresa asociada a un empresario, con posibilidad de
      * incluir imagen. Este método es idéntico al create original pero acepta
@@ -241,7 +240,7 @@ public class EmpresaController {
             throw new BadRequestException("Error al procesar los datos de la empresa: " + e.getMessage());
         }
     }
-    
+
     //IMPORTANTE: se comenta este metodo ya que se hace uso del que permite realizar la subida de imagenes. No se borra
     //ya que se desea mantener por si en un futuro es necesario recuperarlo
     /*
@@ -255,7 +254,7 @@ public class EmpresaController {
      * @throws ResourceNotFoundException si la empresa con el identificador
      * fiscal especificado no existe.
      */
-    /*@PutMapping("/{identificadorFiscal}")
+ /*@PutMapping("/{identificadorFiscal}")
     public ResponseEntity<?> update(@PathVariable String identificadorFiscal, @RequestBody Map<String, Object> updates) {
         try {
             Empresa existingEmpresa = empresaService.findByIdentificadorFiscalFull(identificadorFiscal);
@@ -284,7 +283,6 @@ public class EmpresaController {
             throw new ResourceNotFoundException("No se encontró una empresa o autónomo con el identificador fiscal " + identificadorFiscal);
         }
     }*/
-
     /**
      * Actualiza una empresa existente, incluyendo su imagen si se proporciona.
      *

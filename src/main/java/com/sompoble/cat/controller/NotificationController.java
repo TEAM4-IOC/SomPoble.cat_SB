@@ -2,7 +2,6 @@ package com.sompoble.cat.controller;
 
 import com.sompoble.cat.domain.Notificacion;
 import com.sompoble.cat.dto.ClienteDTO;
-import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.exception.ResourceNotFoundException;
 import com.sompoble.cat.service.ClienteService;
 import com.sompoble.cat.service.NotificationService;
@@ -14,32 +13,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * Controlador que gestiona las notificaciones. Este controlador incluye endpoints
- * tanto para la administración interna como para el acceso desde el front-end.
- * Proporciona funciones como listar, guardar, obtener, y borrar notificaciones.
- * 
- * API para administrar notificaciones de forma manual: consultar, borrar, listar, etc.
- * 
+ * Controlador que gestiona las notificaciones. Este controlador incluye
+ * endpoints tanto para la administración interna como para el acceso desde el
+ * front-end. Proporciona funciones como listar, guardar, obtener, y borrar
+ * notificaciones.
+ *
+ * API para administrar notificaciones de forma manual: consultar, borrar,
+ * listar, etc.
+ *
  * Para ser utilizado principalmente en un panel de administración interno.
  */
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {
-	
-	  /**
+
+    /**
      * Servicio que proporciona acceso y operaciones sobre los datos de los
      * clientes.
      */
     @Autowired
     private ClienteService clienteService;
-	
 
     private final NotificationService notificationService;
 
     /**
      * Constructor de la clase NotificationController.
-     * 
-     * @param notificationService Servicio que maneja las operaciones sobre las notificaciones.
+     *
+     * @param notificationService Servicio que maneja las operaciones sobre las
+     * notificaciones.
      */
     public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
@@ -47,43 +48,40 @@ public class NotificationController {
 
     //------------------------------------------------------------------------//
     // PARA LISTAR DESDE EL FRONT:
-    
     @GetMapping("/clientes/{dni}")
-    public ResponseEntity<List<Notificacion>> obtenerNotificacionesByClientes(@PathVariable String dni){
-    	ClienteDTO cliente = clienteService.findByDni(dni);
+    public ResponseEntity<List<Notificacion>> obtenerNotificacionesByClientes(@PathVariable String dni) {
+        ClienteDTO cliente = clienteService.findByDni(dni);
         if (cliente == null) {
             throw new ResourceNotFoundException("Cliente con DNI " + dni + " no encontrado.");
         }
-    
+
         List<Notificacion> notificacion = notificationService.findByClienteDni(dni);
         return ResponseEntity.ok(notificacion);
     }
-    
-   
-    
 
     //------------------------------------------------------------------------//
     // PARA ADMINISTRACION INTERNA:
-    
     /**
      * Guarda una nueva notificación en el sistema.
-     * 
+     *
      * @param notification La notificación a guardar.
-     * @return Mensaje confirmando que la notificación fue guardada correctamente.
+     * @return Mensaje confirmando que la notificación fue guardada
+     * correctamente.
      */
-    
     /**
      * Obtiene las notificaciones filtradas por identificador (DNI para clientes
      * o Número Fiscal para empresas/autónomos).
-     * 
-     * @param identificador El DNI si es cliente o el Número Fiscal si es empresa/autónomo.
+     *
+     * @param identificador El DNI si es cliente o el Número Fiscal si es
+     * empresa/autónomo.
      * @return Lista de notificaciones asociadas al identificador proporcionado.
-     * @throws RuntimeException Si no se encuentran notificaciones asociadas al identificador.
+     * @throws RuntimeException Si no se encuentran notificaciones asociadas al
+     * identificador.
      */
     @GetMapping("/obtener")
     public ResponseEntity<List<Notificacion>> obtenerNotificacionesPorIdentificador(@RequestParam String identificador) {
         List<Notificacion> notificaciones = notificationService.findNotificationsByIdentificador(identificador);
-        
+
         if (notificaciones.isEmpty()) {
             throw new RuntimeException("No hay notificaciones para este identificador");
         }
@@ -91,7 +89,7 @@ public class NotificationController {
         return ResponseEntity.ok(notificaciones);
     }
     //------------------------------------------------------------------------------------------//
-    
+
     @PostMapping("/save")
     public String saveNotification(@RequestBody Notificacion notification) {
         notificationService.saveNotification(notification);
@@ -100,7 +98,7 @@ public class NotificationController {
 
     /**
      * Obtiene todas las notificaciones almacenadas en el sistema.
-     * 
+     *
      * @return Lista de todas las notificaciones.
      */
     @GetMapping("/all")
@@ -110,7 +108,7 @@ public class NotificationController {
 
     /**
      * Obtiene una notificación por su identificador único.
-     * 
+     *
      * @param id El identificador único de la notificación.
      * @return La notificación asociada al identificador proporcionado.
      */
@@ -121,9 +119,10 @@ public class NotificationController {
 
     /**
      * Elimina una notificación por su identificador único.
-     * 
+     *
      * @param id El identificador único de la notificación a eliminar.
-     * @return Mensaje confirmando que la notificación fue eliminada correctamente.
+     * @return Mensaje confirmando que la notificación fue eliminada
+     * correctamente.
      */
     @DeleteMapping("/delete/{id}")
     public String deleteNotification(@PathVariable Long id) {

@@ -14,21 +14,21 @@ import com.sompoble.cat.service.EventoService;
 /**
  * Implementación del servicio para gestionar eventos.
  * <p>
- * Esta clase proporciona la implementación concreta de los métodos
- * definidos en la interfaz EventoService, gestionando las operaciones
- * relacionadas con eventos a través del repositorio correspondiente.
+ * Esta clase proporciona la implementación concreta de los métodos definidos en
+ * la interfaz EventoService, gestionando las operaciones relacionadas con
+ * eventos a través del repositorio correspondiente.
  * </p>
  */
 @Service
 @Transactional
 public class EventoServiceImpl implements EventoService {
-    
+
     /**
      * Repositorio para acceder a los datos de eventos.
      */
     @Autowired
     private EventoRepository eventoRepository;
-    
+
     /**
      * Guarda un nuevo evento o actualiza uno existente.
      *
@@ -42,12 +42,13 @@ public class EventoServiceImpl implements EventoService {
         requireNonNull(evento, "El evento no puede ser nulo");
         return eventoRepository.save(evento);
     }
-    
+
     /**
      * Elimina un evento por su ID.
      *
      * @param id ID del evento a eliminar.
-     * @return true si el evento se eliminó correctamente, false si no existe o hubo un error
+     * @return true si el evento se eliminó correctamente, false si no existe o
+     * hubo un error
      */
     @Override
     @Transactional
@@ -64,7 +65,7 @@ public class EventoServiceImpl implements EventoService {
             return false; // Error al eliminar el evento
         }
     }
-    
+
     /**
      * Obtiene un evento por su ID.
      *
@@ -77,7 +78,7 @@ public class EventoServiceImpl implements EventoService {
         requireNonNull(id, "El ID no puede ser nulo");
         return eventoRepository.findById(id);
     }
-    
+
     /**
      * Lista todos los eventos almacenados.
      *
@@ -87,12 +88,12 @@ public class EventoServiceImpl implements EventoService {
     public List<Evento> listarTodosLosEventos() {
         return eventoRepository.findAll();
     }
-    
+
     /**
      * Busca eventos dentro de un rango de fechas.
      *
      * @param start Fecha de inicio del rango.
-     * @param end   Fecha de fin del rango.
+     * @param end Fecha de fin del rango.
      * @return Lista de eventos dentro del rango.
      * @throws NullPointerException si alguna de las fechas es nula
      */
@@ -102,7 +103,7 @@ public class EventoServiceImpl implements EventoService {
         requireNonNull(end, "La fecha de fin no puede ser nula");
         return eventoRepository.findByFechaEventoBetween(start, end);
     }
-    
+
     /**
      * Busca eventos por ubicación.
      *
@@ -115,14 +116,15 @@ public class EventoServiceImpl implements EventoService {
         requireNonNull(ubicacion, "La ubicación no puede ser nula");
         return eventoRepository.findByUbicacion(ubicacion);
     }
-   
+
     /**
      * Actualiza un evento existente con la información proporcionada.
      *
      * @param id ID del evento a actualizar.
      * @param evento Objeto {@link Evento} con los datos actualizados.
      * @return El evento actualizado.
-     * @throws EventoNoEncontradoException si no se encuentra el evento con el ID especificado.
+     * @throws EventoNoEncontradoException si no se encuentra el evento con el
+     * ID especificado.
      */
     @Override
     @Transactional
@@ -136,5 +138,5 @@ public class EventoServiceImpl implements EventoService {
         existente.setFechaEvento(evento.getFechaEvento());
         existente.setUbicacion(evento.getUbicacion());
         return eventoRepository.save(existente);
-    }   
+    }
 }

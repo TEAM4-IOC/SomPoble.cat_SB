@@ -11,20 +11,20 @@ import java.util.List;
 /**
  * Implementación de la interfaz {@link EmpresarioService}.
  * <p>
- * Esta clase proporciona la implementación concreta de los métodos
- * definidos en la interfaz EmpresarioService, gestionando las operaciones
- * relacionadas con los empresarios a través del repositorio correspondiente.
+ * Esta clase proporciona la implementación concreta de los métodos definidos en
+ * la interfaz EmpresarioService, gestionando las operaciones relacionadas con
+ * los empresarios a través del repositorio correspondiente.
  * </p>
  */
 @Service
 public class EmpresarioServiceImpl implements EmpresarioService {
-    
+
     /**
      * Repositorio para acceder a los datos de los empresarios.
      */
     @Autowired
     private EmpresarioRepository empresarioRepository;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -32,7 +32,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public EmpresarioDTO findByDni(String dni) {
         return empresarioRepository.findByDNI(dni);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -40,7 +40,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public Empresario findEmpresarioByDNI(String dni) {
         return empresarioRepository.findEmpresarioByDNI(dni);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -48,7 +48,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public void updateEmpresario(EmpresarioDTO empresario) {
         empresarioRepository.updateEmpresario(empresario);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -56,7 +56,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public void addEmpresario(Empresario empresario) {
         empresarioRepository.addEmpresario(empresario);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -64,7 +64,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public List<EmpresarioDTO> findAll() {
         return empresarioRepository.findAll();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -72,7 +72,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public boolean existsById(Long id) {
         return empresarioRepository.existsById(id);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -80,7 +80,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public void deleteById(Long id) {
         empresarioRepository.deleteById(id);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -88,7 +88,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public boolean existsByDni(String dni) {
         return empresarioRepository.existsByDni(dni);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -96,7 +96,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public void deleteByDni(String dni) {
         empresarioRepository.deleteByDni(dni);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -104,7 +104,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public boolean existsByEmail(String email) {
         return empresarioRepository.existsByEmail(email);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -112,7 +112,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
     public EmpresarioDTO findByEmail(String email) {
         return empresarioRepository.findByEmail(email);
     }
-    
+
     /**
      * {@inheritDoc}
      */

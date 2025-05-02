@@ -27,7 +27,7 @@ public class EmpresaServiceImpl implements EmpresaService {
      */
     @Autowired
     private EmpresaRepository empresaRepository;
-    
+
     @Autowired
     private CloudinaryService cloudinaryService;
 

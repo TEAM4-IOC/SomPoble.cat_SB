@@ -13,8 +13,9 @@ public interface ReservationService {
     /**
      * Crea o actualiza una reserva en el sistema.
      * <p>
-     * Este método guarda la reserva en la base de datos, genera una notificación
-     * relacionada con la reserva y envía un email al cliente afectado.
+     * Este método guarda la reserva en la base de datos, genera una
+     * notificación relacionada con la reserva y envía un email al cliente
+     * afectado.
      * </p>
      *
      * @param reserva La reserva a crear o actualizar.
@@ -24,8 +25,8 @@ public interface ReservationService {
     /**
      * Cancela una reserva existente.
      * <p>
-     * Este método elimina la reserva de la base de datos y genera una notificación
-     * informando al cliente sobre la cancelación.
+     * Este método elimina la reserva de la base de datos y genera una
+     * notificación informando al cliente sobre la cancelación.
      * </p>
      *
      * @param reservaId El ID de la reserva a cancelar.
@@ -49,12 +50,14 @@ public interface ReservationService {
      * Obtiene una reserva por su ID.
      * <p>
      * Busca una reserva en la base de datos utilizando su identificador único.
-     * Si no se encuentra ninguna reserva con el ID proporcionado, se devuelve {@code null}.
+     * Si no se encuentra ninguna reserva con el ID proporcionado, se devuelve
+     * {@code null}.
      * </p>
      *
      * @param reservaId El ID de la reserva a buscar. Debe ser un valor no nulo.
-     * @return La reserva encontrada, o {@code null} si no existe ninguna reserva con el ID especificado.
+     * @return La reserva encontrada, o {@code null} si no existe ninguna
+     * reserva con el ID especificado.
      */
     Reserva getReservationById(Long reservaId);
-    
+
 }

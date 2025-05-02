@@ -90,7 +90,8 @@ public interface EmpresaService {
     /**
      * Sube o reemplaza la imagen de una empresa.
      *
-     * @param identificadorFiscal identificador fiscal de la empresa de la empresa
+     * @param identificadorFiscal identificador fiscal de la empresa de la
+     * empresa
      * @param imagen Nueva imagen a subir
      * @return Empresa actualizada con la nueva imagen
      */
