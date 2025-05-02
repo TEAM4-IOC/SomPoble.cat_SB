@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Métricas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        #contenedor {
+            max-width: 900px;
+            margin: auto;
+        }
+        canvas {
+            margin-top: 20px;
+        }
+        .filtros {
+            margin-bottom: 20px;
+        }
+        label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="contenedor">
+        <h2>Panel de Métricas de Empresa</h2>
+
+        <div class="filtros">
+            <label for="empresaId">Identificador Fiscal:</label>
+            <input type="text" id="empresaId" value="ABC123" required>
+
+            <label for="fechaInicio">Desde:</label>
+            <input type="date" id="fechaInicio">
+
+            <label for="fechaFin">Hasta:</label>
+            <input type="date" id="fechaFin">
+
+            <button onclick="cargarMetricas()">Cargar métricas</button>
+        </div>
+
+        <div id="resultados">
+            <p><strong>Empresa:</strong> <span id="empresaNombre">-</span></p>
+            <p><strong>Total Reservas:</strong> <span id="totalReservas">-</span></p>
+            <p><strong>Total Ingresos:</strong> €<span id="totalIngresos">-</span></p>
+            <p><strong>Clientes Únicos:</strong> <span id="clientesUnicos">-</span></p>
+        </div>
+
+        <canvas id="serviciosChart" height="200"></canvas>
+        <canvas id="serviciosPieChart" height="200"></canvas> <!-- Quesito -->
+        <canvas id="mensualChart" height="200"></canvas>
+    </div>
+
+    <script>
+        let chartServicios, chartMensual, chartServiciosPie;
+
+        async function cargarMetricas() {
+            const empresaId = document.getElementById("empresaId").value;
+            const fechaInicio = document.getElementById("fechaInicio").value;
+            const fechaFin = document.getElementById("fechaFin").value;
+
+            if (!empresaId || !fechaInicio || !fechaFin) {
+                alert("Por favor, completa todos los campos.");
+                return;
+            }
+
+            const response = await fetch(`/api/metricas?empresaIdFiscal=${empresaId}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`);
+            const data = await response.json();
+
+            document.getElementById("empresaNombre").textContent = data.nombreEmpresa;
+            document.getElementById("totalReservas").textContent = data.totalReservas;
+            document.getElementById("totalIngresos").textContent = data.totalIngresos;
+            document.getElementById("clientesUnicos").textContent = data.clientesUnicos;
+
+            const serviciosLabels = data.servicios.map(s => s.nombreServicio);
+            const serviciosValores = data.servicios.map(s => s.totalReservas);
+
+            const meses = data.mensual.map(m => m.mes);
+            const ingresosMensuales = data.mensual.map(m => m.totalIngresos);
+
+            if (chartServicios) chartServicios.destroy();
+            chartServicios = new Chart(document.getElementById('serviciosChart'), {
+                type: 'bar',
+                data: {
+                    labels: serviciosLabels,
+                    datasets: [{
+                        label: 'Reservas por Servicio',
+                        data: serviciosValores,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                }
+            });
+
+            if (chartServiciosPie) chartServiciosPie.destroy();
+            chartServiciosPie = new Chart(document.getElementById('serviciosPieChart'), {
+                type: 'pie',
+                data: {
+                    labels: serviciosLabels,
+                    datasets: [{
+                        label: 'Distribución de Reservas',
+                        data: serviciosValores,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(153, 102, 255, 0.5)',
+                            'rgba(255, 159, 64, 0.5)',
+                            'rgba(54, 162, 235, 0.5)'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            if (chartMensual) chartMensual.destroy();
+            chartMensual = new Chart(document.getElementById('mensualChart'), {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: 'Ingresos Mensuales (€)',
+                        data: ingresosMensuales,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        tension: 0.1
+                    }]
+                }
+            });
+        }
+
+        // Inicializa con fechas por defecto (últimos 30 días)
+        window.onload = () => {
+            const hoy = new Date();
+            const hace30dias = new Date(hoy);
+            hace30dias.setDate(hoy.getDate() - 30);
+
+            document.getElementById("fechaInicio").value = hace30dias.toISOString().split('T')[0];
+            document.getElementById("fechaFin").value = hoy.toISOString().split('T')[0];
+        };
+    </script>
+</body>
+</html>

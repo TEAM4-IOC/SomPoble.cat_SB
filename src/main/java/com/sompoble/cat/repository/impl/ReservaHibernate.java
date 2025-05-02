@@ -2,6 +2,8 @@ package com.sompoble.cat.repository.impl;
 
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.dto.PanelMetricasDTO.MetricasMensualesDTO;
+import com.sompoble.cat.dto.PanelMetricasDTO.ServicioResumenDTO;
 import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.domain.Servicio;
@@ -15,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,7 +123,8 @@ public class ReservaHibernate implements ReservaRepository {
      * Busca una reserva completa por su identificador único.
      *
      * @param id el identificador de la reserva.
-     * @return la entidad {@code Reserva} completa si existe, o null si no se encuentra.
+     * @return la entidad {@code Reserva} completa si existe, o null si no se
+     * encuentra.
      */
     @Override
     public Reserva findByIdFull(Long id) {
@@ -226,8 +232,8 @@ public class ReservaHibernate implements ReservaRepository {
     /**
      * Convierte un objeto {@link ReservaDTO} a una entidad {@link Reserva}.
      * <p>
-     * Este método crea una nueva entidad Reserva y la completa con
-     * la información contenida en el DTO proporcionado, incluyendo las relaciones
+     * Este método crea una nueva entidad Reserva y la completa con la
+     * información contenida en el DTO proporcionado, incluyendo las relaciones
      * con Cliente, Empresa y Servicio.
      * </p>
      *
@@ -279,35 +285,179 @@ public class ReservaHibernate implements ReservaRepository {
 
         return entityManager.createQuery(cq).getSingleResult().intValue();
     }
+
     /**
-     * Obtiene todas las reservas próximas a ocurrir dentro de un rango de tiempo específico.
+     * Obtiene todas las reservas próximas a ocurrir dentro de un rango de
+     * tiempo específico.
      * <p>
-     * Este método busca reservas cuya fecha y hora de inicio estén entre la fecha actual
-     * y las próximas 24 horas. Se utiliza para identificar reservas que requieren recordatorios automáticos.
+     * Este método busca reservas cuya fecha y hora de inicio estén entre la
+     * fecha actual y las próximas 24 horas. Se utiliza para identificar
+     * reservas que requieren recordatorios automáticos.
      * </p>
      *
-     * @return una lista de objetos {@link Reserva} que representan las reservas próximas.
-     *         Si no hay reservas próximas, la lista estará vacía.
+     * @return una lista de objetos {@link Reserva} que representan las reservas
+     * próximas. Si no hay reservas próximas, la lista estará vacía.
      */
-        @Override
-        public List<Reserva> findUpcomingReservations() {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime tomorrow = now.plusDays(1);
+    @Override
+    public List<Reserva> findUpcomingReservations() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime tomorrow = now.plusDays(1);
 
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Reserva> cq = cb.createQuery(Reserva.class);
-            Root<Reserva> root = cq.from(Reserva.class);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Reserva> cq = cb.createQuery(Reserva.class);
+        Root<Reserva> root = cq.from(Reserva.class);
 
-            // Predicado sobre fechaAlta
-            Predicate recent = cb.between(
+        // Predicado sobre fechaAlta
+        Predicate recent = cb.between(
                 root.get("fechaAlta"),
                 cb.literal(now),
                 cb.literal(tomorrow)
-            );
+        );
 
-            cq.where(recent);
-            return entityManager.createQuery(cq).getResultList();
+        cq.where(recent);
+        return entityManager.createQuery(cq).getResultList();
+    }
+
+    //-------------------------------------------------------------------------------------------//
+    //--------------------PARTE DE MÉTRICAS------------------------------------------------------//
+    /**
+     * Cuenta la cantidad de clientes únicos que realizaron reservas en una
+     * empresa durante un período determinado.
+     *
+     * @param empresaId ID único de la empresa.
+     * @param inicio Fecha de inicio del período (inclusive).
+     * @param fin Fecha de fin del período (inclusive).
+     * @return Número de clientes únicos como {@code Integer}.
+     */
+    @Override
+    public Integer contarClientesUnicos(Long empresaId, LocalDate inicio, LocalDate fin) {
+        return entityManager.createQuery("""
+                    SELECT COUNT(DISTINCT r.cliente.idPersona) FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fechaReserva BETWEEN :inicio AND :fin
+                """, Long.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio.toString())
+                .setParameter("fin", fin.toString())
+                .getSingleResult()
+                .intValue();
+    }
+
+    /**
+     * Cuenta el número total de reservas realizadas para una empresa dentro de
+     * un período de fechas.
+     *
+     * @param empresaId ID único de la empresa.
+     * @param inicio Fecha de inicio del período (inclusive).
+     * @param fin Fecha de fin del período (inclusive).
+     * @return Número total de reservas realizadas.
+     */
+    @Override
+    public Long contarReservasPorEmpresaYFechas(Long empresaId, LocalDate inicio, LocalDate fin) {
+        return entityManager.createQuery("""
+                    SELECT COUNT(r) FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fechaReserva BETWEEN :inicio AND :fin
+                """, Long.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio.toString())
+                .setParameter("fin", fin.toString())
+                .getSingleResult();
+    }
+
+    /**
+     * Suma los ingresos generados por las reservas de una empresa en un período
+     * determinado.
+     *
+     * @param empresaId ID único de la empresa.
+     * @param inicio Fecha de inicio del período (inclusive).
+     * @param fin Fecha de fin del período (inclusive).
+     * @return Total de ingresos como {@link BigDecimal}.
+     */
+    @Override
+    public Double sumarIngresosPorEmpresaYFechas(Long empresaId, LocalDate inicio, LocalDate fin) {
+        return entityManager.createQuery("""
+                    SELECT SUM(r.servicio.precio) FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fechaReserva BETWEEN :inicio AND :fin
+                """, Double.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio.toString())
+                .setParameter("fin", fin.toString())
+                .getSingleResult();
+    }
+
+    //IMPORTANTE: metodo comentado para futura implementacion. Inlcuido en TEA6 como mejora de la plataforma.
+    /**
+     * Obtiene un resumen de métricas por servicio, agrupado por nombre del
+     * servicio. Incluye la cantidad de reservas y el total de ingresos por cada
+     * servicio.
+     *
+     * @param empresaId ID único de la empresa.
+     * @param inicio Fecha de inicio del período (inclusive).
+     * @param fin Fecha de fin del período (inclusive).
+     * @return Lista de {@link ServicioResumenDTO} con métricas por servicio.
+     */
+    /*
+    @Override
+    public List<ServicioResumenDTO> obtenerMetricasPorServicio(Long empresaId, LocalDate inicio, LocalDate fin) {
+        return entityManager.createQuery("""
+                    SELECT new com.sompoble.cat.dto.PanelMetricasDTO$ServicioResumenDTO(
+                        r.servicio.nombre, COUNT(r), SUM(r.servicio.precio))
+                    FROM Reserva r
+                    WHERE r.servicio.empresa.idEmpresa = :empresaId
+                      AND r.fechaReserva BETWEEN :inicio AND :fin
+                    GROUP BY r.servicio.nombre
+                """, ServicioResumenDTO.class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio.toString())
+                .setParameter("fin", fin.toString())
+                .getResultList();
+    }
+     */
+    /**
+     * Obtiene métricas agregadas por mes (nombre del mes), incluyendo número
+     * total de reservas y suma de ingresos por mes para una empresa.
+     *
+     * Nota: El campo {@code fechaReserva} debe estar en formato ISO
+     * (yyyy-MM-dd) para que la función {@code to_char} lo procese
+     * correctamente.
+     *
+     * @param empresaId ID único de la empresa.
+     * @param inicio Fecha de inicio del período (inclusive).
+     * @param fin Fecha de fin del período (inclusive).
+     * @return Lista de {@link MetricasMensualesDTO} con las métricas mensuales.
+     */
+    @Override
+    public List<MetricasMensualesDTO> obtenerMetricasMensuales(Long empresaId, LocalDate inicio, LocalDate fin) {
+        List<Object[]> resultados = entityManager.createQuery("""
+            SELECT
+                FUNCTION('DATE_FORMAT', FUNCTION('STR_TO_DATE', r.fechaReserva, '%Y-%m-%d'), '%M'),
+                COUNT(r),
+                SUM(r.servicio.precio)
+            FROM Reserva r
+            WHERE r.servicio.empresa.idEmpresa = :empresaId
+              AND r.fechaReserva BETWEEN :inicio AND :fin
+            GROUP BY FUNCTION('DATE_FORMAT', FUNCTION('STR_TO_DATE', r.fechaReserva, '%Y-%m-%d'), '%M'), 
+                     FUNCTION('MONTH', FUNCTION('STR_TO_DATE', r.fechaReserva, '%Y-%m-%d'))
+            ORDER BY FUNCTION('MONTH', FUNCTION('STR_TO_DATE', r.fechaReserva, '%Y-%m-%d'))
+        """, Object[].class)
+                .setParameter("empresaId", empresaId)
+                .setParameter("inicio", inicio.toString())
+                .setParameter("fin", fin.toString())
+                .getResultList();
+
+        List<MetricasMensualesDTO> dtos = new ArrayList<>();
+        for (Object[] resultado : resultados) {
+            String mes = (String) resultado[0];
+            Long reservas = ((Number) resultado[1]).longValue();
+            BigDecimal ingresos = resultado[2] != null
+                    ? new BigDecimal(resultado[2].toString())
+                    : BigDecimal.ZERO;
+
+            dtos.add(new MetricasMensualesDTO(mes, reservas, ingresos));
         }
-    
-    
+
+        return dtos;
+    }
 }

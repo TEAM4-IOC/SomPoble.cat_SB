@@ -1,5 +1,6 @@
 package com.sompoble.cat.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -95,7 +96,7 @@ public class Servicio implements Serializable {
      * Lista de reservas asociadas a este servicio.
      * Este campo no puede ser nulo.
      */
-    @OneToMany(mappedBy = "servicio")
+    @OneToMany(mappedBy = "servicio", cascade = CascadeType.ALL)
     @NotNull
     private List<Reserva> reservas = new ArrayList<>();
     /**
