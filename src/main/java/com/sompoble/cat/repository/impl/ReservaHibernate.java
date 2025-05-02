@@ -3,7 +3,6 @@ package com.sompoble.cat.repository.impl;
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.dto.PanelMetricasDTO.MetricasMensualesDTO;
-import com.sompoble.cat.dto.PanelMetricasDTO.ServicioResumenDTO;
 import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.domain.Servicio;

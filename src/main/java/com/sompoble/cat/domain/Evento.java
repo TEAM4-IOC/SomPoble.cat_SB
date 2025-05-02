@@ -233,20 +233,22 @@ public class Evento implements Serializable {
 
     /**
      * Obtiene la URL de la imagen de la empresa.
+     *
      * @return URL de la imagen.
      */
     public String getImagenUrl() {
         return imagenUrl;
     }
-    
+
     /**
      * Establece la URL de la imagen de la empresa.
+     *
      * @param imagenUrl URL de la imagen a establecer.
      */
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
     }
-    
+
     /**
      * Obtiene el ID público de la imagen en Cloudinary.
      *

@@ -39,18 +39,22 @@ public interface ServicioService {
     List<Servicio> obtenerPorEmpresaId(Long empresaId);
 
     /**
-     * Obtiene todos los servicios de una empresa a partir de su identificador fiscal.
+     * Obtiene todos los servicios de una empresa a partir de su identificador
+     * fiscal.
      *
      * @param identificadorFiscal Identificador fiscal de la empresa.
-     * @return Lista de servicios asociados a la empresa con el identificador fiscal dado.
+     * @return Lista de servicios asociados a la empresa con el identificador
+     * fiscal dado.
      */
     List<Servicio> obtenerPorEmpresaIdentificador(String identificadorFiscal);
 
     /**
-     * Verifica si un servicio existe en la base de datos mediante su identificador.
+     * Verifica si un servicio existe en la base de datos mediante su
+     * identificador.
      *
      * @param id Identificador único del servicio.
-     * @return {@code true} si el servicio existe, {@code false} en caso contrario.
+     * @return {@code true} si el servicio existe, {@code false} en caso
+     * contrario.
      */
     boolean existePorId(Long id);
 

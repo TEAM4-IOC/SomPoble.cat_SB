@@ -10,14 +10,14 @@ package com.sompoble.cat.exception;
  * </p>
  */
 public class BadRequestException extends RuntimeException {
-    
+
     /**
      * Construye una nueva excepción de solicitud incorrecta con el mensaje
      * detallado especificado.
      *
      * @param message el mensaje detallado que explica la razón de la excepción.
-     *                Este mensaje se guarda para recuperación posterior por el
-     *                método {@link Throwable#getMessage()}.
+     * Este mensaje se guarda para recuperación posterior por el método
+     * {@link Throwable#getMessage()}.
      */
     public BadRequestException(String message) {
         super(message);

@@ -7,49 +7,53 @@ import java.util.List;
 /**
  * Servicio que define las operaciones para gestionar empresarios.
  * <p>
- * Esta interfaz proporciona métodos para realizar operaciones CRUD sobre empresarios,
- * así como búsquedas por diferentes criterios como DNI o email.
+ * Esta interfaz proporciona métodos para realizar operaciones CRUD sobre
+ * empresarios, así como búsquedas por diferentes criterios como DNI o email.
  * </p>
  */
 public interface EmpresarioService {
-    
+
     /**
      * Busca un empresario por su DNI y devuelve su representación DTO.
      *
      * @param dni el Documento Nacional de Identidad del empresario.
-     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null si no se encuentra.
+     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null
+     * si no se encuentra.
      */
     EmpresarioDTO findByDni(String dni);
-    
+
     /**
      * Busca un empresario completo por su DNI.
      *
      * @param dni el Documento Nacional de Identidad del empresario.
-     * @return un objeto {@code Empresario} completo si el empresario existe, o null si no se encuentra.
+     * @return un objeto {@code Empresario} completo si el empresario existe, o
+     * null si no se encuentra.
      */
     Empresario findEmpresarioByDNI(String dni);
-    
+
     /**
      * Actualiza la información de un empresario en la base de datos.
      *
-     * @param empresario el objeto {@link EmpresarioDTO} con la información actualizada.
+     * @param empresario el objeto {@link EmpresarioDTO} con la información
+     * actualizada.
      */
     void updateEmpresario(EmpresarioDTO empresario);
-    
+
     /**
      * Agrega un nuevo empresario a la base de datos.
      *
      * @param empresario el objeto {@link Empresario} a guardar.
      */
     void addEmpresario(Empresario empresario);
-    
+
     /**
      * Obtiene todos los empresarios registrados en la base de datos.
      *
-     * @return una lista de objetos {@code EmpresarioDTO} con la información de los empresarios.
+     * @return una lista de objetos {@code EmpresarioDTO} con la información de
+     * los empresarios.
      */
     List<EmpresarioDTO> findAll();
-    
+
     /**
      * Verifica si un empresario existe en la base de datos por su ID.
      *
@@ -57,14 +61,14 @@ public interface EmpresarioService {
      * @return true si el empresario existe, false en caso contrario.
      */
     boolean existsById(Long id);
-    
+
     /**
      * Elimina un empresario de la base de datos mediante su ID.
      *
      * @param id el identificador del empresario a eliminar.
      */
     void deleteById(Long id);
-    
+
     /**
      * Verifica si un empresario existe en la base de datos por su DNI.
      *
@@ -72,35 +76,39 @@ public interface EmpresarioService {
      * @return true si el empresario existe, false en caso contrario.
      */
     boolean existsByDni(String dni);
-    
+
     /**
      * Elimina un empresario de la base de datos mediante su DNI.
      *
      * @param dni el Documento Nacional de Identidad del empresario a eliminar.
      */
     void deleteByDni(String dni);
-    
+
     /**
-     * Verifica si un empresario existe en la base de datos por su correo electrónico.
+     * Verifica si un empresario existe en la base de datos por su correo
+     * electrónico.
      *
      * @param email el correo electrónico del empresario.
      * @return true si el empresario existe, false en caso contrario.
      */
     boolean existsByEmail(String email);
-    
+
     /**
      * Busca un empresario completo por su correo electrónico.
      *
      * @param email el correo electrónico del empresario.
-     * @return un objeto {@code Empresario} completo si el empresario existe, o null si no se encuentra.
+     * @return un objeto {@code Empresario} completo si el empresario existe, o
+     * null si no se encuentra.
      */
     Empresario findByEmailFull(String email);
-    
+
     /**
-     * Busca un empresario por su correo electrónico y devuelve su representación DTO.
+     * Busca un empresario por su correo electrónico y devuelve su
+     * representación DTO.
      *
      * @param email el correo electrónico del empresario.
-     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null si no se encuentra.
+     * @return un objeto {@code EmpresarioDTO} si el empresario existe, o null
+     * si no se encuentra.
      */
     EmpresarioDTO findByEmail(String email);
 }

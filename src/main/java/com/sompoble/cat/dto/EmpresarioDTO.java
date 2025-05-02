@@ -192,6 +192,7 @@ public class EmpresarioDTO implements Serializable {
     public void setNotificacionesIds(List<Long> notificacionesIds) {
         this.notificacionesIds = notificacionesIds;
     }
+
     /**
      * Devuelve la lista de empresas asociadas.
      *
@@ -200,6 +201,7 @@ public class EmpresarioDTO implements Serializable {
     public List<EmpresaDTO> getEmpresas() {
         return empresas;
     }
+
     /**
      * Establece la lista de empresas asociadas.
      *

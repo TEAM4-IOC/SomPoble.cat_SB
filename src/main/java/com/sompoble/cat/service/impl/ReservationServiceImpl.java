@@ -15,8 +15,9 @@ import java.util.Optional;
 /**
  * Implementación del servicio de gestión de reservas.
  * <p>
- * Este servicio proporciona métodos para crear, actualizar, cancelar y consultar reservas,
- * así como para generar notificaciones y enviar emails relacionados con las reservas.
+ * Este servicio proporciona métodos para crear, actualizar, cancelar y
+ * consultar reservas, así como para generar notificaciones y enviar emails
+ * relacionados con las reservas.
  * </p>
  */
 @Service
@@ -34,9 +35,10 @@ public class ReservationServiceImpl implements ReservationService {
     /**
      * Crea o actualiza una reserva en el sistema.
      * <p>
-     * Si la reserva no tiene un ID asignado, se considera nueva y se guarda en la base de datos.
-     * Si la reserva ya tiene un ID asignado, se actualiza en la base de datos.
-     * Además, genera una notificación y envía un email al cliente afectado.
+     * Si la reserva no tiene un ID asignado, se considera nueva y se guarda en
+     * la base de datos. Si la reserva ya tiene un ID asignado, se actualiza en
+     * la base de datos. Además, genera una notificación y envía un email al
+     * cliente afectado.
      * </p>
      *
      * @param reserva La reserva a crear o actualizar.
@@ -54,10 +56,10 @@ public class ReservationServiceImpl implements ReservationService {
 
         // Generar notificación
         Notificacion notificacion = new Notificacion(
-            reserva.getCliente(),
-            null,
-            "Su reserva ha sido creada/actualizada",
-            Notificacion.TipoNotificacion.INFORMACION
+                reserva.getCliente(),
+                null,
+                "Su reserva ha sido creada/actualizada",
+                Notificacion.TipoNotificacion.INFORMACION
         );
 
         // Guardar notificación
@@ -70,8 +72,9 @@ public class ReservationServiceImpl implements ReservationService {
     /**
      * Cancela una reserva existente.
      * <p>
-     * Elimina la reserva de la base de datos, genera una notificación informando al cliente
-     * sobre la cancelación y envía un email al cliente afectado.
+     * Elimina la reserva de la base de datos, genera una notificación
+     * informando al cliente sobre la cancelación y envía un email al cliente
+     * afectado.
      * </p>
      *
      * @param reservaId El ID de la reserva a cancelar.
@@ -87,10 +90,10 @@ public class ReservationServiceImpl implements ReservationService {
 
             // Generar notificación
             Notificacion notificacion = new Notificacion(
-                reserva.getCliente(),
-                null,
-                "Su reserva ha sido cancelada",
-                Notificacion.TipoNotificacion.ADVERTENCIA
+                    reserva.getCliente(),
+                    null,
+                    "Su reserva ha sido cancelada",
+                    Notificacion.TipoNotificacion.ADVERTENCIA
             );
 
             // Guardar notificación
@@ -100,17 +103,17 @@ public class ReservationServiceImpl implements ReservationService {
             emailService.sendNotificationEmail(notificacion);
         }
     }
-    
+
     public void notifyReservationChange(Long reservaId) {
         Optional<Reserva> optionalReserva = Optional.ofNullable(reservaRepository.findByIdFull(reservaId));
         if (optionalReserva.isPresent()) {
             Reserva reserva = optionalReserva.get();
 
             Notificacion notificacion = new Notificacion(
-                reserva.getCliente(),
-                null,
-                "Su reserva ha sido actualizada",
-                Notificacion.TipoNotificacion.INFORMACION
+                    reserva.getCliente(),
+                    null,
+                    "Su reserva ha sido actualizada",
+                    Notificacion.TipoNotificacion.INFORMACION
             );
 
             notificationService.saveNotification(notificacion);
@@ -122,11 +125,13 @@ public class ReservationServiceImpl implements ReservationService {
      * Obtiene una reserva por su ID.
      * <p>
      * Busca una reserva en la base de datos utilizando su identificador único.
-     * Si no se encuentra ninguna reserva con el ID proporcionado, se devuelve {@code null}.
+     * Si no se encuentra ninguna reserva con el ID proporcionado, se devuelve
+     * {@code null}.
      * </p>
      *
      * @param reservaId El ID de la reserva a buscar.
-     * @return La reserva encontrada, o {@code null} si no existe ninguna reserva con el ID especificado.
+     * @return La reserva encontrada, o {@code null} si no existe ninguna
+     * reserva con el ID especificado.
      * @throws IllegalArgumentException Si el ID proporcionado es nulo.
      */
     @Override
@@ -139,10 +144,4 @@ public class ReservationServiceImpl implements ReservationService {
         // Buscar la reserva completa por su ID usando el repositorio
         return reservaRepository.findByIdFull(reservaId);
     }
-    
-    
-
-    
-
-   
 }

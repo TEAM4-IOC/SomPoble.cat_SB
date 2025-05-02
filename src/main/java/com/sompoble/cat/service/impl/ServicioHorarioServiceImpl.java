@@ -16,11 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementación del servicio para gestionar la relación entre servicios y horarios.
+ * Implementación del servicio para gestionar la relación entre servicios y
+ * horarios.
  * <p>
- * Esta clase proporciona la implementación concreta de los métodos definidos en la interfaz
- * ServicioHorarioService, facilitando la obtención de información combinada de servicios
- * y sus horarios asociados.
+ * Esta clase proporciona la implementación concreta de los métodos definidos en
+ * la interfaz ServicioHorarioService, facilitando la obtención de información
+ * combinada de servicios y sus horarios asociados.
  * </p>
  */
 @Service
@@ -37,7 +38,7 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
      */
     @Autowired
     private HorarioRepository horarioRepository;
-    
+
     /**
      * Repositorio para acceder a los datos de empresas.
      */
@@ -54,7 +55,7 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
      */
     @Override
     public List<ServicioHorarioDTO> buscarPorNombreYServicio(
-        String nombreServicio, String diaLaborable) {
+            String nombreServicio, String diaLaborable) {
 
         List<Servicio> servicios = servicioRepository.findByNombreContainingIgnoreCase(nombreServicio);
         List<Horario> horarios = horarioRepository.findByDiasLaborablesContainingIgnoreCase(diaLaborable);
@@ -83,16 +84,16 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
     /**
      * {@inheritDoc}
      * <p>
-     * Este método recupera todos los servicios y horarios asociados a una empresa
-     * identificada por su identificador fiscal, y crea DTOs combinando cada servicio
-     * con cada horario de la misma empresa.
+     * Este método recupera todos los servicios y horarios asociados a una
+     * empresa identificada por su identificador fiscal, y crea DTOs combinando
+     * cada servicio con cada horario de la misma empresa.
      * </p>
      */
     @Override
     public List<ServicioHorarioDTO> obtenerServiciosConHorariosPorEmpresa(String identificadorFiscal) {
         // 1. Buscar la empresa por identificador fiscal
         Optional<Empresa> optionalEmpresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal));
-        
+
         if (optionalEmpresa.isEmpty()) {
             return Collections.emptyList(); // Empresa no encontrada
         }
@@ -110,8 +111,8 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
         for (Servicio servicio : servicios) {
             for (Horario horario : horarios) {
                 // Verificar que pertenezcan a la misma empresa (aunque ya están filtrados)
-                if (empresaId.equals(servicio.getEmpresa().getIdEmpresa()) &&
-                    empresaId.equals(horario.getEmpresa().getIdEmpresa())) {
+                if (empresaId.equals(servicio.getEmpresa().getIdEmpresa())
+                        && empresaId.equals(horario.getEmpresa().getIdEmpresa())) {
                     dtos.add(crearDTO(servicio, horario));
                 }
             }
@@ -123,12 +124,13 @@ public class ServicioHorarioServiceImpl implements ServicioHorarioService {
     /**
      * {@inheritDoc}
      * <p>
-     * Este método busca un servicio y un horario por sus IDs respectivos, verifica que
-     * ambos pertenezcan a la misma empresa, y crea un DTO con la información combinada.
+     * Este método busca un servicio y un horario por sus IDs respectivos,
+     * verifica que ambos pertenezcan a la misma empresa, y crea un DTO con la
+     * información combinada.
      * </p>
-     * 
-     * @throws RuntimeException si el servicio o el horario no existen, o si no pertenecen
-     *                           a la misma empresa
+     *
+     * @throws RuntimeException si el servicio o el horario no existen, o si no
+     * pertenecen a la misma empresa
      */
     @Override
     public ServicioHorarioDTO crearDTO(Long servicioId, Long horarioId) {

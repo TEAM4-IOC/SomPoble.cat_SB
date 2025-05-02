@@ -14,9 +14,9 @@ import java.util.Optional;
 /**
  * Implementación del servicio para gestionar horarios.
  * <p>
- * Esta clase proporciona la implementación concreta de los métodos
- * definidos en la interfaz HorarioService, gestionando las operaciones
- * relacionadas con horarios a través del repositorio correspondiente.
+ * Esta clase proporciona la implementación concreta de los métodos definidos en
+ * la interfaz HorarioService, gestionando las operaciones relacionadas con
+ * horarios a través del repositorio correspondiente.
  * </p>
  */
 @Service

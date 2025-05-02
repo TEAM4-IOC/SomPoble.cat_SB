@@ -11,20 +11,23 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Implementación del servicio {@link NotificationService} que proporciona operaciones
- * para gestionar las notificaciones.
+ * Implementación del servicio {@link NotificationService} que proporciona
+ * operaciones para gestionar las notificaciones.
  */
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
     private NotificacionRepository notificationRepository;
     private Boolean configEnabled;
-    private String  configFrequency;
-    private String  configSendTime;
+    private String configFrequency;
+    private String configSendTime;
+
     /**
-     * Constructor con inyección de dependencias para el repositorio de notificaciones.
+     * Constructor con inyección de dependencias para el repositorio de
+     * notificaciones.
      *
-     * @param notificationRepository el repositorio para gestionar notificaciones
+     * @param notificationRepository el repositorio para gestionar
+     * notificaciones
      */
     public NotificationServiceImpl(NotificacionRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
@@ -56,7 +59,8 @@ public class NotificationServiceImpl implements NotificationService {
      * Busca una notificación por su identificador único.
      *
      * @param id el ID de la notificación
-     * @return la notificación correspondiente, o {@code null} si no se encuentra
+     * @return la notificación correspondiente, o {@code null} si no se
+     * encuentra
      */
     @Override
     public Notificacion findNotificationById(Long id) {
@@ -72,62 +76,76 @@ public class NotificationServiceImpl implements NotificationService {
     public void deleteNotificationById(Long id) {
         notificationRepository.deleteById(id);
     }
+
     /**
      * Establece la configuración de envío de notificaciones.
      *
      * @param enabled Indica si las notificaciones están habilitadas o no.
-     * @param freq La frecuencia con la que se deben enviar las notificaciones (por ejemplo, diaria, semanal).
+     * @param freq La frecuencia con la que se deben enviar las notificaciones
+     * (por ejemplo, diaria, semanal).
      * @param time La hora del día a la que se deben enviar las notificaciones.
      */
     public void setConfig(Boolean enabled, String freq, String time) {
-        this.configEnabled   = enabled;
+        this.configEnabled = enabled;
         this.configFrequency = freq;
-        this.configSendTime  = time;
+        this.configSendTime = time;
     }
+
     /**
      * Obtiene el estado de habilitación de la configuración de notificaciones.
      *
-     * @return {@code true} si las notificaciones están habilitadas, {@code false} en caso contrario.
+     * @return {@code true} si las notificaciones están habilitadas,
+     * {@code false} en caso contrario.
      */
-    public Boolean getConfigEnabled()   { return configEnabled; }
-    
-    
+    public Boolean getConfigEnabled() {
+        return configEnabled;
+    }
+
     /**
      * Obtiene la frecuencia configurada para el envío de notificaciones.
      *
-     * @return La frecuencia como cadena de texto (por ejemplo, "diaria", "semanal").
+     * @return La frecuencia como cadena de texto (por ejemplo, "diaria",
+     * "semanal").
      */
-    public String  getConfigFrequency() { return configFrequency; }
-    
-    
+    public String getConfigFrequency() {
+        return configFrequency;
+    }
+
     /**
      * Obtiene la hora configurada para el envío de notificaciones.
      *
-     * @return La hora de envío configurada, como una cadena de texto en formato HH:mm.
+     * @return La hora de envío configurada, como una cadena de texto en formato
+     * HH:mm.
      */
-    public String  getConfigSendTime()  { return configSendTime;  }
-    
+    public String getConfigSendTime() {
+        return configSendTime;
+    }
+
     /**
-     * Recupera todas las notificaciones asociadas a un identificador específico.
+     * Recupera todas las notificaciones asociadas a un identificador
+     * específico.
      *
-     * <p>El identificador puede ser:
+     * <p>
+     * El identificador puede ser:
      * <ul>
-     *   <li>El DNI de un cliente.</li>
-     *   <li>El número fiscal de una empresa o autónomo.</li>
+     * <li>El DNI de un cliente.</li>
+     * <li>El número fiscal de una empresa o autónomo.</li>
      * </ul>
      * Se devuelven todas las notificaciones relacionadas.</p>
      *
-     * @param identificador El DNI del cliente o el número fiscal de la empresa/autónomo.
-     * @return Una lista de notificaciones encontradas; puede ser una lista vacía si no hay resultados.
+     * @param identificador El DNI del cliente o el número fiscal de la
+     * empresa/autónomo.
+     * @return Una lista de notificaciones encontradas; puede ser una lista
+     * vacía si no hay resultados.
      */
     @Override
     public List<Notificacion> findNotificationsByIdentificador(String identificador) {
         return notificationRepository.findByIdentificador(identificador);
     }
 
-	@Override
-	public List<Notificacion> findByClienteDni(String dni) {
-		
-		return notificationRepository.findByClienteDni(dni);
-	}
+    @Override
+    public List<Notificacion> findByClienteDni(String dni) {
+
+        return notificationRepository.findByClienteDni(dni);
+    }
 }

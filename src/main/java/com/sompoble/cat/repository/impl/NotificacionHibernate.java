@@ -1,8 +1,6 @@
 package com.sompoble.cat.repository.impl;
 
 import com.sompoble.cat.domain.Notificacion;
-import com.sompoble.cat.domain.Reserva;
-import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.repository.NotificacionRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +13,11 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Implementación del repositorio {@link NotificacionRepository} utilizando {@link EntityManager}.
- * Realiza operaciones CRUD sobre la entidad {@link Notificacion}.
+ * Implementación del repositorio {@link NotificacionRepository} utilizando
+ * {@link EntityManager}. Realiza operaciones CRUD sobre la entidad
+ * {@link Notificacion}.
  */
 @Repository
 @Transactional
@@ -29,9 +27,11 @@ public class NotificacionHibernate implements NotificacionRepository {
     private EntityManager entityManager;
 
     /**
-     * Guarda una nueva notificación o actualiza una existente en la base de datos.
+     * Guarda una nueva notificación o actualiza una existente en la base de
+     * datos.
      *
      * @param notificacion la notificación a guardar o actualizar
+     * @return notificacion
      */
     @Override
     public Notificacion save(Notificacion notificacion) {
@@ -42,6 +42,7 @@ public class NotificacionHibernate implements NotificacionRepository {
         }
         return notificacion; // 🔥 Devolvemos la notificación
     }
+
     /**
      * Recupera todas las notificaciones almacenadas en la base de datos.
      *
@@ -56,7 +57,8 @@ public class NotificacionHibernate implements NotificacionRepository {
      * Busca una notificación específica por su identificador.
      *
      * @param id el ID de la notificación
-     * @return la notificación correspondiente al ID, o {@code null} si no se encuentra
+     * @return la notificación correspondiente al ID, o {@code null} si no se
+     * encuentra
      */
     @Override
     public Notificacion findById(Long id) {
@@ -75,54 +77,59 @@ public class NotificacionHibernate implements NotificacionRepository {
             entityManager.remove(notificacion);
         }
     }
+
     /**
-     * Recupera una lista de notificaciones asociadas a un cliente o empresa dado su identificador.
+     * Recupera una lista de notificaciones asociadas a un cliente o empresa
+     * dado su identificador.
      *
-     * <p>El método busca notificaciones donde:
+     * <p>
+     * El método busca notificaciones donde:
      * <ul>
-     *   <li>El DNI del cliente sea igual al identificador proporcionado, o</li>
-     *   <li>El número fiscal de la empresa sea igual al identificador proporcionado.</li>
+     * <li>El DNI del cliente sea igual al identificador proporcionado, o</li>
+     * <li>El número fiscal de la empresa sea igual al identificador
+     * proporcionado.</li>
      * </ul>
      * </p>
      *
      * @param identificador El DNI del cliente o el número fiscal de la empresa.
-     * @return Una lista de {@link Notificacion} que corresponden al identificador dado. 
-     *         Puede ser una lista vacía si no existen coincidencias.
+     * @return Una lista de {@link Notificacion} que corresponden al
+     * identificador dado. Puede ser una lista vacía si no existen
+     * coincidencias.
      */
     @Override
     public List<Notificacion> findByIdentificador(String identificador) {
         return entityManager.createQuery(
-            "SELECT n FROM Notificacion n WHERE n.cliente.dni = :identificador OR n.empresa.numeroFiscal = :identificador",
-            Notificacion.class
+                "SELECT n FROM Notificacion n WHERE n.cliente.dni = :identificador OR n.empresa.numeroFiscal = :identificador",
+                Notificacion.class
         )
-        .setParameter("identificador", identificador)
-        .getResultList();
+                .setParameter("identificador", identificador)
+                .getResultList();
     }
+
     /**
-     * Busca y devuelve una lista de notificaciones asociadas a un cliente específico
-     * identificado por su DNI.
+     * Busca y devuelve una lista de notificaciones asociadas a un cliente
+     * específico identificado por su DNI.
      *
-     * Este método utiliza la API Criteria de JPA para construir una consulta dinámica
-     * que filtre las notificaciones en función del DNI del cliente.
+     * Este método utiliza la API Criteria de JPA para construir una consulta
+     * dinámica que filtre las notificaciones en función del DNI del cliente.
      *
      * @param dni El DNI del cliente cuyas notificaciones se desean obtener.
-     * @return Una lista de notificaciones asociadas al cliente con el DNI proporcionado.
+     * @return Una lista de notificaciones asociadas al cliente con el DNI
+     * proporcionado.
      */
-    
-	@Override
-	public List<Notificacion> findByClienteDni(String dni) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Notificacion> cq= cb.createQuery(Notificacion.class);
+
+    @Override
+    public List<Notificacion> findByClienteDni(String dni) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Notificacion> cq = cb.createQuery(Notificacion.class);
         Root<Notificacion> root = cq.from(Notificacion.class);
-		
+
         Predicate dniPredicate = cb.equal(root.get("cliente").get("dni"), dni);
         cq.where(dniPredicate);
-        
+
         List<Notificacion> notificacion = entityManager.createQuery(cq).getResultList();
-        
-        
-           return entityManager.createQuery(cq).getResultList();
-	}
-	
+
+        return entityManager.createQuery(cq).getResultList();
+    }
 
 }

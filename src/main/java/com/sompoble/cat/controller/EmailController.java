@@ -16,25 +16,45 @@ import jakarta.mail.MessagingException;
 
 import java.util.Map;
 
+/**
+ * Controlador REST para la gestión de correos electrónicos y notificaciones.
+ * Proporciona endpoints para enviar correos personalizados, notificar cambios
+ * en reservas, enviar recordatorios automáticos y configurar notificaciones.
+ */
 @RestController
 @RequestMapping("/api/email")
 public class EmailController {
 
+    /**
+     * Servicio para el envío de correos electrónicos.
+     */
     @Autowired
     private EmailService emailService;
 
+    /**
+     * Servicio para la gestión de notificaciones.
+     */
     @Autowired
     private NotificationService notificationService;
 
+    /**
+     * Servicio para la gestión de reservas.
+     */
     @Autowired
     private ReservationService reservationService;
-    
+
+    /**
+     * Servicio para la gestión de recordatorios.
+     */
     @Autowired
     private ReminderService reminderService;
 
     /**
-     * Envía un correo electrónico personalizado basado en un DTO,
-     * luego guarda la notificación y reenvía por email la notificación.
+     * Envía un correo electrónico personalizado basado en un DTO, luego guarda
+     * la notificación y reenvía por email la notificación.
+     *
+     * @param emailDTO DTO que contiene los datos del correo a enviar
+     * @return ResponseEntity con mensaje de éxito o error
      */
     @PostMapping("/send")
     public ResponseEntity<String> sendCustomEmail(@RequestBody EmailDTO emailDTO) {
@@ -44,10 +64,10 @@ public class EmailController {
 
             // 2) Registro en Notificacion
             Notificacion not1 = new Notificacion(
-                /* cliente: */ null,
-                /* reserva: */ null,
-                /* mensaje: */ "Se ha enviado correo personalizado a " + emailDTO.getDestinatario(),
-                Notificacion.TipoNotificacion.INFORMACION
+                    /* cliente: */null,
+                    /* reserva: */ null,
+                    /* mensaje: */ "Se ha enviado correo personalizado a " + emailDTO.getDestinatario(),
+                    Notificacion.TipoNotificacion.INFORMACION
             );
             notificationService.saveNotification(not1);
 
@@ -57,15 +77,15 @@ public class EmailController {
             return ResponseEntity.ok("Correo enviado y notificación registrada");
         } catch (MessagingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error al enviar correo personalizado");
+                    .body("Error al enviar correo personalizado");
         }
     }
 
     /**
      * Notifica cambios en una reserva.
      *
-     * @param reservaId El ID de la reserva que ha cambiado.
-     * @return Una respuesta HTTP indicando el éxito de la operación.
+     * @param reservaId El ID de la reserva que ha cambiado
+     * @return ResponseEntity con mensaje de éxito o error
      */
     @PostMapping("/notify-reservation-change/{reservaId}")
     public ResponseEntity<String> notifyReservationChange(@PathVariable Long reservaId) {
@@ -76,10 +96,10 @@ public class EmailController {
             }
 
             Notificacion not2 = new Notificacion(
-                reserva.getCliente(),
-                null,
-                "Se ha modificado su reserva",
-                Notificacion.TipoNotificacion.INFORMACION
+                    reserva.getCliente(),
+                    null,
+                    "Se ha modificado su reserva",
+                    Notificacion.TipoNotificacion.INFORMACION
             );
             notificationService.saveNotification(not2);
             emailService.sendNotificationEmail(not2);
@@ -87,19 +107,19 @@ public class EmailController {
             return ResponseEntity.ok("Notificación de cambio de reserva enviada");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error al notificar cambio de reserva");
+                    .body("Error al notificar cambio de reserva");
         }
     }
 
     /**
      * Configura y envía recordatorios automáticos para reservas próximas.
      *
-     * @return Una respuesta HTTP indicando el éxito de la operación.
+     * @return ResponseEntity con mensaje de éxito o error
      */
     @PostMapping("/send-automatic-reminders")
     public ResponseEntity<String> sendAutomaticReminders() {
         try {
-            reminderService.processReminders(); 
+            reminderService.processReminders();
 
             return new ResponseEntity<>("Recordatorios enviados exitosamente", HttpStatus.OK);
         } catch (Exception e) {
@@ -108,8 +128,12 @@ public class EmailController {
     }
 
     /**
-     * Configura notificaciones: guarda un registro en Notificacion
-     * y envía un email resumen de la nueva configuración.
+     * Configura notificaciones: guarda un registro en Notificacion y envía un
+     * email resumen de la nueva configuración.
+     *
+     * @param cfg Mapa con los parámetros de configuración (enabled, frequency,
+     * sendTime)
+     * @return ResponseEntity con mensaje de éxito o error
      */
     @PostMapping("/configure-notifications")
     public ResponseEntity<String> configureNotifications(@RequestBody Map<String, Object> cfg) {
@@ -121,14 +145,14 @@ public class EmailController {
 
             // 2) Registrar la notificación de configuración
             String msg = String.format(
-                "Configuración actualizada: enabled=%s, frequency=%s, sendTime=%s",
-                enabled, frequency, sendTime
+                    "Configuración actualizada: enabled=%s, frequency=%s, sendTime=%s",
+                    enabled, frequency, sendTime
             );
             Notificacion notConfig = new Notificacion(
-                null,
-                null,
-                msg,
-                Notificacion.TipoNotificacion.INFORMACION
+                    null,
+                    null,
+                    msg,
+                    Notificacion.TipoNotificacion.INFORMACION
             );
             notificationService.saveNotification(notConfig);
 
@@ -138,15 +162,19 @@ public class EmailController {
             return ResponseEntity.ok("Configuración aplicada y notificación enviada");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error al configurar notificaciones");
+                    .body("Error al configurar notificaciones");
         }
     }
-    	//PARA PRUEBAS INTERNAS DE BACK
+
+    /**
+     * Método para pruebas internas de backend. Envía un correo de prueba en
+     * formato texto plano.
+     *
+     * @return ResponseEntity con mensaje de confirmación
+     */
     @PostMapping("/test-plain")
     public ResponseEntity<String> testPlainMail() {
         emailService.sendPlainTextTestEmail();
         return new ResponseEntity<>("Correo de prueba enviado", HttpStatus.OK);
     }
-    
-    
 }

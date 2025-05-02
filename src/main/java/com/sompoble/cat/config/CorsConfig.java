@@ -7,19 +7,24 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
+
 /**
- * Configuración global de CORS (Cross-Origin Resource Sharing) para la aplicación.
+ * Configuración global de CORS (Cross-Origin Resource Sharing) para la
+ * aplicación.
  * <p>
- * Esta clase define los orígenes, métodos y cabeceras permitidas para las peticiones HTTP
- * que se realizan desde dominios distintos al backend.
+ * Esta clase define los orígenes, métodos y cabeceras permitidas para las
+ * peticiones HTTP que se realizan desde dominios distintos al backend.
  * </p>
  */
 @Configuration
 public class CorsConfig {
-	/**
-     * Define y registra un filtro de CORS para permitir el acceso controlado desde aplicaciones frontend.
+
+    /**
+     * Define y registra un filtro de CORS para permitir el acceso controlado
+     * desde aplicaciones frontend.
      *
-     * @return una instancia de {@link CorsFilter} con la configuración personalizada.
+     * @return una instancia de {@link CorsFilter} con la configuración
+     * personalizada.
      */
     @Bean
     public CorsFilter corsFilter() {

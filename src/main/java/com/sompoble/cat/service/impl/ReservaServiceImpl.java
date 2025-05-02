@@ -12,9 +12,10 @@ import java.util.List;
 /**
  * Implementación de {@link ReservaService}.
  * <p>
- * Proporciona la lógica de negocio para gestionar las reservas, delegando las operaciones al repositorio.
+ * Proporciona la lógica de negocio para gestionar las reservas, delegando las
+ * operaciones al repositorio.
  * </p>
- * 
+ *
  * @author SomPoble
  */
 @Service
@@ -30,7 +31,8 @@ public class ReservaServiceImpl implements ReservaService {
      * Obtiene todas las reservas asociadas a un cliente mediante su DNI.
      *
      * @param dni el documento nacional de identidad del cliente.
-     * @return una lista de DTOs de reservas realizadas por el cliente con el DNI especificado.
+     * @return una lista de DTOs de reservas realizadas por el cliente con el
+     * DNI especificado.
      */
     @Override
     public List<ReservaDTO> findByClienteDni(String dni) {
@@ -38,10 +40,13 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
     /**
-     * Obtiene todas las reservas asociadas a una empresa o autónomo mediante su identificador fiscal.
+     * Obtiene todas las reservas asociadas a una empresa o autónomo mediante su
+     * identificador fiscal.
      *
-     * @param identificadorFiscal el identificador fiscal de la empresa o autónomo.
-     * @return una lista de DTOs de reservas asociadas a la empresa o autónomo especificada.
+     * @param identificadorFiscal el identificador fiscal de la empresa o
+     * autónomo.
+     * @return una lista de DTOs de reservas asociadas a la empresa o autónomo
+     * especificada.
      */
     @Override
     public List<ReservaDTO> findByEmpresaIdentificadorFiscal(String identificadorFiscal) {
@@ -52,18 +57,20 @@ public class ReservaServiceImpl implements ReservaService {
      * Busca una reserva por su identificador único.
      *
      * @param id el identificador de la reserva.
-     * @return un DTO con la reserva correspondiente, o {@code null} si no se encuentra.
+     * @return un DTO con la reserva correspondiente, o {@code null} si no se
+     * encuentra.
      */
     @Override
     public ReservaDTO findById(Long id) {
         return reservaRepository.findById(id);
     }
-    
+
     /**
      * Busca una reserva completa por su identificador único.
      *
      * @param id el identificador de la reserva.
-     * @return la entidad {@code Reserva} completa si existe, o null si no se encuentra.
+     * @return la entidad {@code Reserva} completa si existe, o null si no se
+     * encuentra.
      */
     @Override
     public Reserva findByIdFull(Long id) {
@@ -71,8 +78,7 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
     /**
-     * Guarda una nueva reserva.
-     * Si la reserva ya existe, la actualiza.
+     * Guarda una nueva reserva. Si la reserva ya existe, la actualiza.
      *
      * @param reserva la reserva a guardar o actualizar.
      */
@@ -112,24 +118,27 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
     /**
-     * Elimina todas las reservas asociadas a una empresa o autónomo mediante su identificador fiscal.
+     * Elimina todas las reservas asociadas a una empresa o autónomo mediante su
+     * identificador fiscal.
      *
-     * @param identificadorFiscal el identificador fiscal de la empresa o autónomo.
+     * @param identificadorFiscal el identificador fiscal de la empresa o
+     * autónomo.
      */
     @Override
     public void deleteByEmpresaIdentificadorFiscal(String identificadorFiscal) {
         reservaRepository.deleteByEmpresaIdentificadorFiscal(identificadorFiscal);
     }
-    
+
     /**
-    * Cuenta el número de reservas para un servicio específico en una fecha determinada.
-    *
-    * @param servicioId el identificador del servicio.
-    * @param fechaReserva la fecha de la reserva en formato String.
-    * @return el número de reservas existentes para ese servicio en esa fecha.
-    */
-   @Override
-   public int countReservasByServicioIdAndFecha(Long servicioId, String fechaReserva) {
-       return reservaRepository.countByServicioIdAndFechaReserva(servicioId, fechaReserva);
-   }
+     * Cuenta el número de reservas para un servicio específico en una fecha
+     * determinada.
+     *
+     * @param servicioId el identificador del servicio.
+     * @param fechaReserva la fecha de la reserva en formato String.
+     * @return el número de reservas existentes para ese servicio en esa fecha.
+     */
+    @Override
+    public int countReservasByServicioIdAndFecha(Long servicioId, String fechaReserva) {
+        return reservaRepository.countByServicioIdAndFechaReserva(servicioId, fechaReserva);
+    }
 }

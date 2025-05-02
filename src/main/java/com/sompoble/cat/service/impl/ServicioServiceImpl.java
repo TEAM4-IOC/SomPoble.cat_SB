@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Servicio que gestiona la lógica de negocio relacionada con los servicios de la empresa.
+ * Servicio que gestiona la lógica de negocio relacionada con los servicios de
+ * la empresa.
  */
 @Service
-public class ServicioServiceImpl implements ServicioService  {
+public class ServicioServiceImpl implements ServicioService {
 
     @Autowired
     private ServicioRepository servicioRepository;
@@ -59,10 +60,12 @@ public class ServicioServiceImpl implements ServicioService  {
     }
 
     /**
-     * Obtiene todos los servicios de una empresa a partir de su identificador fiscal.
+     * Obtiene todos los servicios de una empresa a partir de su identificador
+     * fiscal.
      *
      * @param identificadorFiscal Identificador fiscal de la empresa.
-     * @return Lista de servicios asociados a la empresa con el identificador fiscal dado.
+     * @return Lista de servicios asociados a la empresa con el identificador
+     * fiscal dado.
      */
     @Override
     public List<Servicio> obtenerPorEmpresaIdentificador(String identificadorFiscal) {
@@ -70,10 +73,12 @@ public class ServicioServiceImpl implements ServicioService  {
     }
 
     /**
-     * Verifica si un servicio existe en la base de datos mediante su identificador.
+     * Verifica si un servicio existe en la base de datos mediante su
+     * identificador.
      *
      * @param id Identificador único del servicio.
-     * @return {@code true} si el servicio existe, {@code false} en caso contrario.
+     * @return {@code true} si el servicio existe, {@code false} en caso
+     * contrario.
      */
     @Override
     public boolean existePorId(Long id) {

@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementación del repositorio de eventos usando JPA y Criteria API.
- * Maneja operaciones CRUD y consultas personalizadas.
+ * Implementación del repositorio de eventos usando JPA y Criteria API. Maneja
+ * operaciones CRUD y consultas personalizadas.
  */
 @Repository
 @Transactional
@@ -28,7 +28,7 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Guarda o actualiza un evento en la base de datos.
-     * 
+     *
      * @param evento Objeto {@link Evento} a persistir.
      * @return El evento guardado con su ID asignado.
      */
@@ -44,7 +44,7 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Elimina un evento por su ID.
-     * 
+     *
      * @param id ID del evento a eliminar.
      * @throws EntityNotFoundException si el evento no existe.
      */
@@ -59,7 +59,7 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Obtiene un evento por su ID.
-     * 
+     *
      * @param id ID del evento.
      * @return El evento encontrado o {@code null} si no existe.
      */
@@ -70,7 +70,7 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Lista todos los eventos almacenados.
-     * 
+     *
      * @return Lista de eventos.
      */
     @Override
@@ -84,9 +84,9 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Busca eventos dentro de un rango de fechas.
-     * 
+     *
      * @param start Fecha de inicio del rango.
-     * @param end   Fecha de fin del rango.
+     * @param end Fecha de fin del rango.
      * @return Lista de eventos dentro del rango.
      */
     @Override
@@ -101,7 +101,7 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Busca eventos por ubicación.
-     * 
+     *
      * @param ubicacion Ubicación del evento.
      * @return Lista de eventos en la ubicación especificada.
      */
@@ -117,10 +117,10 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Busca eventos por ubicación y rango de fechas.
-     * 
+     *
      * @param ubicacion Ubicación del evento.
-     * @param start     Fecha de inicio del rango.
-     * @param end       Fecha de fin del rango.
+     * @param start Fecha de inicio del rango.
+     * @param end Fecha de fin del rango.
      * @return Lista de eventos que cumplen con las condiciones.
      */
     @Override
@@ -136,7 +136,7 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Busca eventos por una palabra clave en el nombre del evento.
-     * 
+     *
      * @param keyword Palabra clave a buscar en el nombre del evento.
      * @return Lista de eventos que contienen la palabra clave.
      */
@@ -149,10 +149,10 @@ public class EventoHibernate implements EventoRepository {
         cq.where(keywordPredicate);
         return entityManager.createQuery(cq).getResultList();
     }
-    
+
     /**
      * Encuentra el evento más cercano a la fecha actual.
-     * 
+     *
      * @return El evento más cercano a la fecha actual.
      */
     @Override
@@ -167,7 +167,7 @@ public class EventoHibernate implements EventoRepository {
 
     /**
      * Cuenta la cantidad total de eventos en la base de datos.
-     * 
+     *
      * @return El número total de eventos.
      */
     @Override

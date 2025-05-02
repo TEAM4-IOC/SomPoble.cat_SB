@@ -71,10 +71,10 @@ public class ReservaController {
     private ReservaHibernate reservaHibernate;
     @Autowired
     private EmailService emailService;
-    
+
     @Autowired
     private NotificationService notificationService;
-    
+
     /**
      * Obtiene todas las reservas asociadas a un cliente mediante su DNI.
      *
@@ -87,7 +87,7 @@ public class ReservaController {
         if (cliente == null) {
             throw new ResourceNotFoundException("Cliente con DNI " + dni + " no encontrado.");
         }
-                
+
         List<ReservaDTO> reservas = reservaService.findByClienteDni(dni);
         return ResponseEntity.ok(reservas);
     }
@@ -105,7 +105,7 @@ public class ReservaController {
         if (empresa == null) {
             throw new ResourceNotFoundException("Empresa con identificador fiscal " + identificadorFiscal + " no encontrado.");
         }
-                
+
         List<ReservaDTO> reservas = reservaService.findByEmpresaIdentificadorFiscal(identificadorFiscal);
         return ResponseEntity.ok(reservas);
     }
@@ -126,44 +126,56 @@ public class ReservaController {
     }
 
     /**
-     * Crea una nueva reserva a partir de los datos proporcionados en la solicitud.
+     * Crea una nueva reserva a partir de los datos proporcionados en la
+     * solicitud.
      *
-     * <p>Este método realiza múltiples validaciones antes de crear la reserva, incluyendo:
+     * <p>
+     * Este método realiza múltiples validaciones antes de crear la reserva,
+     * incluyendo:
      * <ul>
-     *     <li>Verificar que el cliente exista basado en su DNI.</li>
-     *     <li>Verificar que la empresa exista basado en su identificador fiscal.</li>
-     *     <li>Verificar que el servicio exista y pertenezca a la empresa especificada.</li>
-     *     <li>Verificar que la fecha, hora y estado sean proporcionados.</li>
-     *     <li>Verificar que no se haya alcanzado el límite de reservas para el servicio en la fecha indicada.</li>
-     *     <li>Verificar que la hora de reserva esté dentro de los horarios disponibles del servicio.</li>
+     * <li>Verificar que el cliente exista basado en su DNI.</li>
+     * <li>Verificar que la empresa exista basado en su identificador
+     * fiscal.</li>
+     * <li>Verificar que el servicio exista y pertenezca a la empresa
+     * especificada.</li>
+     * <li>Verificar que la fecha, hora y estado sean proporcionados.</li>
+     * <li>Verificar que no se haya alcanzado el límite de reservas para el
+     * servicio en la fecha indicada.</li>
+     * <li>Verificar que la hora de reserva esté dentro de los horarios
+     * disponibles del servicio.</li>
      * </ul>
      * Después de crear la reserva, el método también:
      * <ul>
-     *     <li>Envía un correo electrónico de confirmación al cliente.</li>
-     *     <li>Registra una notificación en la base de datos para el cliente.</li>
+     * <li>Envía un correo electrónico de confirmación al cliente.</li>
+     * <li>Registra una notificación en la base de datos para el cliente.</li>
      * </ul>
      *
-     * @param request Un mapa que contiene los datos de la reserva, en el siguiente formato:
-     *                <ul>
-     *                    <li>reserva: {
-     *                        <ul>
-     *                            <li>fechaReserva (String)</li>
-     *                            <li>hora (String)</li>
-     *                            <li>estado (String)</li>
-     *                            <li>cliente: { dni (String) }</li>
-     *                            <li>empresa: { identificadorFiscal (String) }</li>
-     *                            <li>servicio: { idServicio (Long o Integer) }</li>
-     *                        </ul>
-     *                    }</li>
-     *                </ul>
+     * @param request Un mapa que contiene los datos de la reserva, en el
+     * siguiente formato:
+     * <ul>
+     * <li>reserva: {
+     * <ul>
+     * <li>fechaReserva (String)</li>
+     * <li>hora (String)</li>
+     * <li>estado (String)</li>
+     * <li>cliente: { dni (String) }</li>
+     * <li>empresa: { identificadorFiscal (String) }</li>
+     * <li>servicio: { idServicio (Long o Integer) }</li>
+     * </ul>
+     * }</li>
+     * </ul>
      * @return Un {@link ResponseEntity} con los siguientes posibles resultados:
-     *         <ul>
-     *             <li>201 Created si la reserva se creó exitosamente.</li>
-     *             <li>400 Bad Request si hay algún error de validación (cliente, empresa, servicio inexistente, límite de reservas superado, hora inválida, etc.).</li>
-     *             <li>500 Internal Server Error si ocurre un error al enviar el correo o registrar la notificación.</li>
-     *         </ul>
+     * <ul>
+     * <li>201 Created si la reserva se creó exitosamente.</li>
+     * <li>400 Bad Request si hay algún error de validación (cliente, empresa,
+     * servicio inexistente, límite de reservas superado, hora inválida,
+     * etc.).</li>
+     * <li>500 Internal Server Error si ocurre un error al enviar el correo o
+     * registrar la notificación.</li>
+     * </ul>
      *
-     * @throws BadRequestException si ocurre algún error de validación durante la creación de la reserva.
+     * @throws BadRequestException si ocurre algún error de validación durante
+     * la creación de la reserva.
      */
     @PostMapping
     public ResponseEntity<?> createReserva(@RequestBody Map<String, Object> request) {
@@ -250,12 +262,12 @@ public class ReservaController {
             emailDTO.setDestinatario(cliente.getEmail());
             emailDTO.setAsunto("Confirmación de Reserva");
             emailDTO.setMensaje(String.format(
-                    "Estimado/a %s,\n\nSu reserva ha sido confirmada con éxito.\n" +
-                            "Detalles de la reserva:\n" +
-                            "- Fecha: %s\n" +
-                            "- Hora: %s\n" +
-                            "- Servicio: %s\n" +
-                            "- Empresa: %s",
+                    "Estimado/a %s,\n\nSu reserva ha sido confirmada con éxito.\n"
+                    + "Detalles de la reserva:\n"
+                    + "- Fecha: %s\n"
+                    + "- Hora: %s\n"
+                    + "- Servicio: %s\n"
+                    + "- Empresa: %s",
                     cliente.getNombre(),
                     fechaReserva,
                     hora,
@@ -285,40 +297,53 @@ public class ReservaController {
         // 5. Respuesta exitosa
         return ResponseEntity.created(null).build();
     }
+
     /**
-     * Actualiza una reserva existente basada en los campos proporcionados en la solicitud.
+     * Actualiza una reserva existente basada en los campos proporcionados en la
+     * solicitud.
      *
-     * <p>Este método permite actualizar parcialmente una reserva, validando los siguientes aspectos:
+     * <p>
+     * Este método permite actualizar parcialmente una reserva, validando los
+     * siguientes aspectos:
      * <ul>
-     *     <li>Que la reserva exista.</li>
-     *     <li>Que los identificadores de cliente, empresa y servicio proporcionados existan.</li>
-     *     <li>Que el servicio pertenezca a la empresa correspondiente.</li>
-     *     <li>Que se respete el límite máximo de reservas para el servicio en la fecha indicada.</li>
-     *     <li>Que la hora proporcionada esté dentro del rango de horarios definidos para el servicio.</li>
+     * <li>Que la reserva exista.</li>
+     * <li>Que los identificadores de cliente, empresa y servicio proporcionados
+     * existan.</li>
+     * <li>Que el servicio pertenezca a la empresa correspondiente.</li>
+     * <li>Que se respete el límite máximo de reservas para el servicio en la
+     * fecha indicada.</li>
+     * <li>Que la hora proporcionada esté dentro del rango de horarios definidos
+     * para el servicio.</li>
      * </ul>
-     * También se envía un correo electrónico de confirmación al cliente y se registra una notificación en la base de datos
-     * al finalizar exitosamente la actualización.
+     * También se envía un correo electrónico de confirmación al cliente y se
+     * registra una notificación en la base de datos al finalizar exitosamente
+     * la actualización.
      *
      * @param id El ID de la reserva a actualizar.
      * @param updates Un mapa con los campos a actualizar. Puede incluir:
-     *                <ul>
-     *                    <li>fechaReserva (String)</li>
-     *                    <li>hora (String)</li>
-     *                    <li>estado (String)</li>
-     *                    <li>idServicio (Long) o un objeto servicio con idServicio</li>
-     *                    <li>cliente (objeto que contiene el dni del cliente)</li>
-     *                    <li>empresa (objeto que contiene el identificadorFiscal de la empresa)</li>
-     *                </ul>
+     * <ul>
+     * <li>fechaReserva (String)</li>
+     * <li>hora (String)</li>
+     * <li>estado (String)</li>
+     * <li>idServicio (Long) o un objeto servicio con idServicio</li>
+     * <li>cliente (objeto que contiene el dni del cliente)</li>
+     * <li>empresa (objeto que contiene el identificadorFiscal de la
+     * empresa)</li>
+     * </ul>
      * @return Un {@link ResponseEntity} indicando el resultado de la operación:
-     *         <ul>
-     *             <li>200 OK si la reserva fue actualizada exitosamente.</li>
-     *             <li>400 Bad Request si hubo un error de validación (cliente, empresa o servicio inválidos, límite de reservas alcanzado, hora inválida, etc.).</li>
-     *             <li>404 Not Found si no se encuentra la reserva.</li>
-     *             <li>500 Internal Server Error si ocurre un problema enviando el correo o registrando la notificación.</li>
-     *         </ul>
+     * <ul>
+     * <li>200 OK si la reserva fue actualizada exitosamente.</li>
+     * <li>400 Bad Request si hubo un error de validación (cliente, empresa o
+     * servicio inválidos, límite de reservas alcanzado, hora inválida,
+     * etc.).</li>
+     * <li>404 Not Found si no se encuentra la reserva.</li>
+     * <li>500 Internal Server Error si ocurre un problema enviando el correo o
+     * registrando la notificación.</li>
+     * </ul>
      *
      * @throws ResourceNotFoundException si no se encuentra la reserva.
-     * @throws BadRequestException si ocurre algún error de validación durante la actualización.
+     * @throws BadRequestException si ocurre algún error de validación durante
+     * la actualización.
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReserva(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
@@ -483,10 +508,10 @@ public class ReservaController {
                 emailDTO.setDestinatario(cliente.getEmail());
                 emailDTO.setAsunto("Actualización de Reserva");
                 emailDTO.setMensaje(String.format(
-                        "Estimado/a %s,\n\nSu reserva ha sido actualizada con éxito.\n" +
-                                "Detalles actualizados:\n" +
-                                "- Fecha: %s\n" +
-                                "- Hora: %s",
+                        "Estimado/a %s,\n\nSu reserva ha sido actualizada con éxito.\n"
+                        + "Detalles actualizados:\n"
+                        + "- Fecha: %s\n"
+                        + "- Hora: %s",
                         cliente.getNombre(),
                         existingReserva.getFechaReserva(),
                         existingReserva.getHora()
@@ -519,21 +544,28 @@ public class ReservaController {
 
     /**
      * Elimina una reserva específica mediante su identificador único.
-     * 
-     * <p>Este método realiza las siguientes acciones:</p>
+     *
+     * <p>
+     * Este método realiza las siguientes acciones:</p>
      * <ul>
-     *   <li>Verifica que exista una reserva con el ID proporcionado.</li>
-     *   <li>Elimina la reserva de la base de datos.</li>
-     *   <li>Envía un correo electrónico al cliente informando sobre la cancelación de la reserva.</li>
-     *   <li>Registra una notificación en la base de datos asociada al cliente.</li>
+     * <li>Verifica que exista una reserva con el ID proporcionado.</li>
+     * <li>Elimina la reserva de la base de datos.</li>
+     * <li>Envía un correo electrónico al cliente informando sobre la
+     * cancelación de la reserva.</li>
+     * <li>Registra una notificación en la base de datos asociada al
+     * cliente.</li>
      * </ul>
-     * 
-     * <p>Si ocurre algún error durante el proceso (por ejemplo, al enviar correos o registrar notificaciones),
-     * se devuelve una respuesta HTTP con código 500 Internal Server Error.</p>
-     * 
+     *
+     * <p>
+     * Si ocurre algún error durante el proceso (por ejemplo, al enviar correos
+     * o registrar notificaciones), se devuelve una respuesta HTTP con código
+     * 500 Internal Server Error.</p>
+     *
      * @param id el identificador único de la reserva que se desea eliminar.
-     * @return una respuesta HTTP con código 200 OK si la reserva se elimina correctamente.
-     * @throws ResourceNotFoundException si no existe una reserva con el ID proporcionado.
+     * @return una respuesta HTTP con código 200 OK si la reserva se elimina
+     * correctamente.
+     * @throws ResourceNotFoundException si no existe una reserva con el ID
+     * proporcionado.
      * @see ReservaService#findById(Long)
      * @see ReservaService#deleteById(Long)
      * @see EmailService#sendMail(EmailDTO)
@@ -558,10 +590,10 @@ public class ReservaController {
             emailDTO.setDestinatario(cliente.getEmail());
             emailDTO.setAsunto("Cancelación de Reserva");
             emailDTO.setMensaje(String.format(
-                    "Estimado/a %s,\n\nSu reserva ha sido cancelada.\n" +
-                            "Detalles de la reserva cancelada:\n" +
-                            "- Fecha: %s\n" +
-                            "- Hora: %s",
+                    "Estimado/a %s,\n\nSu reserva ha sido cancelada.\n"
+                    + "Detalles de la reserva cancelada:\n"
+                    + "- Fecha: %s\n"
+                    + "- Hora: %s",
                     cliente.getNombre(),
                     existing.getFechaReserva(),
                     existing.getHora()
@@ -589,21 +621,30 @@ public class ReservaController {
 
     /**
      * Elimina todas las reservas asociadas a un cliente mediante su DNI.
-     * 
-     * <p>Este método realiza las siguientes acciones:</p>
+     *
+     * <p>
+     * Este método realiza las siguientes acciones:</p>
      * <ul>
-     *   <li>Verifica que exista un cliente con el DNI proporcionado.</li>
-     *   <li>Elimina todas las reservas asociadas al cliente en la base de datos.</li>
-     *   <li>Envía un correo electrónico al cliente informando sobre la cancelación de sus reservas.</li>
-     *   <li>Registra una notificación en la base de datos asociada al cliente.</li>
+     * <li>Verifica que exista un cliente con el DNI proporcionado.</li>
+     * <li>Elimina todas las reservas asociadas al cliente en la base de
+     * datos.</li>
+     * <li>Envía un correo electrónico al cliente informando sobre la
+     * cancelación de sus reservas.</li>
+     * <li>Registra una notificación en la base de datos asociada al
+     * cliente.</li>
      * </ul>
-     * 
-     * <p>Si ocurre algún error durante el proceso (por ejemplo, al enviar correos o registrar notificaciones),
-     * se devuelve una respuesta HTTP con código 500 Internal Server Error.</p>
-     * 
-     * @param dni el documento nacional de identidad del cliente cuyas reservas se desean eliminar.
-     * @return una respuesta HTTP con código 200 OK si las reservas se eliminan correctamente.
-     * @throws BadRequestException si no existe un cliente con el DNI proporcionado.
+     *
+     * <p>
+     * Si ocurre algún error durante el proceso (por ejemplo, al enviar correos
+     * o registrar notificaciones), se devuelve una respuesta HTTP con código
+     * 500 Internal Server Error.</p>
+     *
+     * @param dni el documento nacional de identidad del cliente cuyas reservas
+     * se desean eliminar.
+     * @return una respuesta HTTP con código 200 OK si las reservas se eliminan
+     * correctamente.
+     * @throws BadRequestException si no existe un cliente con el DNI
+     * proporcionado.
      * @see ClienteService#existsByDni(String)
      * @see ReservaService#deleteByClienteDni(String)
      * @see EmailService#sendMail(EmailDTO)

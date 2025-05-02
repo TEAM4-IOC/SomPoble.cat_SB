@@ -10,13 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+
 /**
  * Controlador REST para la gestión de empresarios.
  */
 @RestController
 @RequestMapping("/api/empresarios")
 public class EmpresarioController {
-	/**
+
+    /**
      * Servicio que maneja la lógica de negocio para empresarios.
      */
     @Autowired
@@ -25,7 +27,8 @@ public class EmpresarioController {
     /**
      * Obtiene todos los empresarios registrados.
      *
-     * @return lista de {@link EmpresarioDTO} si existen, de lo contrario lanza excepción.
+     * @return lista de {@link EmpresarioDTO} si existen, de lo contrario lanza
+     * excepción.
      */
     @GetMapping
     public ResponseEntity<?> getAll() {
@@ -35,6 +38,7 @@ public class EmpresarioController {
         }
         return ResponseEntity.ok(empresarios);
     }
+
     /**
      * Obtiene un empresario específico por su DNI.
      *
@@ -68,7 +72,7 @@ public class EmpresarioController {
         }
 
         empresarioService.addEmpresario(empresario);
-        return ResponseEntity.created(null).build(); 
+        return ResponseEntity.created(null).build();
     }
 
     /**
@@ -81,23 +85,29 @@ public class EmpresarioController {
      */
     @PutMapping("/{dni}")
     public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) {
-        try{
-        EmpresarioDTO existingEmpresario = empresarioService.findByDni(dni);
-        updates.forEach((key, value) -> {
-            if (value != null) {
-                switch (key) {
-                    case "dni" -> existingEmpresario.setDni(value.toString());
-                    case "nombre" -> existingEmpresario.setNombre(value.toString());
-                    case "apellidos" -> existingEmpresario.setApellidos(value.toString());
-                    case "telefono" -> existingEmpresario.setTelefono(value.toString());
-                    case "pass" -> existingEmpresario.setPass(value.toString());
-                    case "email" -> existingEmpresario.setEmail(value.toString());
+        try {
+            EmpresarioDTO existingEmpresario = empresarioService.findByDni(dni);
+            updates.forEach((key, value) -> {
+                if (value != null) {
+                    switch (key) {
+                        case "dni" ->
+                            existingEmpresario.setDni(value.toString());
+                        case "nombre" ->
+                            existingEmpresario.setNombre(value.toString());
+                        case "apellidos" ->
+                            existingEmpresario.setApellidos(value.toString());
+                        case "telefono" ->
+                            existingEmpresario.setTelefono(value.toString());
+                        case "pass" ->
+                            existingEmpresario.setPass(value.toString());
+                        case "email" ->
+                            existingEmpresario.setEmail(value.toString());
+                    }
                 }
-            }
-        });
+            });
 
-        empresarioService.updateEmpresario(existingEmpresario);
-        return ResponseEntity.ok("Empresario con DNI " + dni + " actualizado correctamente");
+            empresarioService.updateEmpresario(existingEmpresario);
+            return ResponseEntity.ok("Empresario con DNI " + dni + " actualizado correctamente");
         } catch (Exception e) {
             throw new ResourceNotFoundException("No se encontró un empresario con el DNI " + dni);
         }
