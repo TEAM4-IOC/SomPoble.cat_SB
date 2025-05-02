@@ -122,13 +122,13 @@ public interface ReservaRepository {
      */
     
     @Query("""
-            SELECT COUNT(r) FROM Reserva r
-            WHERE r.servicio.empresa.idEmpresa = :empresaId
-              AND r.fecha BETWEEN :inicio AND :fin
-        """)
-        Long contarReservasPorEmpresaYFechas(@Param("empresaId") Long empresaId,
-                                             @Param("inicio") LocalDate inicio,
-                                             @Param("fin") LocalDate fin);
+    	    SELECT COUNT(r) FROM Reserva r
+    	    WHERE r.servicio.empresa.idEmpresa = :empresaId
+    	      AND r.fechaReserva BETWEEN :inicio AND :fin
+    	""")
+    	Long contarReservasPorEmpresaYFechas(@Param("empresaId") Long empresaId,
+    	                                     @Param("inicio") LocalDate inicio,
+    	                                     @Param("fin") LocalDate fin);
     /**
      * Suma el total de ingresos generados por las reservas de una empresa en un rango de fechas determinado.
      *
@@ -137,14 +137,14 @@ public interface ReservaRepository {
      * @param fin Fecha de fin del rango.
      * @return Suma total de ingresos.
      */
-        @Query("""
-            SELECT SUM(r.servicio.precio) FROM Reserva r
-            WHERE r.servicio.empresa.idEmpresa = :empresaId
-              AND r.fecha BETWEEN :inicio AND :fin
-        """)
-        BigDecimal sumarIngresosPorEmpresaYFechas(@Param("empresaId") Long empresaId,
-                                                   @Param("inicio") LocalDate inicio,
-                                                   @Param("fin") LocalDate fin);
+    @Query("""
+    	    SELECT SUM(r.servicio.precio) FROM Reserva r
+    	    WHERE r.servicio.empresa.idEmpresa = :empresaId
+    	      AND r.fechaReserva BETWEEN :inicio AND :fin
+    	""")
+    	BigDecimal sumarIngresosPorEmpresaYFechas(@Param("empresaId") Long empresaId,
+    	                                           @Param("inicio") LocalDate inicio,
+    	                                           @Param("fin") LocalDate fin);
         /**
          * Cuenta el número de clientes únicos que han realizado reservas para una empresa en un rango de fechas.
          *
@@ -153,14 +153,14 @@ public interface ReservaRepository {
          * @param fin Fecha de fin del rango.
          * @return Total de clientes únicos.
          */
-        @Query("""
-            SELECT COUNT(DISTINCT r.cliente.idCliente) FROM Reserva r
-            WHERE r.servicio.empresa.idEmpresa = :empresaId
-              AND r.fecha BETWEEN :inicio AND :fin
-        """)
-        Integer contarClientesUnicos(@Param("empresaId") Long empresaId,
-                                     @Param("inicio") LocalDate inicio,
-                                     @Param("fin") LocalDate fin);
+    @Query("""
+    	    SELECT COUNT(DISTINCT r.cliente.idCliente) FROM Reserva r
+    	    WHERE r.servicio.empresa.idEmpresa = :empresaId
+    	      AND r.fechaReserva BETWEEN :inicio AND :fin
+    	""")
+    	Integer contarClientesUnicos(@Param("empresaId") Long empresaId,
+    	                             @Param("inicio") LocalDate inicio,
+    	                             @Param("fin") LocalDate fin);
         /**
          * Obtiene un resumen de métricas agrupadas por servicio, incluyendo el número de reservas
          * y el ingreso total por servicio para una empresa y rango de fechas.
@@ -170,17 +170,17 @@ public interface ReservaRepository {
          * @param fin Fecha de fin del rango.
          * @return Lista de {@link com.sompoble.cat.dto.PanelMetricasDTO.ServicioResumenDTO}.
          */
-        @Query("""
-            SELECT new com.sompoble.cat.dto.PanelMetricasDTO$ServicioResumenDTO(
-                r.servicio.nombre, COUNT(r), SUM(r.servicio.precio))
-            FROM Reserva r
-            WHERE r.servicio.empresa.idEmpresa = :empresaId
-              AND r.fecha BETWEEN :inicio AND :fin
-            GROUP BY r.servicio.nombre
-        """)
-        List<ServicioResumenDTO> obtenerMetricasPorServicio(@Param("empresaId") Long empresaId,
-                                                             @Param("inicio") LocalDate inicio,
-                                                             @Param("fin") LocalDate fin);
+    @Query("""
+    	    SELECT new com.sompoble.cat.dto.PanelMetricasDTO$ServicioResumenDTO(
+    	        r.servicio.nombre, COUNT(r), SUM(r.servicio.precio))
+    	    FROM Reserva r
+    	    WHERE r.servicio.empresa.idEmpresa = :empresaId
+    	      AND r.fechaReserva BETWEEN :inicio AND :fin
+    	    GROUP BY r.servicio.nombre
+    	""")
+    	List<ServicioResumenDTO> obtenerMetricasPorServicio(@Param("empresaId") Long empresaId,
+    	                                                     @Param("inicio") LocalDate inicio,
+    	                                                     @Param("fin") LocalDate fin);
         /**
          * Obtiene las métricas mensuales de reservas e ingresos para una empresa,
          * agrupadas por nombre del mes.
@@ -190,19 +190,19 @@ public interface ReservaRepository {
          * @param fin Fecha de fin del rango.
          * @return Lista de {@link com.sompoble.cat.dto.PanelMetricasDTO.MetricasMensualesDTO}.
          */
-        @Query("""
-            SELECT new com.sompoble.cat.dto.PanelMetricasDTO$MetricasMensualesDTO(
-                FUNCTION('to_char', r.fecha, 'Month'),
-                COUNT(r),
-                SUM(r.servicio.precio))
-            FROM Reserva r
-            WHERE r.servicio.empresa.idEmpresa = :empresaId
-              AND r.fecha BETWEEN :inicio AND :fin
-            GROUP BY FUNCTION('to_char', r.fecha, 'Month')
-            ORDER BY FUNCTION('to_char', r.fecha, 'Month')
-        """)
-        List<MetricasMensualesDTO> obtenerMetricasMensuales(@Param("empresaId") Long empresaId,
-                                                             @Param("inicio") LocalDate inicio,
-                                                             @Param("fin") LocalDate fin);
+    @Query("""
+    	    SELECT new com.sompoble.cat.dto.PanelMetricasDTO$MetricasMensualesDTO(
+    	        FUNCTION('to_char', r.fechaReserva, 'Month'),
+    	        COUNT(r),
+    	        SUM(r.servicio.precio))
+    	    FROM Reserva r
+    	    WHERE r.servicio.empresa.idEmpresa = :empresaId
+    	      AND r.fechaReserva BETWEEN :inicio AND :fin
+    	    GROUP BY FUNCTION('to_char', r.fechaReserva, 'Month')
+    	    ORDER BY FUNCTION('to_char', r.fechaReserva, 'Month')
+    	""")
+    	List<MetricasMensualesDTO> obtenerMetricasMensuales(@Param("empresaId") Long empresaId,
+    	                                                     @Param("inicio") LocalDate inicio,
+    	                                                     @Param("fin") LocalDate fin);
     }
     
