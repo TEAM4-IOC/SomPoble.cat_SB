@@ -15,13 +15,14 @@ public class PanelMetricasDTO {
     private Long totalReservas;
 
     /** Ingresos totales generados en el período indicado */
-    private BigDecimal totalIngresos;
+    private Double totalIngresos;
 
     /** Número de clientes únicos en el período indicado */
     private Integer clientesUnicos;
 
     /** Lista de métricas agrupadas por servicio */
-    private List<ServicioResumenDTO> servicios;
+    //IMPORNTANTE: no se termina de implementar. Inlcuido en TEA6 como mejora de la plataforma.
+    //private List<ServicioResumenDTO> servicios;
 
     /** Lista de métricas agrupadas por mes */
     private List<MetricasMensualesDTO> mensual;
@@ -62,7 +63,7 @@ public class PanelMetricasDTO {
      * Obtiene el total de ingresos.
      * @return ingresos totales
      */
-    public BigDecimal getTotalIngresos() {
+    public Double getTotalIngresos() {
         return totalIngresos;
     }
 
@@ -70,7 +71,7 @@ public class PanelMetricasDTO {
      * Establece el total de ingresos.
      * @param totalIngresos ingresos totales
      */
-    public void setTotalIngresos(BigDecimal totalIngresos) {
+    public void setTotalIngresos(Double totalIngresos) {
         this.totalIngresos = totalIngresos;
     }
 
@@ -89,22 +90,26 @@ public class PanelMetricasDTO {
     public void setClientesUnicos(Integer clientesUnicos) {
         this.clientesUnicos = clientesUnicos;
     }
-
+    
+    //IMPORNTANTE: no se termina de implementar. Inlcuido en TEA6 como mejora de la plataforma.
     /**
      * Obtiene la lista de métricas por servicio.
      * @return lista de métricas por servicio
      */
+    /*
     public List<ServicioResumenDTO> getServicios() {
         return servicios;
     }
-
+    */
     /**
      * Establece la lista de métricas por servicio.
      * @param servicios lista de métricas por servicio
      */
+    /*
     public void setServicios(List<ServicioResumenDTO> servicios) {
         this.servicios = servicios;
     }
+    */
 
     /**
      * Obtiene la lista de métricas mensuales.
@@ -124,6 +129,7 @@ public class PanelMetricasDTO {
 
     /**
      * DTO interno que representa las métricas resumidas por servicio.
+     * IMPORNTANTE: no se termina de implementar. Inlcuido en TEA6 como mejora de la plataforma.
      */
     public static class ServicioResumenDTO {
         /** Nombre del servicio */
