@@ -142,9 +142,9 @@ public interface ReservaRepository {
     	    WHERE r.servicio.empresa.idEmpresa = :empresaId
     	      AND r.fechaReserva BETWEEN :inicio AND :fin
     	""")
-    	BigDecimal sumarIngresosPorEmpresaYFechas(@Param("empresaId") Long empresaId,
-    	                                           @Param("inicio") LocalDate inicio,
-    	                                           @Param("fin") LocalDate fin);
+    	Number sumarIngresosPorEmpresaYFechas(@Param("empresaId") Long empresaId,
+    	                                       @Param("inicio") LocalDate inicio,
+    	                                       @Param("fin") LocalDate fin);
         /**
          * Cuenta el número de clientes únicos que han realizado reservas para una empresa en un rango de fechas.
          *

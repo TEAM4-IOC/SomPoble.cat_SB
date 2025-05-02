@@ -143,8 +143,8 @@ public class PanelMetricasDTO {
          */
         public ServicioResumenDTO(String nombre, Long reservas, BigDecimal ingresos) {
             this.nombre = nombre;
-            this.reservas = reservas;
-            this.ingresos = ingresos;
+            this.reservas = reservas != null ? reservas : 0L;
+            this.ingresos = ingresos != null ? ingresos : BigDecimal.ZERO;
         }
 
         /**
@@ -217,8 +217,8 @@ public class PanelMetricasDTO {
          */
         public MetricasMensualesDTO(String mes, Long reservas, BigDecimal ingresos) {
             this.mes = mes;
-            this.reservas = reservas;
-            this.ingresos = ingresos;
+            this.reservas = reservas != null ? reservas : 0L;
+            this.ingresos = ingresos != null ? ingresos : BigDecimal.ZERO;
         }
 
         /**

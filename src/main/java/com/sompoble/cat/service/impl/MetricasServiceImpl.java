@@ -20,7 +20,7 @@ import java.util.*;
  * y empaquetarlos en un objeto {@link PanelMetricasDTO}.
  */
 @Service
-public class MetricasServiceImpl implements MetricasService{
+public class MetricasServiceImpl implements MetricasService {
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -52,8 +52,11 @@ public class MetricasServiceImpl implements MetricasService{
         // Métricas totales
         Long totalReservas = reservaRepository.contarReservasPorEmpresaYFechas(
                 empresa.getIdEmpresa(), fechaInicio, fechaFin);
-        BigDecimal totalIngresos = reservaRepository.sumarIngresosPorEmpresaYFechas(
+
+        Number ingresos = reservaRepository.sumarIngresosPorEmpresaYFechas(
                 empresa.getIdEmpresa(), fechaInicio, fechaFin);
+        BigDecimal totalIngresos = ingresos != null ? BigDecimal.valueOf(ingresos.doubleValue()) : BigDecimal.ZERO;
+
         Integer clientesUnicos = reservaRepository.contarClientesUnicos(
                 empresa.getIdEmpresa(), fechaInicio, fechaFin);
 
