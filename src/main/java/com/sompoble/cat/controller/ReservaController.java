@@ -295,7 +295,7 @@ public class ReservaController {
         }
 
         // 5. Respuesta exitosa
-        return ResponseEntity.created(null).build();
+        return ResponseEntity.ok("Reserva con ID " + reserva.getIdReserva() + " creada correctamente");
     }
 
     /**
@@ -534,7 +534,7 @@ public class ReservaController {
                         .body("Error al enviar correo o registrar notificación: " + e.getMessage());
             }
 
-            return ResponseEntity.ok("Reserva con ID " + id + " actualizada correctamente");
+            return ResponseEntity.ok("Reserva con ID " + id + " actualizada correctamente");////**************************************//
         } catch (ResourceNotFoundException | BadRequestException e) {
             throw e;
         } catch (Exception e) {
