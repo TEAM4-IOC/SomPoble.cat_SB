@@ -37,7 +37,7 @@ public interface EmpresarioService {
      * @param empresario el objeto {@link EmpresarioDTO} con la información
      * actualizada.
      */
-    void updateEmpresario(EmpresarioDTO empresario);
+    void updateEmpresario(Empresario empresario);
 
     /**
      * Agrega un nuevo empresario a la base de datos.

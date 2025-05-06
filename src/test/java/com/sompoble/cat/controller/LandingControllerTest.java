@@ -3,7 +3,6 @@ package com.sompoble.cat.controller;
 import com.sompoble.cat.domain.Servicio;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.dto.LandingEmpresaDTO;
-import com.sompoble.cat.dto.LandingServicioDTO;
 import com.sompoble.cat.exception.ResourceNotFoundException;
 import com.sompoble.cat.repository.ServicioRepository;
 import com.sompoble.cat.service.EmpresaService;
@@ -15,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -75,7 +73,6 @@ public class LandingControllerTest {
      */
     @Test
     public void testGetLandingData_Success() {
-        // Preparar datos de prueba para empresas
         EmpresaDTO empresa1 = new EmpresaDTO();
         empresa1.setIdEmpresa(1L);
         empresa1.setNombre("Empresa Test 1");
@@ -96,7 +93,6 @@ public class LandingControllerTest {
 
         List<EmpresaDTO> empresas = Arrays.asList(empresa1, empresa2);
 
-        // Preparar datos de prueba para servicios
         Servicio servicio1 = new Servicio();
         servicio1.setIdServicio(1L);
         servicio1.setNombre("Servicio Test 1");
@@ -105,22 +101,18 @@ public class LandingControllerTest {
         servicio2.setIdServicio(2L);
         servicio2.setNombre("Servicio Test 2");
 
-        // Configurar comportamiento de los mocks
         when(empresaService.findAll()).thenReturn(empresas);
         when(servicioRepository.findAllByEmpresaId(1L)).thenReturn(Arrays.asList(servicio1));
         when(servicioRepository.findAllByEmpresaId(2L)).thenReturn(Arrays.asList(servicio2));
 
-        // Ejecutar método a probar
         ResponseEntity<List<LandingEmpresaDTO>> response = landingController.getLandingData();
 
-        // Verificar resultados
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         List<LandingEmpresaDTO> responseBody = response.getBody();
         assertNotNull(responseBody);
         assertEquals(2, responseBody.size());
 
-        // Verificar datos de la primera empresa
         LandingEmpresaDTO landingEmpresa1 = responseBody.get(0);
         assertEquals("Empresa Test 1", landingEmpresa1.getNombre());
         assertEquals("Dirección Test 1", landingEmpresa1.getDireccion());
@@ -131,7 +123,6 @@ public class LandingControllerTest {
         assertEquals(1, landingEmpresa1.getServicios().size());
         assertEquals("Servicio Test 1", landingEmpresa1.getServicios().get(0).getNombre());
 
-        // Verificar datos de la segunda empresa
         LandingEmpresaDTO landingEmpresa2 = responseBody.get(1);
         assertEquals("Empresa Test 2", landingEmpresa2.getNombre());
         assertEquals("Dirección Test 2", landingEmpresa2.getDireccion());
@@ -142,7 +133,6 @@ public class LandingControllerTest {
         assertEquals(1, landingEmpresa2.getServicios().size());
         assertEquals("Servicio Test 2", landingEmpresa2.getServicios().get(0).getNombre());
 
-        // Verificar que se llamaron los métodos esperados
         verify(empresaService, times(1)).findAll();
         verify(servicioRepository, times(1)).findAllByEmpresaId(1L);
         verify(servicioRepository, times(1)).findAllByEmpresaId(2L);
@@ -157,7 +147,6 @@ public class LandingControllerTest {
      */
     @Test
     public void testGetLandingData_WithEmptyServices() {
-        // Preparar datos de prueba para empresas
         EmpresaDTO empresa = new EmpresaDTO();
         empresa.setIdEmpresa(1L);
         empresa.setNombre("Empresa Test");
@@ -169,21 +158,17 @@ public class LandingControllerTest {
 
         List<EmpresaDTO> empresas = Collections.singletonList(empresa);
 
-        // Configurar comportamiento de los mocks
         when(empresaService.findAll()).thenReturn(empresas);
         when(servicioRepository.findAllByEmpresaId(1L)).thenReturn(Collections.emptyList());
 
-        // Ejecutar método a probar
         ResponseEntity<List<LandingEmpresaDTO>> response = landingController.getLandingData();
 
-        // Verificar resultados
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         List<LandingEmpresaDTO> responseBody = response.getBody();
         assertNotNull(responseBody);
         assertEquals(1, responseBody.size());
 
-        // Verificar datos de la empresa
         LandingEmpresaDTO landingEmpresa = responseBody.get(0);
         assertEquals("Empresa Test", landingEmpresa.getNombre());
         assertEquals("Dirección Test", landingEmpresa.getDireccion());
@@ -194,7 +179,6 @@ public class LandingControllerTest {
         assertNotNull(landingEmpresa.getServicios());
         assertTrue(landingEmpresa.getServicios().isEmpty());
 
-        // Verificar que se llamaron los métodos esperados
         verify(empresaService, times(1)).findAll();
         verify(servicioRepository, times(1)).findAllByEmpresaId(1L);
     }
@@ -211,17 +195,13 @@ public class LandingControllerTest {
         // Configurar comportamiento del mock para devolver lista vacía
         when(empresaService.findAll()).thenReturn(Collections.emptyList());
 
-        // Verificar que se lanza la excepción esperada
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             landingController.getLandingData();
         });
 
-        // Verificar el mensaje de la excepción
         assertEquals("No se encontraron empresas en la base de datos", exception.getMessage());
 
-        // Verificar que se llamó al método findAll
         verify(empresaService, times(1)).findAll();
-        // Verificar que nunca se llamó al método findAllByEmpresaId
         verify(servicioRepository, never()).findAllByEmpresaId(anyLong());
     }
 
@@ -237,17 +217,13 @@ public class LandingControllerTest {
         // Configurar comportamiento del mock para lanzar una excepción
         when(empresaService.findAll()).thenThrow(new RuntimeException("Error en el servicio"));
 
-        // Verificar que se lanza la excepción esperada
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             landingController.getLandingData();
         });
 
-        // Verificar el mensaje de la excepción
         assertEquals("Error en el servicio", exception.getMessage());
 
-        // Verificar que se llamó al método findAll
         verify(empresaService, times(1)).findAll();
-        // Verificar que nunca se llamó al método findAllByEmpresaId
         verify(servicioRepository, never()).findAllByEmpresaId(anyLong());
     }
 }

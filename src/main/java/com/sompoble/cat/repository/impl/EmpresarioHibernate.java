@@ -48,7 +48,7 @@ public class EmpresarioHibernate implements EmpresarioRepository {
      * {@inheritDoc}
      */
     @Override
-    public void updateEmpresario(EmpresarioDTO empresario) {
+    public void updateEmpresario(Empresario empresario) {
         entityManager.merge(empresario);
     }
 

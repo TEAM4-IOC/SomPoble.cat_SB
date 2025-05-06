@@ -86,7 +86,7 @@ public class EmpresarioController {
     @PutMapping("/{dni}")
     public ResponseEntity<?> update(@PathVariable String dni, @RequestBody Map<String, Object> updates) {
         try {
-            EmpresarioDTO existingEmpresario = empresarioService.findByDni(dni);
+            Empresario existingEmpresario = empresarioService.findEmpresarioByDNI(dni);
             updates.forEach((key, value) -> {
                 if (value != null) {
                     switch (key) {

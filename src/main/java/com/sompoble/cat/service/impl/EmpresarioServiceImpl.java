@@ -45,7 +45,7 @@ public class EmpresarioServiceImpl implements EmpresarioService {
      * {@inheritDoc}
      */
     @Override
-    public void updateEmpresario(EmpresarioDTO empresario) {
+    public void updateEmpresario(Empresario empresario) {
         empresarioRepository.updateEmpresario(empresario);
     }
 
