@@ -141,4 +141,14 @@ public class ReservaServiceImpl implements ReservaService {
     public int countReservasByServicioIdAndFecha(Long servicioId, String fechaReserva) {
         return reservaRepository.countByServicioIdAndFechaReserva(servicioId, fechaReserva);
     }
+
+    /**
+     * Elimina todas las reservas asociadas a un servicio mediante su ID.
+     *
+     * @param servicioId el identificador del servicio.
+     */
+    @Override
+    public void deleteByServicioId(Long servicioId) {
+        reservaRepository.deleteByServicioId(servicioId);
+    }
 }

@@ -106,6 +106,13 @@ public interface ReservaRepository {
     int countByServicioIdAndFechaReserva(Long servicioId, String fechaReserva);
 
     /**
+     * Elimina todas las reservas asociadas a un servicio mediante su ID.
+     *
+     * @param servicioId el identificador del servicio.
+     */
+    void deleteByServicioId(Long servicioId);
+
+    /**
      * Obtiene las reservas dadas de alta en las últimas 24 horas.
      */
     @Query("SELECT r FROM Reserva r WHERE r.fechaAlta BETWEEN CURRENT_TIMESTAMP AND CURRENT_TIMESTAMP + 1")

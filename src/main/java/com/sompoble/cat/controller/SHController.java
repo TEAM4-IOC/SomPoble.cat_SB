@@ -6,6 +6,7 @@ import com.sompoble.cat.dto.ServicioHorarioDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
 import com.sompoble.cat.repository.HorarioRepository;
 import com.sompoble.cat.repository.ServicioRepository;
+import com.sompoble.cat.service.ReservaService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,11 @@ public class SHController {
      */
     @Autowired
     private EmpresaRepository empresaRepository;
+    /**
+     * Repositorio encargado de operaciones CRUD sobre las empresas o autónomos.
+     */
+    @Autowired
+    private ReservaService reservaService;
 
     /**
      * Crea un nuevo servicio y su horario asociado utilizando el identificador
@@ -204,19 +210,17 @@ public class SHController {
             @PathVariable Long idServicio,
             @RequestParam String identificadorFiscal) {
 
-        // Verificar existencia de la empresa
         Empresa empresa = Optional.ofNullable(empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal))
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
 
-        // Buscar el servicio específico por ID y verificar que pertenezca a la empresa
         Servicio servicio = servicioRepository.findByIdAndEmpresaId(idServicio, empresa.getIdEmpresa())
                 .orElseThrow(() -> new RuntimeException("Servicio no encontrado para la empresa"));
 
-        // Buscar el horario asociado al servicio
         Horario horario = horarioRepository.findByServicio_IdServicio(idServicio)
                 .orElseThrow(() -> new RuntimeException("Horario no encontrado para el servicio"));
-
-        // Eliminar horario y servicio
+        
+        reservaService.deleteByServicioId(idServicio);
+        
         horarioRepository.delete(horario.getIdHorario());
         servicioRepository.deleteById(servicio.getIdServicio());
 
