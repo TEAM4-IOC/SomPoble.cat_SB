@@ -207,6 +207,26 @@ public class ReservaHibernate implements ReservaRepository {
     }
 
     /**
+     * Elimina todas las reservas asociadas a un servicio mediante su ID.
+     *
+     * @param servicioId el identificador del servicio.
+     */
+    @Override
+    public void deleteByServicioId(Long servicioId) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Reserva> cq = cb.createQuery(Reserva.class);
+        Root<Reserva> root = cq.from(Reserva.class);
+
+        Predicate servicioIdPredicate = cb.equal(root.get("servicio").get("idServicio"), servicioId);
+        cq.where(servicioIdPredicate);
+
+        List<Reserva> reservas = entityManager.createQuery(cq).getResultList();
+        for (Reserva reserva : reservas) {
+            entityManager.remove(reserva);
+        }
+    }
+
+    /**
      * Convierte una entidad Reserva a un DTO ReservaDTO.
      *
      * @param reserva la entidad Reserva.

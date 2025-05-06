@@ -95,4 +95,11 @@ public interface ReservaService {
      * @return el número de reservas existentes para ese servicio en esa fecha.
      */
     int countReservasByServicioIdAndFecha(Long servicioId, String fechaReserva);
+
+    /**
+     * Elimina todas las reservas asociadas a un servicio mediante su ID.
+     *
+     * @param servicioId el identificador del servicio.
+     */
+    void deleteByServicioId(Long servicioId);
 }
