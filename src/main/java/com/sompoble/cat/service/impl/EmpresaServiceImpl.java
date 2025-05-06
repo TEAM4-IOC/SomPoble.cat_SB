@@ -1,14 +1,20 @@
 package com.sompoble.cat.service.impl;
 
 import com.sompoble.cat.domain.Empresa;
+import com.sompoble.cat.domain.Horario;
+import com.sompoble.cat.domain.Servicio;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.repository.EmpresaRepository;
 import com.sompoble.cat.service.CloudinaryService;
 import com.sompoble.cat.service.EmpresaService;
+import com.sompoble.cat.service.HorarioService;
+import com.sompoble.cat.service.ReservaService;
+import com.sompoble.cat.service.ServicioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -30,6 +36,16 @@ public class EmpresaServiceImpl implements EmpresaService {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Autowired
+    @Lazy
+    private ReservaService reservaService;
+
+    @Autowired
+    private ServicioService servicioService;
+
+    @Autowired
+    private HorarioService horarioService;
 
     /**
      * {@inheritDoc}
@@ -96,10 +112,26 @@ public class EmpresaServiceImpl implements EmpresaService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc} Elimina una empresa por su identificador fiscal, así como
+     * todos sus horarios, servicios y reservas asociados.
      */
     @Override
     public void deleteByIdentificadorFiscal(String identificadorFiscal) {
+        reservaService.deleteByEmpresaIdentificadorFiscal(identificadorFiscal);
+
+        Empresa empresa = empresaRepository.findByIdentificadorFiscalFull(identificadorFiscal);
+        Long idEmpresa = empresa.getIdEmpresa();
+
+        List<Horario> horarios = horarioService.findByEmpresa_IdEmpresa(idEmpresa);
+        for (Horario horario : horarios) {
+            horarioService.deleteById(horario.getIdHorario());
+        }
+        
+        List<Servicio> servicios = servicioService.obtenerPorEmpresaId(idEmpresa);
+        for (Servicio servicio : servicios) {
+            servicioService.eliminarPorId(servicio.getIdServicio());
+        }
+
         empresaRepository.deleteByIdentificadorFiscal(identificadorFiscal);
     }
 
