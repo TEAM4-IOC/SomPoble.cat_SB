@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -27,6 +29,14 @@ import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * Clase de test para probar la funcionalidad del controlador EmpresaController.
+ * 
+ * Estos tests verifican que los endpoints del controlador manejen correctamente 
+ * diferentes escenarios, incluyendo operaciones CRUD exitosas y manejo de errores.
+ * La configuración usa MockMvc para simular peticiones HTTP sin necesidad de un 
+ * servidor web real.
+ */
 @ExtendWith(MockitoExtension.class)
 public class EmpresaControllerTest {
 
@@ -134,6 +144,13 @@ public class EmpresaControllerTest {
         );
     }
 
+    /**
+     * Prueba para verificar que se obtienen correctamente todas las empresas.
+     * Verifica que el endpoint GET /api/empresas devuelva una lista de empresas
+     * con sus respectivos DNIs de empresarios.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testGetAllEmpresas() throws Exception {
         List<EmpresaDTO> empresasDTO = List.of(empresaDTO1, empresaDTO2);
@@ -151,6 +168,13 @@ public class EmpresaControllerTest {
         verify(empresaService, times(1)).findAll();
     }
 
+    /**
+     * Prueba para verificar que se obtiene correctamente una empresa por su identificador fiscal.
+     * Verifica que el endpoint GET /api/empresas/{identificadorFiscal} devuelva los datos de la empresa
+     * y el DNI del empresario asociado.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testGetEmpresaByIdentificadorFiscal() throws Exception {
         when(empresaService.findByIdentificadorFiscal("A12345678")).thenReturn(empresaDTO1);
@@ -164,6 +188,13 @@ public class EmpresaControllerTest {
         verify(empresaService, times(1)).findByIdentificadorFiscal("A12345678");
     }
     
+    /**
+     * Prueba para verificar el comportamiento cuando se intenta obtener una empresa que no existe.
+     * Verifica que se devuelva un código de estado 404 (Not Found) cuando el identificador fiscal
+     * no corresponde a ninguna empresa registrada.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testGetEmpresaByIdentificadorFiscalNotFound() throws Exception {
         when(empresaService.findByIdentificadorFiscal("A12345678")).thenThrow(new RuntimeException("Empresa no encontrada"));
@@ -174,6 +205,13 @@ public class EmpresaControllerTest {
         verify(empresaService, times(1)).findByIdentificadorFiscal("A12345678");
     }
     
+    /**
+     * Prueba para verificar la creación exitosa de una empresa.
+     * Verifica que el endpoint POST /api/empresas procese correctamente los datos
+     * en formato multipart/form-data y cree una nueva empresa asociada a un empresario existente.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateEmpresa() throws Exception {
         String dni = "12345678X";
@@ -185,18 +223,29 @@ public class EmpresaControllerTest {
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
         
-        Map<String, Object> request = new HashMap<>();
-        request.put("empresa", empresaData);
-        request.put("dni", dni);
+        Map<String, Object> dniMap = new HashMap<>();
+        dniMap.put("dni", dni);
 
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(false);
         when(empresarioService.existsByDni(dni)).thenReturn(true);
         when(empresarioService.findEmpresarioByDNI(dni)).thenReturn(empresario1);
         when(empresarioService.findByDni(dni)).thenReturn(empresarioDTO1);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(request)))
+        MockMultipartFile empresaJson = new MockMultipartFile(
+                "empresa", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(empresaData).getBytes());
+        
+        MockMultipartFile dniJson = new MockMultipartFile(
+                "dni", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(dniMap).getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/empresas")
+                .file(empresaJson)
+                .file(dniJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
         verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
@@ -206,6 +255,13 @@ public class EmpresaControllerTest {
         verify(empresaService, times(1)).addEmpresa(any(Empresa.class));
     }
     
+    /**
+     * Prueba para verificar el comportamiento cuando se intenta crear una empresa para un 
+     * empresario que ya tiene una empresa asignada.
+     * Verifica que se devuelva un código de estado 400 (Bad Request) con un mensaje de error apropiado.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateEmpresaWithExistingEmpresa() throws Exception {
         String dni = "12345678X";
@@ -217,9 +273,8 @@ public class EmpresaControllerTest {
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
         
-        Map<String, Object> request = new HashMap<>();
-        request.put("empresa", empresaData);
-        request.put("dni", dni);
+        Map<String, Object> dniMap = new HashMap<>();
+        dniMap.put("dni", dni);
 
         List<EmpresaDTO> empresasAsignadas = new ArrayList<>();
         empresasAsignadas.add(empresaDTO1);
@@ -241,9 +296,21 @@ public class EmpresaControllerTest {
         when(empresarioService.findEmpresarioByDNI(dni)).thenReturn(empresario1);
         when(empresarioService.findByDni(dni)).thenReturn(empresarioConEmpresa);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(request)))
+        MockMultipartFile empresaJson = new MockMultipartFile(
+                "empresa", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(empresaData).getBytes());
+        
+        MockMultipartFile dniJson = new MockMultipartFile(
+                "dni", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(dniMap).getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/empresas")
+                .file(empresaJson)
+                .file(dniJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("El empresario con DNI 12345678X ya tiene una empresa/autónomo asignada"));
 
@@ -254,6 +321,13 @@ public class EmpresaControllerTest {
         verify(empresaService, never()).addEmpresa(any(Empresa.class));
     }
     
+    /**
+     * Prueba para verificar el comportamiento cuando se intenta crear una empresa con un 
+     * identificador fiscal que ya está registrado.
+     * Verifica que se devuelva un código de estado 400 (Bad Request) con un mensaje de error apropiado.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateEmpresaWithExistingIdentificadorFiscal() throws Exception {
         Map<String, Object> empresaData = new HashMap<>();
@@ -263,15 +337,26 @@ public class EmpresaControllerTest {
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
         
-        Map<String, Object> request = new HashMap<>();
-        request.put("empresa", empresaData);
-        request.put("dni", "12345678X");
+        Map<String, Object> dniMap = new HashMap<>();
+        dniMap.put("dni", "12345678X");
 
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(true);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(request)))
+        MockMultipartFile empresaJson = new MockMultipartFile(
+                "empresa", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(empresaData).getBytes());
+        
+        MockMultipartFile dniJson = new MockMultipartFile(
+                "dni", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(dniMap).getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/empresas")
+                .file(empresaJson)
+                .file(dniJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Empresa con identificador fiscal A12345678 ya existe"));
 
@@ -279,6 +364,13 @@ public class EmpresaControllerTest {
         verify(empresarioService, never()).existsByDni(anyString());
     }
     
+    /**
+     * Prueba para verificar el comportamiento cuando se intenta crear una empresa sin proporcionar 
+     * el DNI del empresario.
+     * Verifica que se devuelva un código de estado 400 (Bad Request) con un mensaje de error apropiado.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateEmpresaWithoutDni() throws Exception {
         Map<String, Object> empresaData = new HashMap<>();
@@ -288,20 +380,39 @@ public class EmpresaControllerTest {
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
         
-        Map<String, Object> request = new HashMap<>();
-        request.put("empresa", empresaData);
+        Map<String, Object> dniMap = new HashMap<>();
+        // No ponemos el DNI en el mapa
 
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(false);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(request)))
+        MockMultipartFile empresaJson = new MockMultipartFile(
+                "empresa", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(empresaData).getBytes());
+        
+        MockMultipartFile dniJson = new MockMultipartFile(
+                "dni", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(dniMap).getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/empresas")
+                .file(empresaJson)
+                .file(dniJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No se ha informado el DNI del empresario"));
 
         verify(empresaService, times(1)).existsByIdentificadorFiscal("A12345678");
     }
     
+    /**
+     * Prueba para verificar el comportamiento cuando se intenta crear una empresa asociada a un 
+     * empresario que no existe en el sistema.
+     * Verifica que se devuelva un código de estado 400 (Bad Request) con un mensaje de error apropiado.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateEmpresaWithNonExistentEmpresario() throws Exception {
         String dni = "12345678X";
@@ -312,16 +423,27 @@ public class EmpresaControllerTest {
         empresaData.put("email", "empresa1@empresa.com");
         empresaData.put("telefono", "650180800");
         
-        Map<String, Object> request = new HashMap<>();
-        request.put("empresa", empresaData);
-        request.put("dni", dni);
+        Map<String, Object> dniMap = new HashMap<>();
+        dniMap.put("dni", dni);
 
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(false);
         when(empresarioService.existsByDni(dni)).thenReturn(false);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/empresas")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(request)))
+        MockMultipartFile empresaJson = new MockMultipartFile(
+                "empresa", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(empresaData).getBytes());
+        
+        MockMultipartFile dniJson = new MockMultipartFile(
+                "dni", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(dniMap).getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/empresas")
+                .file(empresaJson)
+                .file(dniJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No existe un empresario con DNI " + dni));
 
@@ -329,6 +451,13 @@ public class EmpresaControllerTest {
         verify(empresarioService, times(1)).existsByDni(dni);
     }
 
+    /**
+     * Prueba para verificar la actualización exitosa de una empresa existente.
+     * Verifica que el endpoint PUT /api/empresas/{identificadorFiscal} actualice correctamente 
+     * los datos de la empresa y devuelva un mensaje de confirmación.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testUpdateEmpresa() throws Exception {
         Map<String, Object> updatedFields = new HashMap<>();
@@ -339,9 +468,18 @@ public class EmpresaControllerTest {
 
         when(empresaService.findByIdentificadorFiscalFull("A12345678")).thenReturn(empresa1);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/empresas/A12345678")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(updatedFields)))
+        MockMultipartFile empresaJson = new MockMultipartFile(
+                "empresa", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(updatedFields).getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/empresas/A12345678")
+                .file(empresaJson)
+                .with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Empresa o autónomo con identificador fiscal A12345678 actualizada correctamente"));
 
@@ -349,6 +487,13 @@ public class EmpresaControllerTest {
         verify(empresaService, times(1)).updateEmpresa(empresa1);
     }
 
+    /**
+     * Prueba para verificar el comportamiento cuando se intenta actualizar una empresa que no existe.
+     * Verifica que se devuelva un código de estado 404 (Not Found) cuando el identificador fiscal
+     * no corresponde a ninguna empresa registrada.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testUpdateEmpresaNotFound() throws Exception {
         Map<String, Object> updatedFields = new HashMap<>();
@@ -359,15 +504,31 @@ public class EmpresaControllerTest {
 
         when(empresaService.findByIdentificadorFiscalFull("A12345678")).thenThrow(new RuntimeException("Empresa no encontrada"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/empresas/A12345678")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(updatedFields)))
+        MockMultipartFile empresaJson = new MockMultipartFile(
+                "empresa", 
+                "", 
+                "application/json", 
+                objectMapper.writeValueAsString(updatedFields).getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/empresas/A12345678")
+                .file(empresaJson)
+                .with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
         verify(empresaService, times(1)).findByIdentificadorFiscalFull("A12345678");
         verify(empresaService, never()).updateEmpresa(any(Empresa.class));
     }
 
+    /**
+     * Prueba para verificar la eliminación exitosa de una empresa.
+     * Verifica que el endpoint DELETE /api/empresas/{identificadorFiscal} elimine correctamente 
+     * la empresa y devuelva un mensaje de confirmación.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testDeleteEmpresa() throws Exception {
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(true);
@@ -381,6 +542,13 @@ public class EmpresaControllerTest {
         verify(empresaService, times(1)).deleteByIdentificadorFiscal("A12345678");
     }
 
+    /**
+     * Prueba para verificar el comportamiento cuando se intenta eliminar una empresa que no existe.
+     * Verifica que se devuelva un código de estado 404 (Not Found) cuando el identificador fiscal
+     * no corresponde a ninguna empresa registrada.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testDeleteEmpresaNotFound() throws Exception {
         when(empresaService.existsByIdentificadorFiscal("A12345678")).thenReturn(false);
