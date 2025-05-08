@@ -43,14 +43,14 @@ public class NotificationControllerTest {
         String dni = "12345678A";
         ClienteDTO cliente = Mockito.mock(ClienteDTO.class);
         Notificacion notificacion = Mockito.mock(Notificacion.class);
-        Mockito.when(notificacion.getIdNotificacion()).thenReturn(1L); // Asigna el valor 1L
+        Mockito.when(notificacion.getIdNotificacion()).thenReturn(1L);
 
         Mockito.when(clienteService.findByDni(dni)).thenReturn(cliente);
         Mockito.when(notificationService.findByClienteDni(dni)).thenReturn(Arrays.asList(notificacion));
 
         mockMvc.perform(get("/api/notifications/clientes/{dni}", dni))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$[0].idNotificacion").value(1L)); // Cambiado a "idNotificacion"
+               .andExpect(jsonPath("$[0].idNotificacion").value(1L));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class NotificationControllerTest {
         mockMvc.perform(get("/api/notifications/obtener")
                 .param("identificador", identificador))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].idNotificacion").value(2L));;
+                .andExpect(jsonPath("$[0].idNotificacion").value(2L));
     }
 
     @Test
@@ -102,15 +102,16 @@ public class NotificationControllerTest {
     public void testGetNotificationById() throws Exception {
         Long id = 5L;
         Notificacion notificacion = Mockito.mock(Notificacion.class);
-        Mockito.when(notificacion.getIdNotificacion()).thenReturn(id); // Asegura que el valor sea 5L
+        Mockito.when(notificacion.getIdNotificacion()).thenReturn(id);
 
         Mockito.when(notificationService.findNotificationById(id))
                .thenReturn(notificacion);
 
         mockMvc.perform(get("/api/notifications/{id}", id))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$.idNotificacion").value(5L)); // Cambiado a "idNotificacion"
+               .andExpect(jsonPath("$.idNotificacion").value(5L));
     }
+
     @Test
     @WithMockUser(username = "user", roles = {"ADMIN"})
     public void testDeleteNotification() throws Exception {

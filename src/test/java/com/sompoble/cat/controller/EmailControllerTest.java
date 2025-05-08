@@ -1,28 +1,37 @@
 package com.sompoble.cat.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Notificacion;
 import com.sompoble.cat.domain.Reserva;
-import com.sompoble.cat.dto.ClienteDTO;
 import com.sompoble.cat.dto.EmailDTO;
-import com.sompoble.cat.service.ClienteService;
+import com.sompoble.cat.exception.GlobalExceptionHandler;
 import com.sompoble.cat.service.EmailService;
 import com.sompoble.cat.service.NotificationService;
 import com.sompoble.cat.service.ReminderService;
 import com.sompoble.cat.service.ReservationService;
-import jakarta.mail.MessagingException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.ResponseEntity;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.lang.reflect.Field;
+import jakarta.mail.MessagingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 public class EmailControllerTest {
 
     @InjectMocks
@@ -39,60 +48,130 @@ public class EmailControllerTest {
 
     @Mock
     private ReminderService reminderService;
-    
-    @Mock
-    private ClienteService clienteService;
-    
-    
+
+    private MockMvc mockMvc;
+    private ObjectMapper objectMapper;
+    private EmailDTO emailDTO;
+    private Reserva reserva;
+    private Cliente cliente;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(emailController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+        objectMapper = new ObjectMapper();
+
+        emailDTO = new EmailDTO();
+        emailDTO.setDestinatario("test@example.com");
+        emailDTO.setAsunto("Asunto de prueba");
+        emailDTO.setAsunto("Contenido del correo de prueba");
+
+        cliente = new Cliente();
+        cliente.setDni("12345678A");
+        cliente.setNombre("Juan");
+        cliente.setApellidos("Pérez");
+        cliente.setEmail("juan@example.com");
+        cliente.setTelefono("678901234");
+        cliente.setPass("password123");
+
+        reserva = new Reserva();
+        reserva.setCliente(cliente);
+        try {
+            java.lang.reflect.Field field = reserva.getClass().getDeclaredField("idReserva");
+            field.setAccessible(true);
+            field.set(reserva, 1L);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-  
-
     @Test
-    void testSendCustomEmail_messagingException() throws MessagingException {
-        EmailDTO emailDTO = new EmailDTO();
-        emailDTO.setDestinatario("error@example.com");
+    public void testSendCustomEmailWithException() throws Exception {
+        doThrow(new MessagingException("Error al enviar correo")).when(emailService).sendMail(any(EmailDTO.class));
 
-        doThrow(MessagingException.class).when(emailService).sendMail(emailDTO);
+        mockMvc.perform(post("/api/email/send")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(emailDTO)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error al enviar correo personalizado"));
 
-        ResponseEntity<String> response = emailController.sendCustomEmail(emailDTO);
-
-        assertEquals(500, response.getStatusCodeValue());
-        assertEquals("Error al enviar correo personalizado", response.getBody());
+        verify(emailService, times(1)).sendMail(any(EmailDTO.class));
+        verify(notificationService, never()).saveNotification(any(Notificacion.class));
+        verify(emailService, never()).sendNotificationEmail(any(Notificacion.class));
     }
 
-    
     @Test
-    void testNotifyReservationChange_notFound() {
+    public void testNotifyReservationChange() throws Exception {
+        when(reservationService.getReservationById(1L)).thenReturn(reserva);
+        doNothing().when(notificationService).saveNotification(any(Notificacion.class));
+        doNothing().when(emailService).sendNotificationEmail(any(Notificacion.class));
+
+        mockMvc.perform(post("/api/email/notify-reservation-change/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Notificación de cambio de reserva enviada"));
+
+        verify(reservationService, times(1)).getReservationById(1L);
+        verify(notificationService, times(1)).saveNotification(any(Notificacion.class));
+        verify(emailService, times(1)).sendNotificationEmail(any(Notificacion.class));
+    }
+
+    @Test
+    public void testNotifyReservationChangeReservaNoEncontrada() throws Exception {
         when(reservationService.getReservationById(999L)).thenReturn(null);
 
-        ResponseEntity<String> response = emailController.notifyReservationChange(999L);
+        mockMvc.perform(post("/api/email/notify-reservation-change/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Reserva no encontrada"));
 
-        assertEquals(404, response.getStatusCodeValue());
-        assertEquals("Reserva no encontrada", response.getBody());
+        verify(reservationService, times(1)).getReservationById(999L);
+        verify(notificationService, never()).saveNotification(any(Notificacion.class));
+        verify(emailService, never()).sendNotificationEmail(any(Notificacion.class));
     }
 
     @Test
-    void testSendAutomaticReminders_success() {
-        ResponseEntity<String> response = emailController.sendAutomaticReminders();
+    public void testNotifyReservationChangeWithException() throws Exception {
+        when(reservationService.getReservationById(1L)).thenThrow(new RuntimeException("Error al obtener reserva"));
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Recordatorios enviados exitosamente", response.getBody());
-        verify(reminderService).processReminders();
+        mockMvc.perform(post("/api/email/notify-reservation-change/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error al notificar cambio de reserva"));
+
+        verify(reservationService, times(1)).getReservationById(1L);
+        verify(notificationService, never()).saveNotification(any(Notificacion.class));
+        verify(emailService, never()).sendNotificationEmail(any(Notificacion.class));
     }
 
-  
+    @Test
+    public void testSendAutomaticReminders() throws Exception {
+        doNothing().when(reminderService).processReminders();
+
+        mockMvc.perform(post("/api/email/send-automatic-reminders"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Recordatorios enviados exitosamente"));
+
+        verify(reminderService, times(1)).processReminders();
+    }
 
     @Test
-    void testTestPlainMail_success() {
-        ResponseEntity<String> response = emailController.testPlainMail();
+    public void testSendAutomaticRemindersWithException() throws Exception {
+        doThrow(new RuntimeException("Error al procesar recordatorios")).when(reminderService).processReminders();
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Correo de prueba enviado", response.getBody());
-        verify(emailService).sendPlainTextTestEmail();
+        mockMvc.perform(post("/api/email/send-automatic-reminders"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error al enviar recordatorios"));
+
+        verify(reminderService, times(1)).processReminders();
+    }
+
+    @Test
+    public void testTestPlainMail() throws Exception {
+        doNothing().when(emailService).sendPlainTextTestEmail();
+
+        mockMvc.perform(post("/api/email/test-plain"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Correo de prueba enviado"));
+
+        verify(emailService, times(1)).sendPlainTextTestEmail();
     }
 }

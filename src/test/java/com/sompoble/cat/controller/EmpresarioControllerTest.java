@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,18 @@ public class EmpresarioControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(2))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].dni").value("12345678A"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].dni").value("87654321B"));
+
+        verify(empresarioService, times(1)).findAll();
+    }
+    
+    @Test
+    public void testGetAllEmpresariosEmpty() throws Exception {
+        // Test para el caso cuando no hay empresarios (lista vacía)
+        when(empresarioService.findAll()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/empresarios"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No se encontraron empresarios en la base de datos"));
 
         verify(empresarioService, times(1)).findAll();
     }
@@ -194,25 +207,75 @@ public class EmpresarioControllerTest {
         verify(empresarioService, never()).addEmpresario(any(Empresario.class));
     }
 
-    /*@Test
+    @Test
     public void testUpdateEmpresario() throws Exception {
+        // Test para el método update utilizando diferentes tipos de campos
         Map<String, Object> updates = new HashMap<>();
         updates.put("nombre", "Juan Updated");
         updates.put("apellidos", "Perez Updated");
         updates.put("email", "juan.updated@ejemplo.com");
         updates.put("telefono", "916775589");
         updates.put("pass", "pass1");
+        updates.put("dni", "12345678Z"); // Probar actualización del DNI también
 
-        when(empresarioService.findByDni("12345678A")).thenReturn(empresarioDTO1);
-        doNothing().when(empresarioService).updateEmpresario(any(EmpresarioDTO.class));
+        when(empresarioService.findEmpresarioByDNI("12345678A")).thenReturn(empresario1);
+        doNothing().when(empresarioService).updateEmpresario(any(Empresario.class));
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/empresarios/12345678A")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updates)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Empresario con DNI 12345678A actualizado correctamente"));
 
-        verify(empresarioService, times(1)).updateEmpresario(any(EmpresarioDTO.class));
+        // Verificar que el método updateEmpresario fue llamado con el empresario actualizado
+        verify(empresarioService, times(1)).findEmpresarioByDNI("12345678A");
+        verify(empresarioService, times(1)).updateEmpresario(any(Empresario.class));
+            }
+
+    @Test
+    public void testUpdateEmpresarioWithNullValues() throws Exception {
+        // Test para verificar que los valores nulos no actualizan los campos
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("nombre", "Juan Updated");
+        updates.put("apellidos", null); // Valor nulo, no debería actualizar
+        updates.put("email", "juan.updated@ejemplo.com");
+
+        when(empresarioService.findEmpresarioByDNI("12345678A")).thenReturn(empresario1);
+        doNothing().when(empresarioService).updateEmpresario(any(Empresario.class));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/empresarios/12345678A")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updates)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Verificar que los apellidos no fueron actualizados porque el valor era nulo
+        verify(empresarioService).updateEmpresario(argThat(empresario -> 
+            empresario.getNombre().equals("Juan Updated") &&
+            empresario.getApellidos().equals("Perez Garcia") && // Mantiene el valor original
+            empresario.getEmail().equals("juan.updated@ejemplo.com")
+        ));
+    }
+
+    @Test
+    public void testUpdateEmpresarioWithInvalidField() throws Exception {
+        // Test para verificar que los campos no reconocidos son ignorados
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("nombre", "Juan Updated");
+        updates.put("campo_invalido", "Este campo debe ser ignorado");
+
+        when(empresarioService.findEmpresarioByDNI("12345678A")).thenReturn(empresario1);
+        doNothing().when(empresarioService).updateEmpresario(any(Empresario.class));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/empresarios/12345678A")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updates)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Verificar que solo se actualizó el nombre y se ignoró el campo inválido
+        verify(empresarioService).updateEmpresario(argThat(empresario -> 
+            empresario.getNombre().equals("Juan Updated") &&
+            empresario.getApellidos().equals("Perez Garcia") // Los demás campos mantienen sus valores originales
+        ));
     }
 
     @Test
@@ -221,16 +284,17 @@ public class EmpresarioControllerTest {
         updates.put("nombre", "Juan Updated");
         updates.put("apellidos", "Perez Updated");
 
-        when(empresarioService.findByDni("12345678A")).thenThrow(new RuntimeException("Empresario no encontrado"));
+        when(empresarioService.findEmpresarioByDNI("12345678A")).thenThrow(new RuntimeException("Empresario no encontrado"));
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/empresarios/12345678A")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updates)))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No se encontró un empresario con el DNI 12345678A"));
 
-        verify(empresarioService, times(1)).findByDni("12345678A");
-        verify(empresarioService, never()).updateEmpresario(any(EmpresarioDTO.class));
-    }*/
+        verify(empresarioService, times(1)).findEmpresarioByDNI("12345678A");
+        verify(empresarioService, never()).updateEmpresario(any(Empresario.class));
+    }
 
     @Test
     public void testDeleteEmpresario() throws Exception {
