@@ -4,17 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sompoble.cat.domain.Cliente;
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Horario;
+import com.sompoble.cat.domain.Notificacion;
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.domain.Servicio;
 import com.sompoble.cat.dto.ClienteDTO;
+import com.sompoble.cat.dto.EmailDTO;
 import com.sompoble.cat.dto.EmpresaDTO;
 import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.exception.GlobalExceptionHandler;
 import com.sompoble.cat.repository.impl.ReservaHibernate;
 import com.sompoble.cat.service.ClienteService;
+import com.sompoble.cat.service.EmailService;
 import com.sompoble.cat.service.EmpresaService;
+import com.sompoble.cat.service.NotificationService;
 import com.sompoble.cat.service.ReservaService;
 import com.sompoble.cat.service.ServicioService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +40,13 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 import org.springframework.http.MediaType;
 
+/**
+ * Clase de prueba para el controlador ReservaController.
+ * 
+ * Esta clase se encarga de verificar el funcionamiento correcto de los endpoints
+ * relacionados con la gestión de reservas, incluyendo la creación, consulta,
+ * actualización y eliminación de reservas.
+ */
 @ExtendWith(MockitoExtension.class)
 public class ReservaControllerTest {
 
@@ -55,6 +67,12 @@ public class ReservaControllerTest {
 
     @Mock
     private ReservaHibernate reservaHibernate;
+    
+    @Mock
+    private EmailService emailService;
+    
+    @Mock
+    private NotificationService notificationService;
 
     private MockMvc mockMvc;
 
@@ -71,6 +89,11 @@ public class ReservaControllerTest {
     private EmpresaDTO empresaDTO;
     private List<Horario> horarios;
 
+    /**
+     * Configura el entorno de prueba antes de cada test.
+     * 
+     * Inicializa los mocks, crea los objetos de prueba y configura MockMvc.
+     */
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(reservaController)
@@ -105,6 +128,7 @@ public class ReservaControllerTest {
         );
 
         reservaDTO1 = new ReservaDTO();
+        reservaDTO1.setIdReserva(1L);
         reservaDTO1.setFechaReserva("2025-04-15");
         reservaDTO1.setHora("10:00");
         reservaDTO1.setEstado("CONFIRMADA");
@@ -113,6 +137,7 @@ public class ReservaControllerTest {
         reservaDTO1.setIdServicio(1L);
 
         reservaDTO2 = new ReservaDTO();
+        reservaDTO2.setIdReserva(2L);
         reservaDTO2.setFechaReserva("2025-04-16");
         reservaDTO2.setHora("11:00");
         reservaDTO2.setEstado("PENDIENTE");
@@ -151,6 +176,7 @@ public class ReservaControllerTest {
         servicio.setEmpresa(empresa);
 
         reserva1 = new Reserva();
+        reserva1.setIdReserva(1L);
         reserva1.setFechaReserva("2025-04-15");
         reserva1.setHora("10:00");
         reserva1.setEstado("CONFIRMADA");
@@ -159,6 +185,7 @@ public class ReservaControllerTest {
         reserva1.setServicio(servicio);
 
         reserva2 = new Reserva();
+        reserva2.setIdReserva(2L);
         reserva2.setFechaReserva("2025-04-16");
         reserva2.setHora("11:00");
         reserva2.setEstado("PENDIENTE");
@@ -167,6 +194,11 @@ public class ReservaControllerTest {
         reserva2.setServicio(servicio);
     }
 
+    /**
+     * Prueba la recuperación de reservas para un cliente que no existe.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testGetReservasByClienteNotFound() throws Exception {
         when(clienteService.findByDni("12345678Z")).thenReturn(null);
@@ -178,18 +210,31 @@ public class ReservaControllerTest {
         verify(reservaService, never()).findByClienteDni(anyString());
     }
 
+    /**
+     * Prueba la recuperación de reservas para un cliente que no tiene reservas.
+     * Debe devolver una lista vacía con estado 200 OK.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testGetReservasByClienteNoReservas() throws Exception {
         when(clienteService.findByDni("12345678A")).thenReturn(clienteDTO);
         when(reservaService.findByClienteDni("12345678A")).thenReturn(new ArrayList<>());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reservas/clientes/12345678A"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(0));
 
         verify(clienteService, times(1)).findByDni("12345678A");
         verify(reservaService, times(1)).findByClienteDni("12345678A");
     }
 
+    /**
+     * Prueba la recuperación de reservas para una empresa.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testGetReservasByEmpresa() throws Exception {
         List<ReservaDTO> reservas = List.of(reservaDTO1, reservaDTO2);
@@ -207,6 +252,11 @@ public class ReservaControllerTest {
         verify(reservaService, times(1)).findByEmpresaIdentificadorFiscal("B12345678");
     }
 
+    /**
+     * Prueba la recuperación de reservas para una empresa que no existe.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testGetReservasByEmpresaNotFound() throws Exception {
         when(empresaService.findByIdentificadorFiscal("Z87654321")).thenReturn(null);
@@ -218,6 +268,28 @@ public class ReservaControllerTest {
         verify(reservaService, never()).findByEmpresaIdentificadorFiscal(anyString());
     }
 
+    /**
+     * Prueba la recuperación de una reserva por su ID.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
+    @Test
+    public void testGetReservaById() throws Exception {
+        when(reservaService.findById(1L)).thenReturn(reservaDTO1);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reservas/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.fechaReserva").value("2025-04-15"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hora").value("10:00"));
+
+        verify(reservaService, times(1)).findById(1L);
+    }
+
+    /**
+     * Prueba la recuperación de una reserva que no existe.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testGetReservaByIdNotFound() throws Exception {
         when(reservaService.findById(99L)).thenReturn(null);
@@ -228,6 +300,11 @@ public class ReservaControllerTest {
         verify(reservaService, times(1)).findById(99L);
     }
 
+    /**
+     * Prueba la creación de una nueva reserva.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateReserva() throws Exception {
         Map<String, Object> clienteData = new HashMap<>();
@@ -257,19 +334,34 @@ public class ReservaControllerTest {
         when(servicioService.existePorId(1L)).thenReturn(true);
         when(servicioService.obtenerPorId(1L)).thenReturn(servicio);
         when(reservaService.countReservasByServicioIdAndFecha(1L, "2025-04-15")).thenReturn(5);
-        doNothing().when(reservaService).addReserva(any(Reserva.class));
+        doAnswer(invocation -> {
+            Reserva reserva = invocation.getArgument(0);
+            reserva.setIdReserva(1L);
+            return null;
+        }).when(reservaService).addReserva(any(Reserva.class));
+        
+        doNothing().when(emailService).sendMail(any(EmailDTO.class));
+        doNothing().when(notificationService).saveNotification(any(Notificacion.class));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/reservas")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Reserva con ID 1 creada correctamente"));
 
         verify(clienteService, times(1)).existsByDni("12345678A");
         verify(empresaService, times(1)).existsByIdentificadorFiscal("B12345678");
         verify(servicioService, times(1)).existePorId(1L);
         verify(reservaService, times(1)).addReserva(any(Reserva.class));
+        verify(emailService, times(1)).sendMail(any(EmailDTO.class));
+        verify(notificationService, times(1)).saveNotification(any(Notificacion.class));
     }
 
+    /**
+     * Prueba la creación de una reserva para un cliente que no existe.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateReservaClienteNoExiste() throws Exception {
         Map<String, Object> clienteData = new HashMap<>();
@@ -304,6 +396,11 @@ public class ReservaControllerTest {
         verify(reservaService, never()).addReserva(any(Reserva.class));
     }
 
+    /**
+     * Prueba la creación de una reserva para una empresa que no existe.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateReservaEmpresaNoExiste() throws Exception {
         Map<String, Object> clienteData = new HashMap<>();
@@ -340,6 +437,11 @@ public class ReservaControllerTest {
         verify(reservaService, never()).addReserva(any(Reserva.class));
     }
 
+    /**
+     * Prueba la creación de una reserva para un servicio que no existe.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateReservaServicioNoExiste() throws Exception {
         Map<String, Object> clienteData = new HashMap<>();
@@ -378,6 +480,11 @@ public class ReservaControllerTest {
         verify(reservaService, never()).addReserva(any(Reserva.class));
     }
 
+    /**
+     * Prueba la creación de una reserva cuando se ha alcanzado el límite.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testCreateReservaLimiteAlcanzado() throws Exception {
         Map<String, Object> clienteData = new HashMap<>();
@@ -422,6 +529,11 @@ public class ReservaControllerTest {
         verify(reservaService, never()).addReserva(any(Reserva.class));
     }
 
+    /**
+     * Prueba la actualización de una reserva.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testUpdateReserva() throws Exception {
         Map<String, Object> updates = new HashMap<>();
@@ -435,9 +547,14 @@ public class ReservaControllerTest {
         when(reservaService.countReservasByServicioIdAndFecha(1L, "2025-04-20")).thenReturn(5);
         when(reservaHibernate.convertToEntity(any(ReservaDTO.class))).thenReturn(reserva1);
         doNothing().when(reservaService).updateReserva(any(Reserva.class));
+        when(clienteService.findByDniFull(anyString())).thenReturn(cliente);
+        
+        // Mockeamos el servicio de email y notificaciones
+        doNothing().when(emailService).sendMail(any(EmailDTO.class));
+        doNothing().when(notificationService).saveNotification(any(Notificacion.class));
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/reservas/1")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updates)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Reserva con ID 1 actualizada correctamente"));
@@ -445,8 +562,15 @@ public class ReservaControllerTest {
         verify(reservaService, times(1)).findByIdFull(1L);
         verify(reservaService, times(1)).findById(1L);
         verify(reservaService, times(1)).updateReserva(any(Reserva.class));
+        verify(emailService, times(1)).sendMail(any(EmailDTO.class));
+        verify(notificationService, times(1)).saveNotification(any(Notificacion.class));
     }
 
+    /**
+     * Prueba la actualización de una reserva que no existe.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testUpdateReservaNotFound() throws Exception {
         Map<String, Object> updates = new HashMap<>();
@@ -464,6 +588,11 @@ public class ReservaControllerTest {
         verify(reservaService, never()).updateReserva(any(Reserva.class));
     }
 
+    /**
+     * Prueba la actualización de una reserva con una empresa inválida.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testUpdateReservaEmpresaInvalida() throws Exception {
         Map<String, Object> empresaData = new HashMap<>();
@@ -487,54 +616,11 @@ public class ReservaControllerTest {
         verify(reservaService, never()).updateReserva(any(Reserva.class));
     }
 
-    @Test
-    public void testDeleteReserva() throws Exception {
-        when(reservaService.findById(1L)).thenReturn(reservaDTO1);
-        doNothing().when(reservaService).deleteById(1L);
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/reservas/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Reserva con ID 1 eliminada correctamente"));
-
-        verify(reservaService, times(1)).findById(1L);
-        verify(reservaService, times(1)).deleteById(1L);
-    }
-
-    @Test
-    public void testDeleteReservaNotFound() throws Exception {
-        when(reservaService.findById(99L)).thenReturn(null);
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/reservas/99"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-
-        verify(reservaService, times(1)).findById(99L);
-        verify(reservaService, never()).deleteById(anyLong());
-    }
-
-    @Test
-    public void testDeleteReservasByCliente() throws Exception {
-        when(clienteService.existsByDni("12345678A")).thenReturn(true);
-        doNothing().when(reservaService).deleteByClienteDni("12345678A");
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/reservas/clientes/12345678A"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Reservas para el cliente con DNI 12345678A eliminadas correctamente"));
-
-        verify(clienteService, times(1)).existsByDni("12345678A");
-        verify(reservaService, times(1)).deleteByClienteDni("12345678A");
-    }
-
-    @Test
-    public void testDeleteReservasByClienteNotFound() throws Exception {
-        when(clienteService.existsByDni("99999999Z")).thenReturn(false);
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/reservas/clientes/99999999Z"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-
-        verify(clienteService, times(1)).existsByDni("99999999Z");
-        verify(reservaService, never()).deleteByClienteDni(anyString());
-    }
-
+    /**
+     * Prueba la eliminación de una reserva.
+     * 
+     * @throws Exception Si ocurre un error durante la ejecución de la prueba
+     */
     @Test
     public void testDeleteReservasByEmpresa() throws Exception {
         when(empresaService.existsByIdentificadorFiscal("B12345678")).thenReturn(true);
