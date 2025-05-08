@@ -138,33 +138,37 @@ public class EmailController {
     @PostMapping("/configure-notifications")
     public ResponseEntity<String> configureNotifications(@RequestBody Map<String, Object> cfg) {
         try {
-            // 1) Extraer parámetros de configuración
-            Boolean enabled = cfg.containsKey("enabled") ? (Boolean) cfg.get("enabled") : null;
+            Object enabledObj = cfg.get("enabled");
+            Boolean enabled = (enabledObj != null) ? Boolean.valueOf(enabledObj.toString()) : null;
+
             String frequency = cfg.containsKey("frequency") ? cfg.get("frequency").toString() : null;
             String sendTime = cfg.containsKey("sendTime") ? cfg.get("sendTime").toString() : null;
 
-            // 2) Registrar la notificación de configuración
             String msg = String.format(
                     "Configuración actualizada: enabled=%s, frequency=%s, sendTime=%s",
                     enabled, frequency, sendTime
             );
+
             Notificacion notConfig = new Notificacion(
                     null,
                     null,
                     msg,
                     Notificacion.TipoNotificacion.INFORMACION
             );
-            notificationService.saveNotification(notConfig);
 
-            // 3) Enviar el email de notificación
+            notificationService.saveNotification(notConfig);
             emailService.sendNotificationEmail(notConfig);
 
             return ResponseEntity.ok("Configuración aplicada y notificación enviada");
         } catch (Exception e) {
+            e.printStackTrace(); // ⚠️ Esto debe mostrar el error real en la consola (a la derecha en rojo)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al configurar notificaciones");
         }
     }
+
+
+
 
     /**
      * Método para pruebas internas de backend. Envía un correo de prueba en

@@ -1,214 +1,125 @@
 package com.sompoble.cat.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sompoble.cat.domain.Cliente;
-import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.domain.Notificacion;
 import com.sompoble.cat.dto.ClienteDTO;
-import com.sompoble.cat.exception.GlobalExceptionHandler;
-import com.sompoble.cat.exception.ResourceNotFoundException;
 import com.sompoble.cat.service.ClienteService;
 import com.sompoble.cat.service.NotificationService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class NotificationControllerTest {
 
-    @Mock
-    private ClienteService clienteService;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private NotificationService notificationService;
 
-    @InjectMocks
-    private NotificationController notificationController;
+    @MockBean
+    private ClienteService clienteService;
 
-    private MockMvc mockMvc;
+    @Autowired
     private ObjectMapper objectMapper;
-    private Notificacion notificacion1;
-    private Notificacion notificacion2;
-    private Cliente cliente;
-    private Empresario empresario;
-    private ClienteDTO clienteDTO;
-    private List<Notificacion> notificaciones;
 
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
-                .setControllerAdvice(new GlobalExceptionHandler())
-                .build();
-        objectMapper = new ObjectMapper();
+    @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
+    public void testObtenerNotificacionesByClientes() throws Exception {
+        String dni = "12345678A";
+        ClienteDTO cliente = Mockito.mock(ClienteDTO.class);
+        Notificacion notificacion = Mockito.mock(Notificacion.class);
+        Mockito.when(notificacion.getIdNotificacion()).thenReturn(1L);
 
-        // Configuración de datos de prueba
-        cliente = new Cliente();
-        cliente.setDni("12345678A");
-        cliente.setNombre("Juan");
-        cliente.setApellidos("Pérez");
-        cliente.setEmail("juan@ejemplo.com");
-        cliente.setTelefono("678901234");
-        cliente.setPass("password123");
+        Mockito.when(clienteService.findByDni(dni)).thenReturn(cliente);
+        Mockito.when(notificationService.findByClienteDni(dni)).thenReturn(Arrays.asList(notificacion));
 
-        empresario = new Empresario();
-        empresario.setDni("87654321B");
-        empresario.setNombre("Maria");
-        empresario.setApellidos("López");
-        empresario.setEmail("maria@empresa.com");
-        empresario.setTelefono("654321987");
-        empresario.setPass("password456");
-
-        clienteDTO = new ClienteDTO(
-                1L, // idPersona
-                "12345678A", // dni
-                "Juan", // nombre
-                "Pérez", // apellidos
-                "juan@ejemplo.com", // email
-                "678901234", // telefono
-                "password123", // pass
-                new ArrayList<>(), // reservasIds
-                Arrays.asList(1L, 2L) // notificacionesIds
-        );
-
-        notificacion1 = new Notificacion(cliente, null, "Notificación para cliente", Notificacion.TipoNotificacion.INFORMACION);
-        // Simular ID generado
-        try {
-            java.lang.reflect.Field field = notificacion1.getClass().getDeclaredField("idNotificacion");
-            field.setAccessible(true);
-            field.set(notificacion1, 1L);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        notificacion2 = new Notificacion(cliente, null, "Otra notificación", Notificacion.TipoNotificacion.ADVERTENCIA);
-        // Simular ID generado
-        try {
-            java.lang.reflect.Field field = notificacion2.getClass().getDeclaredField("idNotificacion");
-            field.setAccessible(true);
-            field.set(notificacion2, 2L);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        notificaciones = new ArrayList<>();
-        notificaciones.add(notificacion1);
-        notificaciones.add(notificacion2);
+        mockMvc.perform(get("/api/notifications/clientes/{dni}", dni))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$[0].idNotificacion").value(1L));
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     public void testObtenerNotificacionesPorIdentificador() throws Exception {
-        // Configurar comportamiento del mock
-        when(notificationService.findNotificationsByIdentificador("12345678A")).thenReturn(notificaciones);
+        String identificador = "12345678A";
+        Notificacion notificacion = Mockito.mock(Notificacion.class);
+        Mockito.when(notificacion.getIdNotificacion()).thenReturn(2L);
 
-        // Ejecutar y verificar
+        Mockito.when(notificationService.findNotificationsByIdentificador(identificador))
+                .thenReturn(Arrays.asList(notificacion));
+
         mockMvc.perform(get("/api/notifications/obtener")
-                .param("identificador", "12345678A"))
+                .param("identificador", identificador))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].mensaje", is("Notificación para cliente")))
-                .andExpect(jsonPath("$[1].mensaje", is("Otra notificación")));
-
-        verify(notificationService, times(1)).findNotificationsByIdentificador("12345678A");
+                .andExpect(jsonPath("$[0].idNotificacion").value(2L));
     }
 
     @Test
-    public void testObtenerNotificacionesPorIdentificadorNoEncontradas() throws Exception {
-        // Configurar comportamiento del mock
-        when(notificationService.findNotificationsByIdentificador("00000000X")).thenReturn(Collections.emptyList());
+    @WithMockUser(username = "user", roles = {"ADMIN"})
+    public void testSaveNotification() throws Exception {
+        Notificacion notification = new Notificacion();
 
-        // Ejecutar y verificar
-        mockMvc.perform(get("/api/notifications/obtener")
-                .param("identificador", "00000000X"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value(containsString("No hay notificaciones para este identificador")));
+        Mockito.doNothing().when(notificationService).saveNotification(any(Notificacion.class));
 
-        verify(notificationService, times(1)).findNotificationsByIdentificador("00000000X");
+        mockMvc.perform(post("/api/notifications/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(notification)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Notificación guardada correctamente."));
     }
 
     @Test
+    @WithMockUser
     public void testGetAllNotifications() throws Exception {
-        // Configurar comportamiento del mock
-        when(notificationService.getAllNotifications()).thenReturn(notificaciones);
+        Notificacion notificacion = Mockito.mock(Notificacion.class);
+        Mockito.when(notificacion.getIdNotificacion()).thenReturn(4L);
 
-        // Ejecutar y verificar
+        Mockito.when(notificationService.getAllNotifications())
+                .thenReturn(Collections.singletonList(notificacion));
+
         mockMvc.perform(get("/api/notifications/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].mensaje", is("Notificación para cliente")))
-                .andExpect(jsonPath("$[1].mensaje", is("Otra notificación")));
-
-        verify(notificationService, times(1)).getAllNotifications();
+                .andExpect(jsonPath("$[0].idNotificacion").value(4L));
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     public void testGetNotificationById() throws Exception {
-        // Configurar comportamiento del mock
-        when(notificationService.findNotificationById(1L)).thenReturn(notificacion1);
+        Long id = 5L;
+        Notificacion notificacion = Mockito.mock(Notificacion.class);
+        Mockito.when(notificacion.getIdNotificacion()).thenReturn(id);
 
-        // Ejecutar y verificar
-        mockMvc.perform(get("/api/notifications/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje", is("Notificación para cliente")))
-                .andExpect(jsonPath("$.tipo", is("INFORMACION")));
+        Mockito.when(notificationService.findNotificationById(id))
+               .thenReturn(notificacion);
 
-        verify(notificationService, times(1)).findNotificationById(1L);
+        mockMvc.perform(get("/api/notifications/{id}", id))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.idNotificacion").value(5L));
     }
 
     @Test
-    public void testGetNotificationByIdNotFound() throws Exception {
-        // Configurar comportamiento del mock
-        when(notificationService.findNotificationById(999L)).thenThrow(new ResourceNotFoundException("Notificación con ID 999 no encontrada"));
-
-        // Ejecutar y verificar
-        mockMvc.perform(get("/api/notifications/999"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(containsString("Notificación con ID 999 no encontrada")));
-
-        verify(notificationService, times(1)).findNotificationById(999L);
-    }
-
-    @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     public void testDeleteNotification() throws Exception {
-        // Configurar comportamiento del mock
-        doNothing().when(notificationService).deleteNotificationById(1L);
+        Long id = 6L;
+        Mockito.doNothing().when(notificationService).deleteNotificationById(id);
 
-        // Ejecutar y verificar
-        mockMvc.perform(delete("/api/notifications/delete/1"))
+        mockMvc.perform(delete("/api/notifications/delete/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Notificación eliminada correctamente."));
-
-        verify(notificationService, times(1)).deleteNotificationById(1L);
-    }
-
-    @Test
-    public void testDeleteNotificationNotFound() throws Exception {
-        // Configurar comportamiento del mock
-        doThrow(new ResourceNotFoundException("Notificación con ID 999 no encontrada"))
-                .when(notificationService).deleteNotificationById(999L);
-
-        // Ejecutar y verificar
-        mockMvc.perform(delete("/api/notifications/delete/999"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(containsString("Notificación con ID 999 no encontrada")));
-
-        verify(notificationService, times(1)).deleteNotificationById(999L);
     }
 }

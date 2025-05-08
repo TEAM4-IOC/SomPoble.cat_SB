@@ -59,34 +59,26 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendNotificationEmail(Notificacion notificacion) {
-        String subject = generateSubject(notificacion.getTipo());
         String recipient = getRecipientEmail(notificacion);
-
-        // Procesar la plantilla HTML
         Context context = new Context();
-        context.setVariable("subject", subject);
         context.setVariable("message", notificacion.getMensaje());
-
         String htmlContent = templateEngine.process("email", context);
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
             helper.setTo(recipient);
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true); // Indica que el contenido es HTML
-
+            helper.setSubject(generateSubject(notificacion.getTipo()));
+            helper.setText(htmlContent, true);
             Resource logoResource = resourceLoader.getResource("classpath:templates/SomPoble.png");
-            helper.addInline("logoImage", logoResource);
-
+            if (logoResource.exists()) {
+                helper.addInline("logoImage", logoResource);
+            }
             javaMailSender.send(mimeMessage);
-
         } catch (Exception e) {
-            throw new RuntimeException("Error al enviar el email", e);
+            throw new RuntimeException("Error al enviar el email: " + e.getMessage(), e);
         }
     }
-
     /**
      * Genera el asunto del email según el tipo de notificación.
      *
@@ -115,10 +107,20 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public String getRecipientEmail(Notificacion notificacion) {
-        if (notificacion.esParaCliente()) {
-            return notificacion.getCliente().getEmail();
+        if (notificacion.esParaCliente() && notificacion.getCliente() != null) {
+            if (notificacion.getCliente().getEmail() != null) {
+                return notificacion.getCliente().getEmail();
+            } else {
+                throw new IllegalArgumentException("El cliente no tiene un email configurado");
+            }
+        } else if (notificacion.getEmpresario() != null) {
+            if (notificacion.getEmpresario().getEmail() != null) {
+                return notificacion.getEmpresario().getEmail();
+            } else {
+                throw new IllegalArgumentException("El empresario no tiene un email configurado");
+            }
         } else {
-            return notificacion.getEmpresario().getEmail();
+            throw new IllegalArgumentException("Debe especificar cliente o empresario");
         }
     }
 

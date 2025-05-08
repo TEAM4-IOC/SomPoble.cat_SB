@@ -40,7 +40,7 @@ public class NotificacionHibernate implements NotificacionRepository {
         } else {
             notificacion = entityManager.merge(notificacion); // Actualiza entidad existente
         }
-        return notificacion; // 🔥 Devolvemos la notificación
+        return notificacion; // Devolvemos la notificación
     }
 
     /**
