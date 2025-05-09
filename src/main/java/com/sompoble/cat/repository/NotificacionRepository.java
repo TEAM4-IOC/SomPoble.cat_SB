@@ -44,12 +44,12 @@ public interface NotificacionRepository {
      *
      * <p>
      * El identificador puede ser:
+     * </p>
      * <ul>
      * <li>El DNI de un cliente.</li>
      * <li>El número fiscal de una empresa o autónomo.</li>
      * </ul>
-     * Se devuelven todas las notificaciones donde coincida alguno de estos
-     * campos.</p>
+     * <p>Se devuelven todas las notificaciones donde coincida alguno de estos campos.</p>
      *
      * @param identificador El DNI del cliente o el número fiscal de la
      * empresa/autónomo.

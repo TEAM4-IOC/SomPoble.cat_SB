@@ -1,16 +1,16 @@
 package com.sompoble.cat.repository.impl;
+
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Horario;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Expression;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,14 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
 import org.junit.jupiter.api.Test;
-import java.util.Date;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class HorarioHibernateTest {
@@ -129,8 +126,6 @@ class HorarioHibernateTest {
         verify(entityManager, times(1)).createQuery(cq);
     }
 
-
-
     @Test
     void findByOrderByHorarioInicioAsc() {
         // Mocking the CriteriaBuilder and CriteriaQuery
@@ -161,4 +156,75 @@ class HorarioHibernateTest {
         verify(entityManager, times(1)).createQuery(query);
     }
 
+    @Test
+    void findByServicio_Empresa_IdentificadorFiscal() {
+        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
+        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+
+        List<Horario> result = horarioRepository.findByServicio_Empresa_IdentificadorFiscal("A12345678");
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(horario, result.get(0));
+        verify(entityManager).createQuery(anyString(), eq(Horario.class));
+    }
+
+    @Test
+    void findFirstByServicioId() {
+        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
+        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
+        when(typedQuery.setMaxResults(1)).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(horario));
+
+        Optional<Horario> result = horarioRepository.findFirstByServicioId(1L);
+
+        assertTrue(result.isPresent());
+        assertEquals(horario, result.get());
+        verify(entityManager).createQuery(anyString(), eq(Horario.class));
+        verify(typedQuery).setMaxResults(1);
+    }
+
+    @Test
+    void findFirstByServicioId_NoResult() {
+        when(entityManager.createQuery(anyString(), eq(Horario.class))).thenReturn(typedQuery);
+        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
+        when(typedQuery.setMaxResults(1)).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(Collections.emptyList());
+
+        Optional<Horario> result = horarioRepository.findFirstByServicioId(1L);
+
+        assertFalse(result.isPresent());
+        verify(entityManager).createQuery(anyString(), eq(Horario.class));
+        verify(typedQuery).setMaxResults(1);
+    }
+
+    @Test
+    void delete_EntityNotFound() {
+        when(entityManager.find(Horario.class, 1L)).thenReturn(null);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            horarioRepository.delete(1L);
+        });
+
+        verify(entityManager).find(Horario.class, 1L);
+        verify(entityManager, never()).remove(any(Horario.class));
+    }
+
+    @Test
+    void saveNewHorario() {
+        Horario newHorario = new Horario();
+        newHorario.setHorarioInicio(LocalTime.of(9, 0));
+        newHorario.setHorarioFin(LocalTime.of(18, 0));
+        newHorario.setDiasLaborables("Lunes,Martes");
+
+        doNothing().when(entityManager).persist(newHorario);
+
+        Horario result = horarioRepository.save(newHorario);
+
+        assertNotNull(result);
+        assertEquals(newHorario, result);
+        verify(entityManager).persist(newHorario);
+        verify(entityManager, never()).merge(any(Horario.class));
+    }
 }
