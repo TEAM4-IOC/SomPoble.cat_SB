@@ -31,7 +31,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("https://som-poble-cat-front-end-vmcw.vercel.app/landing")); //TODO: cambiar cuando lo tengamos definido
+        config.setAllowedOriginPatterns(List.of("https://som-poble-cat-front-end-vmcw.vercel.app")); //TODO: cambiar cuando lo tengamos definido
         config.setAllowedHeaders(List.of("*")); // TODO: ver si lo tenemos que cambiar o que hacemos
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Métodos permitidos
 
