@@ -127,11 +127,12 @@ public class NotificationServiceImpl implements NotificationService {
      *
      * <p>
      * El identificador puede ser:
+     * </p>
      * <ul>
      * <li>El DNI de un cliente.</li>
      * <li>El número fiscal de una empresa o autónomo.</li>
      * </ul>
-     * Se devuelven todas las notificaciones relacionadas.</p>
+     * <p>Se devuelven todas las notificaciones relacionadas.</p>
      *
      * @param identificador El DNI del cliente o el número fiscal de la
      * empresa/autónomo.

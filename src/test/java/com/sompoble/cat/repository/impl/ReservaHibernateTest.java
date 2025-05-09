@@ -6,6 +6,7 @@ import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Empresario;
 import com.sompoble.cat.domain.Reserva;
 import com.sompoble.cat.domain.Servicio;
+import com.sompoble.cat.dto.PanelMetricasDTO.MetricasMensualesDTO;
 import com.sompoble.cat.dto.ReservaDTO;
 import com.sompoble.cat.service.ClienteService;
 import com.sompoble.cat.service.EmpresaService;
@@ -20,6 +21,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -89,10 +97,6 @@ class ReservaHibernateTest {
         servicio.setEmpresa(empresa);
         entityManager.persist(servicio);
 
-        // Eliminamos los stubs innecesarios:
-        // when(clienteService.findByDniFull("12345678A")).thenReturn(cliente);
-        // when(empresaService.findByIdentificadorFiscalFull("A12345678")).thenReturn(empresa);
-        // when(servicioService.obtenerPorId(servicio.getIdServicio())).thenReturn(servicio);
         entityManager.flush();
     }
 
@@ -373,5 +377,219 @@ class ReservaHibernateTest {
 
         int countFechaInexistente = reservaHibernate.countByServicioIdAndFechaReserva(servicio.getIdServicio(), "2023-05-17");
         assertEquals(0, countFechaInexistente);
+    }
+
+    @Test
+    void deleteByServicioIdTest() {
+        Reserva reserva1 = new Reserva();
+        reserva1.setFechaReserva("2023-05-15");
+        reserva1.setHora("10:00");
+        reserva1.setEstado("PENDIENTE");
+        reserva1.setCliente(cliente);
+        reserva1.setEmpresa(empresa);
+        reserva1.setServicio(servicio);
+
+        Reserva reserva2 = new Reserva();
+        reserva2.setFechaReserva("2023-05-16");
+        reserva2.setHora("11:00");
+        reserva2.setEstado("PENDIENTE");
+        reserva2.setCliente(cliente);
+        reserva2.setEmpresa(empresa);
+        reserva2.setServicio(servicio);
+
+        reservaHibernate.addReserva(reserva1);
+        reservaHibernate.addReserva(reserva2);
+
+        Servicio servicio2 = new Servicio();
+        servicio2.setNombre("Otro servicio");
+        servicio2.setDescripcion("Otra descripción");
+        servicio2.setPrecio(75);
+        servicio2.setDuracion(45);
+        servicio2.setEmpresa(empresa);
+        entityManager.persist(servicio2);
+
+        Reserva reserva3 = new Reserva();
+        reserva3.setFechaReserva("2023-05-17");
+        reserva3.setHora("12:00");
+        reserva3.setEstado("PENDIENTE");
+        reserva3.setCliente(cliente);
+        reserva3.setEmpresa(empresa);
+        reserva3.setServicio(servicio2);
+        reservaHibernate.addReserva(reserva3);
+
+        reservaHibernate.deleteByServicioId(servicio.getIdServicio());
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Reserva> cq = cb.createQuery(Reserva.class);
+        Root<Reserva> root = cq.from(Reserva.class);
+        Predicate servicioIdPredicate = cb.equal(root.get("servicio").get("idServicio"), servicio.getIdServicio());
+        cq.where(servicioIdPredicate);
+        List<Reserva> reservas = entityManager.createQuery(cq).getResultList();
+        assertTrue(reservas.isEmpty(), "Deberían haberse eliminado todas las reservas del servicio");
+
+        CriteriaQuery<Reserva> cq2 = cb.createQuery(Reserva.class);
+        Root<Reserva> root2 = cq2.from(Reserva.class);
+        Predicate servicio2IdPredicate = cb.equal(root2.get("servicio").get("idServicio"), servicio2.getIdServicio());
+        cq2.where(servicio2IdPredicate);
+        List<Reserva> reservasServicio2 = entityManager.createQuery(cq2).getResultList();
+        assertEquals(1, reservasServicio2.size(), "La reserva del segundo servicio debe seguir existiendo");
+    }
+
+    @Test
+    void contarClientesUnicosTest() {
+        Cliente cliente2 = new Cliente();
+        cliente2.setDni("22222222B");
+        cliente2.setNombre("Ana");
+        cliente2.setApellidos("Gomez Lopez");
+        cliente2.setEmail("ana@ejemplo.com");
+        cliente2.setTelefono("650180802");
+        cliente2.setPass("pass");
+        entityManager.persist(cliente2);
+
+        Reserva reserva1 = new Reserva();
+        reserva1.setFechaReserva("2023-05-15");
+        reserva1.setHora("10:00");
+        reserva1.setEstado("PENDIENTE");
+        reserva1.setCliente(cliente);
+        reserva1.setEmpresa(empresa);
+        reserva1.setServicio(servicio);
+        reservaHibernate.addReserva(reserva1);
+
+        Reserva reserva2 = new Reserva();
+        reserva2.setFechaReserva("2023-05-16");
+        reserva2.setHora("11:00");
+        reserva2.setEstado("PENDIENTE");
+        reserva2.setCliente(cliente);
+        reserva2.setEmpresa(empresa);
+        reserva2.setServicio(servicio);
+        reservaHibernate.addReserva(reserva2);
+
+        Reserva reserva3 = new Reserva();
+        reserva3.setFechaReserva("2023-05-17");
+        reserva3.setHora("12:00");
+        reserva3.setEstado("PENDIENTE");
+        reserva3.setCliente(cliente2);
+        reserva3.setEmpresa(empresa);
+        reserva3.setServicio(servicio);
+        reservaHibernate.addReserva(reserva3);
+
+        Reserva reserva4 = new Reserva();
+        reserva4.setFechaReserva("2023-06-01");
+        reserva4.setHora("09:00");
+        reserva4.setEstado("PENDIENTE");
+        reserva4.setCliente(cliente);
+        reserva4.setEmpresa(empresa);
+        reserva4.setServicio(servicio);
+        reservaHibernate.addReserva(reserva4);
+
+        Integer clientesUnicos = reservaHibernate.contarClientesUnicos(
+                empresa.getIdEmpresa(),
+                LocalDate.of(2023, 5, 1),
+                LocalDate.of(2023, 5, 31)
+        );
+
+        assertEquals(2, clientesUnicos, "Debe haber exactamente 2 clientes únicos en el período");
+    }
+
+    @Test
+    void contarReservasPorEmpresaYFechasTest() {
+        Reserva reserva1 = new Reserva();
+        reserva1.setFechaReserva("2023-05-15");
+        reserva1.setHora("10:00");
+        reserva1.setEstado("PENDIENTE");
+        reserva1.setCliente(cliente);
+        reserva1.setEmpresa(empresa);
+        reserva1.setServicio(servicio);
+        reservaHibernate.addReserva(reserva1);
+
+        Reserva reserva2 = new Reserva();
+        reserva2.setFechaReserva("2023-05-16"); 
+        reserva2.setHora("11:00");
+        reserva2.setEstado("PENDIENTE");
+        reserva2.setCliente(cliente);
+        reserva2.setEmpresa(empresa);
+        reserva2.setServicio(servicio);
+        reservaHibernate.addReserva(reserva2);
+
+        Reserva reserva3 = new Reserva();
+        reserva3.setFechaReserva("2023-06-01");
+        reserva3.setHora("09:00");
+        reserva3.setEstado("PENDIENTE");
+        reserva3.setCliente(cliente);
+        reserva3.setEmpresa(empresa);
+        reserva3.setServicio(servicio);
+        reservaHibernate.addReserva(reserva3);
+
+        Long reservasMayo = reservaHibernate.contarReservasPorEmpresaYFechas(
+                empresa.getIdEmpresa(),
+                LocalDate.of(2023, 5, 1),
+                LocalDate.of(2023, 5, 31)
+        );
+
+        assertEquals(2L, reservasMayo, "Debe haber exactamente 2 reservas en mayo");
+
+        Long reservasJunio = reservaHibernate.contarReservasPorEmpresaYFechas(
+                empresa.getIdEmpresa(),
+                LocalDate.of(2023, 6, 1),
+                LocalDate.of(2023, 6, 30)
+        );
+
+        assertEquals(1L, reservasJunio, "Debe haber exactamente 1 reserva en junio");
+    }
+
+    @Test
+    void sumarIngresosPorEmpresaYFechasTest() {
+        Servicio servicio1 = servicio;
+
+        Servicio servicio2 = new Servicio();
+        servicio2.setNombre("Servicio premium");
+        servicio2.setDescripcion("Descripción del servicio premium");
+        servicio2.setPrecio(100);
+        servicio2.setDuracion(90);
+        servicio2.setEmpresa(empresa);
+        entityManager.persist(servicio2);
+
+        Reserva reserva1 = new Reserva();
+        reserva1.setFechaReserva("2023-05-15"); 
+        reserva1.setHora("10:00");
+        reserva1.setEstado("PENDIENTE");
+        reserva1.setCliente(cliente);
+        reserva1.setEmpresa(empresa);
+        reserva1.setServicio(servicio1); 
+        reservaHibernate.addReserva(reserva1);
+
+        Reserva reserva2 = new Reserva();
+        reserva2.setFechaReserva("2023-05-16"); 
+        reserva2.setHora("11:00");
+        reserva2.setEstado("PENDIENTE");
+        reserva2.setCliente(cliente);
+        reserva2.setEmpresa(empresa);
+        reserva2.setServicio(servicio2);
+        reservaHibernate.addReserva(reserva2);
+
+        Reserva reserva3 = new Reserva();
+        reserva3.setFechaReserva("2023-06-01"); 
+        reserva3.setHora("09:00");
+        reserva3.setEstado("PENDIENTE");
+        reserva3.setCliente(cliente);
+        reserva3.setEmpresa(empresa);
+        reserva3.setServicio(servicio1); 
+        reservaHibernate.addReserva(reserva3);
+
+        Double ingresosMayo = reservaHibernate.sumarIngresosPorEmpresaYFechas(
+                empresa.getIdEmpresa(),
+                LocalDate.of(2023, 5, 1),
+                LocalDate.of(2023, 5, 31)
+        );
+
+        assertEquals(150.0, ingresosMayo, 0.001, "Los ingresos en mayo deben ser 150€");
+
+        Double ingresosJunio = reservaHibernate.sumarIngresosPorEmpresaYFechas(
+                empresa.getIdEmpresa(),
+                LocalDate.of(2023, 6, 1),
+                LocalDate.of(2023, 6, 30)
+        );
+
+        assertEquals(50.0, ingresosJunio, 0.001, "Los ingresos en junio deben ser 50€");
     }
 }

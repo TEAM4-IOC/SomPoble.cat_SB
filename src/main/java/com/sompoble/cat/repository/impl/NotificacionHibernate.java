@@ -84,12 +84,13 @@ public class NotificacionHibernate implements NotificacionRepository {
      *
      * <p>
      * El método busca notificaciones donde:
+     * </p>
      * <ul>
      * <li>El DNI del cliente sea igual al identificador proporcionado, o</li>
      * <li>El número fiscal de la empresa sea igual al identificador
      * proporcionado.</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param identificador El DNI del cliente o el número fiscal de la empresa.
      * @return Una lista de {@link Notificacion} que corresponden al

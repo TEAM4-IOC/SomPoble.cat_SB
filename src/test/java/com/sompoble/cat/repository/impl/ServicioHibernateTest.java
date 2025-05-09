@@ -3,9 +3,12 @@ package com.sompoble.cat.repository.impl;
 import com.sompoble.cat.domain.Empresa;
 import com.sompoble.cat.domain.Servicio;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -19,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -69,16 +73,16 @@ public class ServicioHibernateTest {
         empresa.setIdentificadorFiscal("A12345678");
         empresa.setIdEmpresa(1L);
         servicio = new Servicio(
-            "Servicio Test",                  
-            "Descripción del servicio test",  
-            2,                                
-            100.0f,                          
-            10,                               
-            empresa                          
+                "Servicio Test",
+                "Descripción del servicio test",
+                2,
+                100.0f,
+                10,
+                empresa
         );
-        servicio.setIdServicio(1L);  
+        servicio.setIdServicio(1L);
     }
-    
+
     @Test
     public void testFindById() {
         when(entityManager.find(Servicio.class, 1L)).thenReturn(servicio);
@@ -90,8 +94,7 @@ public class ServicioHibernateTest {
         assertEquals("Servicio Test", result.getNombre());
         verify(entityManager).find(Servicio.class, 1L);
     }
-    
-    
+
     @Test
     public void testUpdateServicio() {
         when(entityManager.merge(servicio)).thenReturn(servicio);
@@ -104,8 +107,7 @@ public class ServicioHibernateTest {
         servicioHibernate.addServicio(servicio);
         verify(entityManager).persist(servicio);
     }
-    
-    
+
     @Test
     public void testFindAllByEmpresaId() {
         List<Servicio> expectedServicios = Arrays.asList(servicio);
@@ -123,7 +125,7 @@ public class ServicioHibernateTest {
         assertEquals(1L, result.get(0).getIdServicio());
         verify(criteriaQuery).where(any(Predicate.class));
     }
-    
+
     @Test
     public void testExistsById() {
         // Simular el EntityManager y CriteriaBuilder
@@ -151,8 +153,6 @@ public class ServicioHibernateTest {
         assertTrue(exists);
     }
 
-    
-
     @Test
     public void testDeleteById_ExistingServicio() {
         when(entityManager.find(Servicio.class, 1L)).thenReturn(servicio);
@@ -167,5 +167,147 @@ public class ServicioHibernateTest {
         servicioHibernate.deleteById(1L);
         verify(entityManager).find(Servicio.class, 1L);
         verify(entityManager, never()).remove(any(Servicio.class));
+    }
+
+    @Test
+    public void testFindAllByEmpresaIdentificador() {
+        List<Servicio> expectedServicios = Arrays.asList(servicio);
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(Servicio.class)).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(Servicio.class)).thenReturn(root);
+        when(root.get("empresa")).thenReturn(empresaPath);
+        when(empresaPath.get("identificadorFiscal")).thenReturn(identificadorPath);
+        when(criteriaBuilder.equal(identificadorPath, "A12345678")).thenReturn(mock(Predicate.class));
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(expectedServicios);
+
+        List<Servicio> result = servicioHibernate.findAllByEmpresaIdentificador("A12345678");
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getIdServicio());
+        verify(criteriaQuery).where(any(Predicate.class));
+    }
+    
+    @Test
+    public void testFindAllHorariosByEmpresaId() {
+        List<Servicio> expectedServicios = Arrays.asList(servicio);
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(Servicio.class)).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(Servicio.class)).thenReturn(root);
+
+        // Mocking the join operation
+        when(root.join("horarios", JoinType.LEFT)).thenReturn(mock(Join.class));
+
+        when(root.get("empresa")).thenReturn(empresaPath);
+        when(empresaPath.get("id")).thenReturn(idPath);
+        when(criteriaBuilder.equal(idPath, 1L)).thenReturn(mock(Predicate.class));
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(expectedServicios);
+
+        List<Servicio> result = servicioHibernate.findAllHorariosByEmpresaId(1L);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getIdServicio());
+        verify(criteriaQuery).where(any(Predicate.class));
+    }
+
+    @Test
+    public void testFindByIdAndEmpresaId_Found() {
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(Servicio.class)).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(Servicio.class)).thenReturn(root);
+
+        Path<Object> servicioIdPath = mock(Path.class);
+        when(root.get("id")).thenReturn(servicioIdPath);
+        when(criteriaBuilder.equal(servicioIdPath, 1L)).thenReturn(mock(Predicate.class));
+
+        when(root.get("empresa")).thenReturn(empresaPath);
+        when(empresaPath.get("id")).thenReturn(idPath);
+        when(criteriaBuilder.equal(idPath, 1L)).thenReturn(mock(Predicate.class));
+
+        when(criteriaBuilder.and(any(Predicate.class), any(Predicate.class))).thenReturn(mock(Predicate.class));
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(servicio);
+
+        Optional<Servicio> result = servicioHibernate.findByIdAndEmpresaId(1L, 1L);
+
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getIdServicio());
+        verify(criteriaQuery).where(any(Predicate.class));
+    }
+
+    @Test
+    public void testFindByIdAndEmpresaId_NotFound() {
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(Servicio.class)).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(Servicio.class)).thenReturn(root);
+
+        Path<Object> servicioIdPath = mock(Path.class);
+        when(root.get("id")).thenReturn(servicioIdPath);
+        when(criteriaBuilder.equal(servicioIdPath, 1L)).thenReturn(mock(Predicate.class));
+
+        when(root.get("empresa")).thenReturn(empresaPath);
+        when(empresaPath.get("id")).thenReturn(idPath);
+        when(criteriaBuilder.equal(idPath, 2L)).thenReturn(mock(Predicate.class));
+
+        when(criteriaBuilder.and(any(Predicate.class), any(Predicate.class))).thenReturn(mock(Predicate.class));
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenThrow(new NoResultException());
+
+        Optional<Servicio> result = servicioHibernate.findByIdAndEmpresaId(1L, 2L);
+
+        assertFalse(result.isPresent());
+        verify(criteriaQuery).where(any(Predicate.class));
+    }
+
+    @Test
+    public void testFindByIdAndEmpresaIdentificadorFiscal_Found() {
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(Servicio.class)).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(Servicio.class)).thenReturn(root);
+
+        Path<Object> servicioIdPath = mock(Path.class);
+        when(root.get("id")).thenReturn(servicioIdPath);
+        when(criteriaBuilder.equal(servicioIdPath, 1L)).thenReturn(mock(Predicate.class));
+
+        when(root.get("empresa")).thenReturn(empresaPath);
+        when(empresaPath.get("identificadorFiscal")).thenReturn(identificadorPath);
+        when(criteriaBuilder.equal(identificadorPath, "A12345678")).thenReturn(mock(Predicate.class));
+
+        when(criteriaBuilder.and(any(Predicate.class), any(Predicate.class))).thenReturn(mock(Predicate.class));
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(servicio);
+
+        Optional<Servicio> result = servicioHibernate.findByIdAndEmpresaIdentificadorFiscal(1L, "A12345678");
+
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getIdServicio());
+        verify(criteriaQuery).where(any(Predicate.class));
+    }
+
+    @Test
+    public void testFindByIdAndEmpresaIdentificadorFiscal_NotFound() {
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createQuery(Servicio.class)).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(Servicio.class)).thenReturn(root);
+
+        Path<Object> servicioIdPath = mock(Path.class);
+        when(root.get("id")).thenReturn(servicioIdPath);
+        when(criteriaBuilder.equal(servicioIdPath, 1L)).thenReturn(mock(Predicate.class));
+
+        when(root.get("empresa")).thenReturn(empresaPath);
+        when(empresaPath.get("identificadorFiscal")).thenReturn(identificadorPath);
+        when(criteriaBuilder.equal(identificadorPath, "B87654321")).thenReturn(mock(Predicate.class));
+
+        when(criteriaBuilder.and(any(Predicate.class), any(Predicate.class))).thenReturn(mock(Predicate.class));
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenThrow(new NoResultException());
+
+        Optional<Servicio> result = servicioHibernate.findByIdAndEmpresaIdentificadorFiscal(1L, "B87654321");
+
+        assertFalse(result.isPresent());
+        verify(criteriaQuery).where(any(Predicate.class));
     }
 }
